@@ -1,0 +1,1720 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Unidad 2 - Introducción a los Sistemas Operativos | UTIC</title>
+
+    <style>
+      /* =====================================================
+       CONFIGURACIÓN GENERAL
+       ===================================================== */
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f6f9;
+        color: #343a40;
+        line-height: 1.65;
+      }
+
+      /* =====================================================
+       ESTRUCTURA PRINCIPAL
+       ===================================================== */
+
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* =====================================================
+       MENÚ LATERAL
+       ===================================================== */
+
+      .sidebar {
+        position: fixed;
+
+        left: 0;
+        top: 0;
+
+        width: 285px;
+        height: 100vh;
+
+        overflow-y: auto;
+
+        background: #343a40;
+
+        color: white;
+      }
+
+      .logo {
+        padding: 22px 15px;
+
+        text-align: center;
+
+        background: #007bff;
+      }
+
+      .logo h2 {
+        margin: 0;
+
+        font-size: 20px;
+      }
+
+      .logo p {
+        margin: 5px 0 0;
+
+        font-size: 13px;
+      }
+
+      .sidebar ul {
+        list-style: none;
+
+        margin: 0;
+
+        padding: 0;
+      }
+
+      .sidebar li {
+        border-bottom: 1px solid #4a4f54;
+      }
+
+      .sidebar a {
+        display: block;
+
+        padding: 10px 15px;
+
+        color: #ddd;
+
+        text-decoration: none;
+
+        font-size: 14px;
+
+        transition:
+          background 0.3s,
+          padding-left 0.3s;
+      }
+
+      .sidebar a:hover {
+        background: #007bff;
+
+        color: #fff;
+
+        padding-left: 22px;
+      }
+
+      /* =====================================================
+       CONTENIDO
+       ===================================================== */
+
+      .content {
+        margin-left: 285px;
+
+        width: calc(100% - 285px);
+
+        padding: 28px;
+
+        max-width: 1500px;
+      }
+
+      /* =====================================================
+       ENCABEZADO
+       ===================================================== */
+
+      .hero {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+
+        color: #fff;
+
+        border-radius: 12px;
+
+        padding: 42px 35px;
+
+        margin-bottom: 25px;
+
+        box-shadow: 0 4px 15px #ccc;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+
+        line-height: 1.2;
+
+        margin: 0 0 10px;
+      }
+
+      .hero p {
+        margin: 5px 0;
+      }
+
+      .badge {
+        display: inline-block;
+
+        background: #fff;
+
+        color: #0056b3;
+
+        padding: 5px 11px;
+
+        border-radius: 20px;
+
+        font-size: 12px;
+
+        font-weight: bold;
+
+        margin-top: 12px;
+      }
+
+      /* =====================================================
+       TARJETAS
+       ===================================================== */
+
+      .card {
+        background: #fff;
+
+        border-radius: 10px;
+
+        padding: 28px;
+
+        margin-bottom: 24px;
+
+        box-shadow: 0 2px 10px #ddd;
+
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-3px);
+
+        box-shadow: 0 6px 18px #ccc;
+      }
+
+      .card h2 {
+        color: #007bff;
+
+        border-bottom: 2px solid #007bff;
+
+        padding-bottom: 8px;
+
+        margin-top: 0;
+      }
+
+      .card h3 {
+        margin-top: 20px;
+      }
+
+      /* =====================================================
+       FIGURAS
+       ===================================================== */
+
+      .figure {
+        margin: 0 0 20px;
+
+        border: 1px solid #ddd;
+
+        border-radius: 9px;
+
+        overflow: hidden;
+
+        background: #f8f9fa;
+      }
+
+      .figure svg {
+        display: block;
+
+        width: 100%;
+
+        height: auto;
+      }
+
+      .caption {
+        text-align: center;
+
+        background: #fff;
+
+        color: #666;
+
+        padding: 9px;
+
+        font-size: 13px;
+      }
+
+      /* =====================================================
+       BLOQUES INFORMATIVOS
+       ===================================================== */
+
+      .info,
+      .warning,
+      .success,
+      .activity {
+        padding: 16px 18px;
+
+        border-radius: 6px;
+
+        margin: 16px 0;
+      }
+
+      .info {
+        background: #e8f4fd;
+
+        border-left: 5px solid #17a2b8;
+      }
+
+      .warning {
+        background: #fff3cd;
+
+        border-left: 5px solid #ffc107;
+      }
+
+      .success {
+        background: #d4edda;
+
+        border-left: 5px solid #28a745;
+      }
+
+      .activity {
+        background: #f8f9fa;
+
+        border-left: 5px solid #6c757d;
+      }
+
+      /* =====================================================
+       TABLAS
+       ===================================================== */
+
+      table {
+        width: 100%;
+
+        border-collapse: collapse;
+
+        margin: 15px 0;
+      }
+
+      th {
+        background: #007bff;
+
+        color: #fff;
+
+        padding: 10px;
+
+        text-align: left;
+      }
+
+      td {
+        padding: 10px;
+
+        border: 1px solid #ddd;
+      }
+
+      tr:nth-child(even) {
+        background: #f8f9fa;
+      }
+
+      /* =====================================================
+       TARJETAS DE FUNCIONES
+       ===================================================== */
+
+      .grid {
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 20px;
+
+        margin-top: 20px;
+      }
+
+      .mini-card {
+        background: #f8f9fa;
+
+        border: 1px solid #ddd;
+
+        border-radius: 10px;
+
+        padding: 20px;
+
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .mini-card:hover {
+        transform: translateY(-5px);
+
+        box-shadow: 0 8px 20px #ddd;
+      }
+
+      .mini-card .icon {
+        font-size: 34px;
+
+        margin-bottom: 10px;
+      }
+
+      .mini-card h3 {
+        margin: 5px 0 10px;
+
+        color: #007bff;
+      }
+
+      /* =====================================================
+       EVOLUCIÓN
+       ===================================================== */
+
+      .timeline {
+        position: relative;
+
+        margin: 30px 0;
+
+        padding-left: 35px;
+
+        border-left: 4px solid #007bff;
+      }
+
+      .timeline-item {
+        position: relative;
+
+        background: #f8f9fa;
+
+        border: 1px solid #ddd;
+
+        border-radius: 8px;
+
+        padding: 18px;
+
+        margin-bottom: 20px;
+
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .timeline-item:hover {
+        transform: translateX(5px);
+
+        box-shadow: 0 5px 15px #ddd;
+      }
+
+      .timeline-item::before {
+        content: "";
+
+        position: absolute;
+
+        left: -47px;
+
+        top: 25px;
+
+        width: 18px;
+
+        height: 18px;
+
+        background: #007bff;
+
+        border-radius: 50%;
+
+        border: 4px solid #fff;
+
+        box-shadow: 0 0 0 2px #007bff;
+      }
+
+      .timeline-year {
+        display: inline-block;
+
+        background: #007bff;
+
+        color: #fff;
+
+        padding: 4px 10px;
+
+        border-radius: 15px;
+
+        font-size: 12px;
+
+        font-weight: bold;
+      }
+
+      /* =====================================================
+       TIPOS DE SISTEMAS OPERATIVOS
+       ===================================================== */
+
+      .os-grid {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 18px;
+
+        margin-top: 20px;
+      }
+
+      .os-card {
+        background: #fff;
+
+        border: 1px solid #ddd;
+
+        border-radius: 10px;
+
+        padding: 20px;
+
+        box-shadow: 0 2px 8px #ddd;
+
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .os-card:hover {
+        transform: translateY(-6px);
+
+        box-shadow: 0 8px 20px #ccc;
+      }
+
+      .os-card h3 {
+        color: #007bff;
+
+        margin-top: 5px;
+      }
+
+      .os-icon {
+        font-size: 38px;
+      }
+
+      /* =====================================================
+       RESUMEN
+       ===================================================== */
+
+      .concepto-clave {
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+        background: linear-gradient(135deg, #e8f4fd, #f8fbff);
+
+        border-radius: 10px;
+
+        padding: 20px;
+
+        border-left: 5px solid #007bff;
+
+        margin-top: 20px;
+      }
+
+      .concepto-icono {
+        font-size: 35px;
+
+        flex-shrink: 0;
+      }
+
+      /* =====================================================
+       PIE
+       ===================================================== */
+
+      footer {
+        background: #343a40;
+
+        color: white;
+
+        text-align: center;
+
+        padding: 25px;
+
+        border-radius: 9px;
+      }
+
+      /* =====================================================
+       BOTÓN SUBIR
+       ===================================================== */
+
+      .top {
+        position: fixed;
+
+        right: 20px;
+
+        bottom: 20px;
+
+        width: 44px;
+
+        height: 44px;
+
+        border-radius: 50%;
+
+        background: #007bff;
+
+        color: #fff;
+
+        text-decoration: none;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 21px;
+
+        box-shadow: 0 3px 10px #aaa;
+
+        z-index: 1000;
+      }
+
+      /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+      @media (max-width: 1000px) {
+        .os-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 850px) {
+        .sidebar {
+          position: relative;
+
+          width: 100%;
+
+          height: auto;
+        }
+
+        .layout {
+          display: block;
+        }
+
+        .content {
+          margin: 0;
+
+          width: 100%;
+
+          padding: 15px;
+        }
+
+        .sidebar ul {
+          display: grid;
+
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .hero h1 {
+          font-size: 29px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .sidebar ul {
+          display: block;
+        }
+
+        .card {
+          padding: 19px;
+        }
+
+        .hero {
+          padding: 28px 20px;
+        }
+
+        .hero h1 {
+          font-size: 25px;
+        }
+
+        .os-grid {
+          grid-template-columns: 1fr;
+        }
+
+        table {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+
+  <body id="inicio">
+    <div class="layout">
+      <!-- =====================================================
+       MENÚ LATERAL
+       ===================================================== -->
+
+      <aside class="sidebar">
+        <div class="logo">
+          <h2>Sistemas Operativos</h2>
+
+          <p>UTIC · Unidad 2</p>
+        </div>
+
+        <ul>
+          <li>
+            <a href="#inicio"> 🏠 Inicio </a>
+          </li>
+
+          <li>
+            <a href="#introduccion"> 1. Introducción </a>
+          </li>
+
+          <li>
+            <a href="#objetivos"> 2. Objetivos </a>
+          </li>
+
+          <li>
+            <a href="#que-es"> 3. ¿Qué es un Sistema Operativo? </a>
+          </li>
+
+          <li>
+            <a href="#componentes"> 4. Componentes del SO </a>
+          </li>
+
+          <li>
+            <a href="#funciones"> 5. Objetivos y funciones </a>
+          </li>
+
+          <li>
+            <a href="#evolucion"> 6. Evolución histórica </a>
+          </li>
+
+          <li>
+            <a href="#tipos"> 7. Tipos de Sistemas Operativos </a>
+          </li>
+
+          <li>
+            <a href="#comparacion"> 8. Comparación </a>
+          </li>
+
+          <li>
+            <a href="#actividad"> 9. Actividad </a>
+          </li>
+
+          <li>
+            <a href="#resumen"> 10. Resumen </a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- =====================================================
+       CONTENIDO PRINCIPAL
+       ===================================================== -->
+
+      <main class="content">
+        <!-- ===================================================
+         HERO
+         =================================================== -->
+
+        <header class="hero" id="inicio">
+          <h1>Unidad 2: Introducción a los Sistemas Operativos</h1>
+
+          <p>
+            <strong> Curso: </strong>
+            Sistemas Operativos
+          </p>
+
+          <p>
+            <strong> Carrera: </strong>
+            Análisis de Sistemas Informáticos
+          </p>
+
+          <p>
+            <strong> Parte 1: </strong>
+            ¿Qué es un SO? · Objetivos y funciones · Evolución histórica · Tipos
+            de sistemas operativos
+          </p>
+
+          <span class="badge"> Material didáctico · UTIC </span>
+        </header>
+
+        <!-- ===================================================
+         1. INTRODUCCIÓN
+         =================================================== -->
+
+        <section class="card" id="introduccion">
+          <h2>1. Introducción a los Sistemas Operativos</h2>
+
+          <figure class="figure">
+            <svg
+              viewBox="0 0 900 320"
+              role="img"
+              aria-label="Relación entre usuario, sistema operativo y hardware"
+            >
+              <rect width="900" height="320" fill="#eef7ff" />
+
+              <!-- USUARIO -->
+
+              <rect
+                x="80"
+                y="95"
+                width="180"
+                height="110"
+                rx="15"
+                fill="#ffc107"
+              />
+
+              <text x="170" y="140" text-anchor="middle" font-size="25">
+                USUARIO
+              </text>
+
+              <text x="170" y="172" text-anchor="middle" font-size="16">
+                Persona
+              </text>
+
+              <!-- FLECHA -->
+
+              <path d="M270 150 H350" stroke="#343a40" stroke-width="7" />
+
+              <path
+                d="M340 137 L360 150 L340 163"
+                fill="none"
+                stroke="#343a40"
+                stroke-width="7"
+              />
+
+              <!-- SO -->
+
+              <rect
+                x="360"
+                y="70"
+                width="180"
+                height="160"
+                rx="15"
+                fill="#007bff"
+              />
+
+              <text
+                x="450"
+                y="120"
+                text-anchor="middle"
+                fill="white"
+                font-size="25"
+              >
+                SISTEMA
+              </text>
+
+              <text
+                x="450"
+                y="153"
+                text-anchor="middle"
+                fill="white"
+                font-size="25"
+              >
+                OPERATIVO
+              </text>
+
+              <text
+                x="450"
+                y="190"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                Gestiona recursos
+              </text>
+
+              <!-- FLECHA -->
+
+              <path d="M550 150 H630" stroke="#343a40" stroke-width="7" />
+
+              <path
+                d="M620 137 L640 150 L620 163"
+                fill="none"
+                stroke="#343a40"
+                stroke-width="7"
+              />
+
+              <!-- HARDWARE -->
+
+              <rect
+                x="640"
+                y="95"
+                width="180"
+                height="110"
+                rx="15"
+                fill="#343a40"
+              />
+
+              <text
+                x="730"
+                y="140"
+                text-anchor="middle"
+                fill="white"
+                font-size="24"
+              >
+                HARDWARE
+              </text>
+
+              <text
+                x="730"
+                y="172"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                CPU · RAM · Disco
+              </text>
+            </svg>
+
+            <figcaption class="caption">
+              El sistema operativo actúa como intermediario entre el usuario,
+              las aplicaciones y el hardware.
+            </figcaption>
+          </figure>
+
+          <p>
+            Un <strong>sistema operativo (SO)</strong> es el software
+            fundamental que permite administrar los recursos de una computadora
+            y proporcionar servicios a los programas y usuarios.
+          </p>
+
+          <p>
+            Sin un sistema operativo, el usuario tendría que comunicarse
+            directamente con los componentes físicos mediante instrucciones de
+            muy bajo nivel.
+          </p>
+
+          <div class="info">
+            <strong> Idea fundamental: </strong>
+
+            El sistema operativo permite que el usuario y las aplicaciones
+            utilicen los recursos del hardware de una manera organizada, segura
+            y eficiente.
+          </div>
+        </section>
+
+        <!-- ===================================================
+         2. OBJETIVOS
+         =================================================== -->
+
+        <section class="card" id="objetivos">
+          <h2>2. Objetivos de la Unidad</h2>
+
+          <p>
+            Al finalizar esta primera parte, el estudiante deberá comprender el
+            concepto de sistema operativo y reconocer su importancia dentro de
+            un sistema informático.
+          </p>
+
+          <div class="grid">
+            <article class="mini-card">
+              <div class="icon">🧠</div>
+
+              <h3>Comprender</h3>
+
+              <p>
+                Comprender qué es un sistema operativo y cuál es su función
+                dentro de una computadora.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">⚙️</div>
+
+              <h3>Identificar</h3>
+
+              <p>
+                Identificar las principales funciones que realiza un sistema
+                operativo.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">🕒</div>
+
+              <h3>Analizar</h3>
+
+              <p>Analizar la evolución histórica de los sistemas operativos.</p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">💻</div>
+
+              <h3>Diferenciar</h3>
+
+              <p>
+                Diferenciar los principales tipos de sistemas operativos y sus
+                ámbitos de utilización.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ===================================================
+         3. ¿QUÉ ES UN SISTEMA OPERATIVO?
+         =================================================== -->
+
+        <section class="card" id="que-es">
+          <h2>3. ¿Qué es un Sistema Operativo?</h2>
+
+          <figure class="figure">
+            <svg
+              viewBox="0 0 900 330"
+              role="img"
+              aria-label="Sistema operativo como intermediario"
+            >
+              <rect width="900" height="330" fill="#f8f9fa" />
+
+              <rect
+                x="100"
+                y="80"
+                width="200"
+                height="150"
+                rx="15"
+                fill="#ffc107"
+              />
+
+              <text x="200" y="130" text-anchor="middle" font-size="25">
+                USUARIO
+              </text>
+
+              <text x="200" y="165" text-anchor="middle" font-size="16">
+                Solicita tareas
+              </text>
+
+              <text x="200" y="195" text-anchor="middle" font-size="16">
+                Utiliza aplicaciones
+              </text>
+
+              <path d="M310 155 H385" stroke="#343a40" stroke-width="7" />
+
+              <path
+                d="M375 142 L395 155 L375 168"
+                fill="none"
+                stroke="#343a40"
+                stroke-width="7"
+              />
+
+              <rect
+                x="395"
+                y="60"
+                width="210"
+                height="190"
+                rx="15"
+                fill="#007bff"
+              />
+
+              <text
+                x="500"
+                y="112"
+                text-anchor="middle"
+                fill="white"
+                font-size="23"
+              >
+                SISTEMA
+              </text>
+
+              <text
+                x="500"
+                y="145"
+                text-anchor="middle"
+                fill="white"
+                font-size="23"
+              >
+                OPERATIVO
+              </text>
+
+              <text
+                x="500"
+                y="182"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                Administra
+              </text>
+
+              <text
+                x="500"
+                y="205"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                Coordina
+              </text>
+
+              <text
+                x="500"
+                y="228"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                Protege
+              </text>
+
+              <path d="M615 155 H690" stroke="#343a40" stroke-width="7" />
+
+              <path
+                d="M680 142 L700 155 L680 168"
+                fill="none"
+                stroke="#343a40"
+                stroke-width="7"
+              />
+
+              <rect
+                x="700"
+                y="80"
+                width="130"
+                height="150"
+                rx="15"
+                fill="#343a40"
+              />
+
+              <text
+                x="765"
+                y="130"
+                text-anchor="middle"
+                fill="white"
+                font-size="22"
+              >
+                CPU
+              </text>
+
+              <text
+                x="765"
+                y="162"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                RAM
+              </text>
+
+              <text
+                x="765"
+                y="190"
+                text-anchor="middle"
+                fill="white"
+                font-size="15"
+              >
+                DISCO
+              </text>
+            </svg>
+
+            <figcaption class="caption">
+              El sistema operativo funciona como una capa de comunicación y
+              administración entre el usuario y el hardware.
+            </figcaption>
+          </figure>
+
+          <h3>Definición</h3>
+
+          <p>
+            Un sistema operativo es un conjunto de programas que administra los
+            recursos físicos y lógicos de una computadora y proporciona un
+            entorno para la ejecución de aplicaciones.
+          </p>
+
+          <p>
+            Entre los recursos administrados se encuentran el
+            <strong
+              >procesador, la memoria, los dispositivos de almacenamiento y los
+              dispositivos de entrada y salida</strong
+            >.
+          </p>
+
+          <div class="success">
+            <strong> Concepto clave: </strong>
+
+            El sistema operativo no es solamente una interfaz gráfica. Es el
+            software encargado de coordinar numerosos recursos y servicios
+            necesarios para que el sistema informático funcione.
+          </div>
+        </section>
+
+        <!-- ===================================================
+         4. COMPONENTES / ELEMENTOS
+         =================================================== -->
+
+        <section class="card" id="componentes">
+          <h2>4. Elementos que intervienen en un Sistema Operativo</h2>
+
+          <p>
+            Para comprender el funcionamiento de un sistema operativo es
+            necesario observar la relación entre usuarios, aplicaciones, sistema
+            operativo y hardware.
+          </p>
+
+          <div class="grid">
+            <article class="mini-card">
+              <div class="icon">👤</div>
+
+              <h3>Usuario</h3>
+
+              <p>
+                Persona que utiliza el sistema para realizar determinadas
+                tareas.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">📱</div>
+
+              <h3>Aplicaciones</h3>
+
+              <p>
+                Programas que utilizan los servicios proporcionados por el
+                sistema operativo.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">⚙️</div>
+
+              <h3>Sistema Operativo</h3>
+
+              <p>
+                Administra recursos y proporciona servicios necesarios para
+                ejecutar aplicaciones.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">🖥️</div>
+
+              <h3>Hardware</h3>
+
+              <p>
+                Componentes físicos utilizados para procesar, almacenar, recibir
+                y transmitir información.
+              </p>
+            </article>
+          </div>
+
+          <div class="info">
+            <strong> Relación fundamental: </strong>
+
+            Usuario → Aplicaciones → Sistema Operativo → Hardware
+          </div>
+        </section>
+
+        <!-- ===================================================
+         5. OBJETIVOS Y FUNCIONES
+         =================================================== -->
+
+        <section class="card" id="funciones">
+          <h2>5. Objetivos y Funciones del Sistema Operativo</h2>
+
+          <p>
+            El sistema operativo tiene como objetivo principal administrar los
+            recursos de la computadora y proporcionar un entorno adecuado para
+            la ejecución de programas.
+          </p>
+
+          <div class="grid">
+            <article class="mini-card">
+              <div class="icon">🧠</div>
+
+              <h3>Gestión del procesador</h3>
+
+              <p>
+                Administra la utilización de la CPU y coordina la ejecución de
+                los programas.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">💾</div>
+
+              <h3>Gestión de memoria</h3>
+
+              <p>
+                Controla la utilización de la memoria principal y asigna espacio
+                a los programas.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">📁</div>
+
+              <h3>Gestión de archivos</h3>
+
+              <p>
+                Proporciona mecanismos para organizar, almacenar, consultar y
+                administrar archivos.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">🔌</div>
+
+              <h3>Gestión de dispositivos</h3>
+
+              <p>
+                Coordina el acceso a dispositivos como teclado, mouse,
+                impresoras, discos y otros periféricos.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">🔐</div>
+
+              <h3>Seguridad y protección</h3>
+
+              <p>
+                Controla el acceso a recursos y ayuda a proteger la información
+                y los procesos del sistema.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <div class="icon">🖱️</div>
+
+              <h3>Interfaz de usuario</h3>
+
+              <p>
+                Permite al usuario interactuar con el sistema mediante
+                interfaces gráficas o de línea de comandos.
+              </p>
+            </article>
+          </div>
+
+          <h3>Resumen de funciones</h3>
+
+          <table>
+            <tr>
+              <th>Recurso</th>
+
+              <th>Función del sistema operativo</th>
+            </tr>
+
+            <tr>
+              <td>CPU</td>
+
+              <td>Coordinar la ejecución de programas y procesos.</td>
+            </tr>
+
+            <tr>
+              <td>Memoria</td>
+
+              <td>Asignar y controlar el uso de la memoria.</td>
+            </tr>
+
+            <tr>
+              <td>Almacenamiento</td>
+
+              <td>Organizar y administrar archivos y datos.</td>
+            </tr>
+
+            <tr>
+              <td>Periféricos</td>
+
+              <td>Controlar la comunicación con los dispositivos.</td>
+            </tr>
+
+            <tr>
+              <td>Usuarios</td>
+
+              <td>Controlar el acceso y proporcionar una interfaz.</td>
+            </tr>
+          </table>
+        </section>
+
+        <!-- ===================================================
+         6. EVOLUCIÓN HISTÓRICA
+         =================================================== -->
+
+        <section class="card" id="evolucion">
+          <h2>6. Evolución Histórica de los Sistemas Operativos</h2>
+
+          <p>
+            Los sistemas operativos evolucionaron junto con el hardware y las
+            necesidades de los usuarios. Las primeras computadoras no disponían
+            de los sistemas operativos modernos que conocemos actualmente.
+          </p>
+
+          <div class="timeline">
+            <article class="timeline-item">
+              <span class="timeline-year"> Década de 1940 </span>
+
+              <h3>Primeras computadoras</h3>
+
+              <p>
+                Las primeras computadoras electrónicas se utilizaban
+                principalmente para cálculos científicos y militares. La
+                interacción con la máquina era limitada y los programas se
+                ejecutaban de manera muy cercana al hardware.
+              </p>
+            </article>
+
+            <article class="timeline-item">
+              <span class="timeline-year"> Década de 1950 </span>
+
+              <h3>Procesamiento por lotes</h3>
+
+              <p>
+                Aparecen mecanismos para agrupar trabajos y ejecutarlos de forma
+                secuencial. El objetivo era aprovechar mejor el tiempo de
+                procesamiento de las computadoras.
+              </p>
+            </article>
+
+            <article class="timeline-item">
+              <span class="timeline-year"> Década de 1960 </span>
+
+              <h3>Multiprogramación y tiempo compartido</h3>
+
+              <p>
+                Los sistemas comienzan a administrar varios trabajos y usuarios,
+                buscando utilizar de manera más eficiente los recursos del
+                procesador y la memoria.
+              </p>
+            </article>
+
+            <article class="timeline-item">
+              <span class="timeline-year"> Década de 1970 </span>
+
+              <h3>UNIX y nuevos enfoques</h3>
+
+              <p>
+                UNIX se convierte en un sistema operativo de gran importancia
+                histórica por sus conceptos de diseño, portabilidad y
+                utilización en diferentes entornos.
+              </p>
+            </article>
+
+            <article class="timeline-item">
+              <span class="timeline-year"> Décadas de 1980 y 1990 </span>
+
+              <h3>Computación personal</h3>
+
+              <p>
+                La expansión de las computadoras personales impulsa sistemas
+                operativos orientados al usuario final y posteriormente
+                interfaces gráficas cada vez más accesibles.
+              </p>
+            </article>
+
+            <article class="timeline-item">
+              <span class="timeline-year"> Actualidad </span>
+
+              <h3>Sistemas conectados y multidispositivo</h3>
+
+              <p>
+                Los sistemas operativos actuales funcionan en computadoras,
+                servidores, teléfonos inteligentes, dispositivos embebidos y
+                otros equipos conectados.
+              </p>
+            </article>
+          </div>
+
+          <div class="warning">
+            <strong> Importante: </strong>
+
+            La evolución de los sistemas operativos está relacionada
+            directamente con la evolución del hardware, las redes, las
+            aplicaciones y las necesidades de los usuarios.
+          </div>
+        </section>
+
+        <!-- ===================================================
+         7. TIPOS DE SISTEMAS OPERATIVOS
+         =================================================== -->
+
+        <section class="card" id="tipos">
+          <h2>7. Tipos de Sistemas Operativos</h2>
+
+          <p>
+            Los sistemas operativos pueden clasificarse de diferentes maneras
+            según el tipo de equipo, cantidad de usuarios, forma de
+            procesamiento o propósito para el que fueron diseñados.
+          </p>
+
+          <div class="os-grid">
+            <article class="os-card">
+              <div class="os-icon">🖥️</div>
+
+              <h3>Escritorio</h3>
+
+              <p>
+                Diseñados para computadoras personales y estaciones de trabajo.
+              </p>
+
+              <strong> Ejemplos: </strong>
+
+              <p>Windows, GNU/Linux y macOS.</p>
+            </article>
+
+            <article class="os-card">
+              <div class="os-icon">🗄️</div>
+
+              <h3>Servidores</h3>
+
+              <p>
+                Diseñados para proporcionar servicios y recursos a otros equipos
+                mediante una red.
+              </p>
+
+              <strong> Ejemplos: </strong>
+
+              <p>Linux Server y Windows Server.</p>
+            </article>
+
+            <article class="os-card">
+              <div class="os-icon">📱</div>
+
+              <h3>Móviles</h3>
+
+              <p>
+                Diseñados para teléfonos inteligentes y dispositivos móviles.
+              </p>
+
+              <strong> Ejemplos: </strong>
+
+              <p>Android e iOS.</p>
+            </article>
+
+            <article class="os-card">
+              <div class="os-icon">⚡</div>
+
+              <h3>Tiempo real</h3>
+
+              <p>
+                Diseñados para responder a eventos dentro de restricciones
+                temporales determinadas.
+              </p>
+
+              <strong> Aplicaciones: </strong>
+
+              <p>Control industrial, robótica y sistemas críticos.</p>
+            </article>
+
+            <article class="os-card">
+              <div class="os-icon">🔧</div>
+
+              <h3>Embebidos</h3>
+
+              <p>
+                Funcionan dentro de dispositivos diseñados para realizar
+                funciones específicas.
+              </p>
+
+              <strong> Aplicaciones: </strong>
+
+              <p>Automóviles, electrodomésticos, dispositivos IoT.</p>
+            </article>
+
+            <article class="os-card">
+              <div class="os-icon">🌐</div>
+
+              <h3>Distribuidos</h3>
+
+              <p>
+                Permiten coordinar recursos y servicios ubicados en diferentes
+                equipos conectados.
+              </p>
+
+              <strong> Característica: </strong>
+
+              <p>Coordinación de recursos mediante redes.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ===================================================
+         8. COMPARACIÓN
+         =================================================== -->
+
+        <section class="card" id="comparacion">
+          <h2>8. Comparación de Algunos Tipos de Sistemas Operativos</h2>
+
+          <table>
+            <tr>
+              <th>Tipo</th>
+
+              <th>Propósito</th>
+
+              <th>Ejemplos / Aplicaciones</th>
+            </tr>
+
+            <tr>
+              <td>Escritorio</td>
+
+              <td>Uso personal y profesional.</td>
+
+              <td>Windows, GNU/Linux, macOS.</td>
+            </tr>
+
+            <tr>
+              <td>Servidor</td>
+
+              <td>Proporcionar servicios y recursos en red.</td>
+
+              <td>Servidores web, bases de datos, archivos.</td>
+            </tr>
+
+            <tr>
+              <td>Móvil</td>
+
+              <td>Administrar dispositivos portátiles.</td>
+
+              <td>Android, iOS.</td>
+            </tr>
+
+            <tr>
+              <td>Tiempo real</td>
+
+              <td>Responder a eventos dentro de tiempos determinados.</td>
+
+              <td>Automatización, robótica y control.</td>
+            </tr>
+
+            <tr>
+              <td>Embebido</td>
+
+              <td>Controlar dispositivos específicos.</td>
+
+              <td>IoT, vehículos, electrodomésticos.</td>
+            </tr>
+
+            <tr>
+              <td>Distribuido</td>
+
+              <td>Coordinar recursos de diferentes equipos.</td>
+
+              <td>Sistemas conectados y entornos distribuidos.</td>
+            </tr>
+          </table>
+        </section>
+
+        <!-- ===================================================
+         9. ACTIVIDAD
+         =================================================== -->
+
+        <section class="card" id="actividad">
+          <h2>9. Actividad de Aprendizaje</h2>
+
+          <div class="activity">
+            <h3>Actividad 1 — Comprensión conceptual</h3>
+
+            <p>Responde con tus propias palabras:</p>
+
+            <ol>
+              <li>¿Qué es un sistema operativo?</li>
+
+              <li>
+                ¿Por qué se considera al sistema operativo un intermediario
+                entre el usuario y el hardware?
+              </li>
+
+              <li>¿Qué recursos administra un sistema operativo?</li>
+
+              <li>¿Cuál es la función de la gestión de memoria?</li>
+
+              <li>¿Qué función cumple la gestión de archivos?</li>
+
+              <li>
+                ¿Por qué la evolución del hardware influyó en la evolución de
+                los sistemas operativos?
+              </li>
+
+              <li>
+                ¿Qué diferencia existe entre un sistema operativo de escritorio
+                y uno para dispositivos móviles?
+              </li>
+            </ol>
+          </div>
+
+          <div class="activity">
+            <h3>Actividad 2 — Análisis</h3>
+
+            <p>Analiza el siguiente escenario:</p>
+
+            <p>
+              Una computadora posee un procesador, memoria RAM, almacenamiento
+              SSD, teclado, mouse y monitor. El usuario desea ejecutar un
+              procesador de textos.
+            </p>
+
+            <p>
+              Explica qué papel desempeña el sistema operativo para permitir que
+              el usuario pueda utilizar el procesador de textos.
+            </p>
+          </div>
+
+          <div class="activity">
+            <h3>Actividad 3 — Investigación</h3>
+
+            <p>
+              Investiga la evolución de un sistema operativo de tu elección y
+              construye una línea de tiempo con al menos cinco versiones
+              importantes.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===================================================
+         10. RESUMEN
+         =================================================== -->
+
+        <section class="card" id="resumen">
+          <h2>10. Resumen de la Parte 1</h2>
+
+          <div class="concepto-clave">
+            <div class="concepto-icono">💡</div>
+
+            <div>
+              <strong> Concepto principal </strong>
+
+              <p>
+                El <strong>sistema operativo</strong> es el software fundamental
+                encargado de administrar los recursos de una computadora y
+                proporcionar servicios para las aplicaciones y los usuarios.
+              </p>
+
+              <p>
+                Sus funciones incluyen la administración del procesador,
+                memoria, archivos y dispositivos, además de proporcionar
+                mecanismos de interacción, protección y control de los recursos.
+              </p>
+            </div>
+          </div>
+
+          <div class="success">
+            <strong> Recuerda: </strong>
+
+            <br />
+
+            Usuario → Aplicaciones → Sistema Operativo → Hardware
+          </div>
+        </section>
+
+        <!-- ===================================================
+         PIE DE PÁGINA
+         =================================================== -->
+
+        <footer>
+          <strong> Universidad Tecnológica Intercontinental · UTIC </strong>
+
+          <br />
+
+          Carrera: Análisis de Sistemas Informáticos
+
+          <br />
+
+          Asignatura: Sistemas Operativos
+
+          <br />
+
+          Unidad 2 · Introducción a los Sistemas Operativos · Parte 1
+        </footer>
+      </main>
+    </div>
+
+    <!-- =====================================================
+     BOTÓN VOLVER ARRIBA
+     ===================================================== -->
+
+    <a href="#inicio" class="top" title="Volver al inicio"> ↑ </a>
+  </body>
+</html>

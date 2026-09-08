@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronograma Semanal Detallado | Sistemas Operativos – UTIC</title>
+<style>
+  :root {
+    --primary: #1a365d;
+    --secondary: #2b6cb0;
+    --accent: #ed8936;
+    --bg: #f7fafc;
+    --text: #2d3748;
+    --green: #276749;
+    --red: #c53030;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  header h1 { font-size: 1.9rem; margin-bottom: 0.3rem; }
+  .nav {
+    background: #fff;
+    padding: 0.8rem 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav a { color: var(--secondary); text-decoration: none; font-weight: 500; }
+  .nav a:hover { text-decoration: underline; }
+  .container { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem; }
+  .resumen {
+    background: white;
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-left: 5px solid var(--accent);
+  }
+  .resumen ul { margin: 0.6rem 0 0 1.3rem; }
+  h2 {
+    color: var(--primary);
+    margin: 2rem 0 1rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.4rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.93rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    border: 1px solid #e2e8f0;
+    padding: 0.7rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+  }
+  tr:nth-child(even) { background: #f7fafc; }
+  .semana { background: #ebf8ff !important; font-weight: 600; color: var(--primary); }
+  .reservado { background: #fff5f5 !important; }
+  .reservado td { color: var(--red); }
+  .horas { text-align: center; white-space: nowrap; }
+  .nota {
+    background: #f0fff4;
+    border-left: 4px solid var(--green);
+    padding: 0.9rem 1.1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95rem;
+  }
+  .leyenda {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+  }
+  .leyenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #718096;
+    font-size: 0.9rem;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 2rem;
+  }
+  @media (max-width: 700px) {
+    table { font-size: 0.82rem; }
+    th, td { padding: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cronograma Semanal Detallado</h1>
+  <p>Sistemas Operativos (SOP) · UTIC · Carga horaria: <strong>53 horas</strong></p>
+  <p>Clases de 3 horas · ≈ 18 sesiones</p>
+</header>
+
+<nav class="nav">
+  <a href="index.html">← Índice de Unidades</a>
+  <a href="unidad_evaluacion.html">Evaluación</a>
+</nav>
+
+<div class="container">
+
+  <div class="resumen">
+    <strong>Resumen general</strong>
+    <ul>
+      <li><strong>Carga total:</strong> 53 horas</li>
+      <li><strong>Duración de cada clase:</strong> 3 horas</li>
+      <li><strong>Total de sesiones:</strong> 18 (15 de contenido + 3 reservadas)</li>
+      <li><strong>Distribución sugerida:</strong> 2 clases por semana → 9 semanas</li>
+      <li><strong>Días reservados:</strong> Trabajo Práctico (20 %), Examen Parcial (30 %), Examen Final (50 %)</li>
+      <li><strong>Asistencia mínima recomendada:</strong> ≈ 48 horas (90 %)</li>
+    </ul>
+  </div>
+
+  <div class="leyenda">
+    <span><span class="dot" style="background:#ebf8ff;border:1px solid #90cdf4;"></span> Encabezado de semana</span>
+    <span><span class="dot" style="background:#fff5f5;border:1px solid #feb2b2;"></span> Día reservado (evaluación)</span>
+    <span><span class="dot" style="background:#f0fff4;border:1px solid #9ae6b4;"></span> Contenido teórico-práctico</span>
+  </div>
+
+  <!-- ========== CRONOGRAMA ========== -->
+  <h2>Cronograma por Semanas</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%">Semana</th>
+        <th style="width:10%">Sesión</th>
+        <th style="width:12%">Horas</th>
+        <th>Contenido / Actividad</th>
+        <th style="width:18%">Unidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- SEMANA 1 -->
+      <tr class="semana"><td colspan="5">SEMANA 1 – Fundamentos de Hardware y SO</td></tr>
+      <tr>
+        <td>1</td>
+        <td>Sesión 1</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Introducción a las Computadoras</strong><br>
+          Elementos básicos · Registros del procesador · Ejecución de instrucciones · Interrupciones · Jerarquía de memoria · Caché · Técnicas de E/S
+        </td>
+        <td>Unidad 1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Sesión 2</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Introducción a los Sistemas Operativos (Parte 1)</strong><br>
+          ¿Qué es un SO? · Objetivos y funciones · Evolución histórica · Tipos de sistemas operativos
+        </td>
+        <td>Unidad 2</td>
+      </tr>
+
+      <!-- SEMANA 2 -->
+      <tr class="semana"><td colspan="5">SEMANA 2 – Conceptos de SO y Procesos</td></tr>
+      <tr>
+        <td>2</td>
+        <td>Sesión 3</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Introducción a los Sistemas Operativos (Parte 2)</strong><br>
+          Estructuras de los SO (monolítica, microkernel, híbrida) · Conceptos básicos · Descripción global de Windows, UNIX y Linux
+        </td>
+        <td>Unidad 2</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Sesión 4</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Procesos (Parte 1)</strong><br>
+          ¿Qué es un proceso? · Estados de los procesos · PCB · Creación y terminación · Modelo de procesos
+        </td>
+        <td>Unidad 3</td>
+      </tr>
+
+      <!-- SEMANA 3 -->
+      <tr class="semana"><td colspan="5">SEMANA 3 – Procesos e Hilos</td></tr>
+      <tr>
+        <td>3</td>
+        <td>Sesión 5</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Procesos (Parte 2)</strong><br>
+          Hilos (threads) · Gestión de procesos en UNIX/Linux · Planificación de CPU (FCFS, SJF, Round Robin, prioridades)
+        </td>
+        <td>Unidad 3</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Sesión 6</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Entrada/Salida (Parte 1)</strong><br>
+          Dispositivos de E/S · Organización del sistema de E/S · Aspectos de diseño · Utilización de buffers
+        </td>
+        <td>Unidad 4</td>
+      </tr>
+
+      <!-- SEMANA 4 -->
+      <tr class="semana"><td colspan="5">SEMANA 4 – Entrada/Salida y Disco</td></tr>
+      <tr>
+        <td>4</td>
+        <td>Sesión 7</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Entrada/Salida (Parte 2)</strong><br>
+          Planificación de disco · RAID · Caché de disco · E/S en UNIX, Linux y Windows · Principios de software
+        </td>
+        <td>Unidad 4</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Sesión 8</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Administración de Memoria (Parte 1)</strong><br>
+          Requisitos · Particionamiento · Paginación · Segmentación · Intercambio (swapping)
+        </td>
+        <td>Unidad 5</td>
+      </tr>
+
+      <!-- SEMANA 5 -->
+      <tr class="semana"><td colspan="5">SEMANA 5 – Memoria Virtual</td></tr>
+      <tr>
+        <td>5</td>
+        <td>Sesión 9</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Administración de Memoria (Parte 2)</strong><br>
+          Memoria Virtual · Algoritmos de reemplazo de páginas (FIFO, LRU, Clock, Óptimo) · Anomalía de Belady
+        </td>
+        <td>Unidad 5</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Sesión 10</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Administración de Memoria (Parte 3) + Archivos (inicio)</strong><br>
+          Diseño de sistemas de paginación · Gestión en Linux y Windows · Introducción a archivos y directorios
+        </td>
+        <td>Unidad 5 / 6</td>
+      </tr>
+
+      <!-- SEMANA 6 -->
+      <tr class="semana"><td colspan="5">SEMANA 6 – Sistemas de Archivos y Bloqueos</td></tr>
+      <tr>
+        <td>6</td>
+        <td>Sesión 11</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Sistemas de Archivos</strong><br>
+          Implementación · FAT, NTFS, ext4, XFS, Btrfs · Seguridad y mecanismos de protección · Permisos
+        </td>
+        <td>Unidad 6</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Sesión 12</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Bloqueos (Deadlocks)</strong><br>
+          Recursos · Condiciones de Coffman · Detección y recuperación · Evasión (Banquero) · Prevención
+        </td>
+        <td>Unidad 7</td>
+      </tr>
+
+      <!-- SEMANA 7 -->
+      <tr class="semana"><td colspan="5">SEMANA 7 – Casos de Estudio y Distribuidos</td></tr>
+      <tr>
+        <td>7</td>
+        <td>Sesión 13</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Estudios de Sistemas</strong><br>
+          Unix/Linux · MS-DOS · Windows (familia NT) · Otros (macOS, Android, tiempo real)
+        </td>
+        <td>Unidad 8</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Sesión 14</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Sistemas Distribuidos + Seguridad (inicio)</strong><br>
+          Objetivos, hardware, software y aspectos de diseño de sistemas distribuidos · Introducción a amenazas
+        </td>
+        <td>Unidad 9 / 10</td>
+      </tr>
+
+      <!-- SEMANA 8 -->
+      <tr class="semana"><td colspan="5">SEMANA 8 – Seguridad, Creación de SO y Cierre de Contenido</td></tr>
+      <tr>
+        <td>8</td>
+        <td>Sesión 15</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>Seguridad + Cómo crear un SO</strong><br>
+          Amenazas, protección, malware, sistemas confiables · Pasos para crear un SO · Prototipo en Linux · Revisión general
+        </td>
+        <td>Unidad 10 / 11</td>
+      </tr>
+      <tr class="reservado">
+        <td>8</td>
+        <td>Sesión 16</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>★ DÍA RESERVADO – TRABAJO PRÁCTICO</strong><br>
+          Investigación + instalación de un Sistema Operativo (grupal o individual) · Presentaciones
+        </td>
+        <td>Evaluación (20 %)</td>
+      </tr>
+
+      <!-- SEMANA 9 -->
+      <tr class="semana"><td colspan="5">SEMANA 9 – Evaluaciones Finales</td></tr>
+      <tr class="reservado">
+        <td>9</td>
+        <td>Sesión 17</td>
+        <td class="horas">3 h</td>
+        <td>
+          <strong>★ DÍA RESERVADO – EXAMEN PARCIAL</strong><br>
+          Evaluación de los temas desarrollados (hasta Archivos / Bloqueos según avance)
+        </td>
+        <td>Evaluación (30 %)</td>
+      </tr>
+      <tr class="reservado">
+        <td>9</td>
+        <td>Sesión 18</td>
+        <td class="horas">2 h*</td>
+        <td>
+          <strong>★ DÍA RESERVADO – EXAMEN FINAL TEÓRICO-PRÁCTICO</strong><br>
+          Evaluación integral de toda la asignatura (50 %)<br>
+          <em>* Las 2 horas restantes completan las 53 horas totales (15×3 + 3 + 3 + 2 = 53)</em>
+        </td>
+        <td>Evaluación (50 %)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="nota">
+    <strong>Nota sobre las 53 horas:</strong><br>
+    15 sesiones de contenido × 3 h = 45 h<br>
+    + Trabajo Práctico 3 h<br>
+    + Examen Parcial 3 h<br>
+    + Examen Final 2 h<br>
+    = <strong>53 horas exactas</strong>.
+  </div>
+
+  <h2>Observaciones importantes</h2>
+  <ul>
+    <li>El orden de las unidades respeta el programa oficial del PDF de la asignatura.</li>
+    <li>Los días reservados <strong>no se dictan contenidos nuevos</strong>.</li>
+    <li>Se recomienda que el Trabajo Práctico se entregue y presente en la Sesión 16.</li>
+    <li>El docente puede ajustar ligeramente la distribución interna de cada sesión según el ritmo del grupo.</li>
+    <li>La participación activa en clase es obligatoria y forma parte de la evaluación continua.</li>
+  </ul>
+
+  <h2>Resumen de horas por bloque</h2>
+  <table>
+    <tr><th>Bloque temático</th><th>Sesiones</th><th>Horas</th></tr>
+    <tr><td>Hardware + Introducción a SO</td><td>1-3</td><td>9 h</td></tr>
+    <tr><td>Procesos</td><td>4-5</td><td>6 h</td></tr>
+    <tr><td>Entrada/Salida</td><td>6-7</td><td>6 h</td></tr>
+    <tr><td>Administración de Memoria</td><td>8-10</td><td>9 h</td></tr>
+    <tr><td>Sistemas de Archivos + Bloqueos</td><td>11-12</td><td>6 h</td></tr>
+    <tr><td>Estudios, Distribuidos, Seguridad y Creación de SO</td><td>13-15</td><td>9 h</td></tr>
+    <tr><td><strong>Evaluaciones (días reservados)</strong></td><td>16-18</td><td><strong>8 h</strong></td></tr>
+    <tr style="font-weight:bold;background:#ebf8ff;"><td>TOTAL</td><td>18</td><td>53 h</td></tr>
+  </table>
+
+</div>
+
+<footer>
+  <p>Cronograma Semanal Detallado · Sistemas Operativos (SOP) · UTIC · 53 horas</p>
+  <p>Sede Central: Atyrá 1750 c/ Capitán Rivas · Fernando de la Mora – Paraguay</p>
+  <p><a href="index.html">Volver al Índice de Unidades</a></p>
+</footer>
+</body>
+</html>

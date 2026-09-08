@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Historia de las Computadoras - Línea del Tiempo</title>
+
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        background: #061525;
+        color: #333;
+        overflow-x: hidden;
+      }
+
+      /* =========================
+         FONDO TECNOLÓGICO ANIMADO
+      ========================= */
+
+      #fondoTecnologico {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -10;
+        background: radial-gradient(circle at center, #0b2945 0%, #061525 55%, #020a12 100%);
+      }
+
+      /* Capa de circuitos y brillo */
+      .circuit-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: -8;
+        pointer-events: none;
+        opacity: 0.32;
+        background-image:
+          linear-gradient(90deg, rgba(25,118,210,.08) 1px, transparent 1px),
+          linear-gradient(rgba(25,118,210,.08) 1px, transparent 1px);
+        background-size: 70px 70px;
+        transform: translateY(var(--scroll-offset, 0px));
+        transition: transform .15s linear;
+      }
+
+      /* Contenido sobre el fondo */
+      header {
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 10px 35px rgba(0,0,0,.30);
+      }
+
+      .contenedor {
+        position: relative;
+        z-index: 2;
+      }
+
+      .introduccion, .item {
+        background: rgba(255,255,255,.94);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,.65);
+      }
+
+      /* Movimiento suave de las tarjetas al entrar en pantalla */
+      .item {
+        will-change: transform, opacity;
+        transition: transform .35s ease, box-shadow .35s ease;
+      }
+
+      .item:hover {
+        transform: translateY(-7px) scale(1.015);
+        box-shadow: 0 14px 30px rgba(0,0,0,.22);
+      }
+
+      /* Punto luminoso de cada acontecimiento */
+      .timeline .item::before {
+        content: '';
+        position: absolute;
+        top: 30px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #29b6f6;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 4px rgba(41,182,246,.25), 0 0 20px rgba(41,182,246,.9);
+        animation: pulsoTecnologico 2s infinite;
+      }
+
+      .timeline .item:nth-child(odd)::before { right: -8%; }
+      .timeline .item:nth-child(even)::before { left: -8%; }
+
+      @keyframes pulsoTecnologico {
+        0%, 100% { box-shadow: 0 0 0 3px rgba(41,182,246,.20), 0 0 12px rgba(41,182,246,.7); }
+        50% { box-shadow: 0 0 0 9px rgba(41,182,246,.03), 0 0 28px rgba(41,182,246,1); }
+      }
+
+      @media (max-width: 768px) {
+        .timeline .item::before {
+          left: -38px !important;
+          right: auto !important;
+        }
+      }
+
+      /* =========================
+   ENCABEZADO
+========================= */
+
+      header {
+        background: linear-gradient(135deg, #0d47a1, #1976d2);
+        color: white;
+        text-align: center;
+        padding: 40px;
+      }
+
+      header h1 {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+
+      header p {
+        font-size: 20px;
+      }
+
+      /* =========================
+   CONTENEDOR
+========================= */
+
+      .contenedor {
+        width: 90%;
+        max-width: 1100px;
+        margin: auto;
+      }
+
+      /* =========================
+   INTRODUCCIÓN
+========================= */
+
+      .introduccion {
+        background: white;
+        margin-top: 30px;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px #ccc;
+      }
+
+      .introduccion h2 {
+        color: #0d47a1;
+      }
+
+      /* =========================
+   LINEA DEL TIEMPO
+========================= */
+
+      .timeline {
+        margin-top: 40px;
+        position: relative;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        width: 4px;
+        background: #1976d2;
+        top: 0;
+        bottom: 0;
+      }
+
+      /* TARJETAS */
+
+      .item {
+        width: 45%;
+        background: white;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px #ccc;
+
+        opacity: 0;
+        transform: translateY(50px);
+
+        animation: mostrar 1s forwards;
+      }
+
+      .item:nth-child(odd) {
+        margin-left: 0;
+      }
+
+      .item:nth-child(even) {
+        margin-left: 55%;
+      }
+
+      .item h3 {
+        color: #1976d2;
+      }
+
+      /* FECHA */
+
+      .fecha {
+        background: #d32f2f;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        font-weight: bold;
+      }
+
+      /* ANIMACION */
+
+      @keyframes mostrar {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* =========================
+   IMAGENES PEQUEÑAS JUNTAS
+========================= */
+
+      .imagenes {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin: 15px 0;
+      }
+
+      .imagenes img {
+        width: 140px;
+        height: 100px;
+
+        max-width: 140px;
+
+        object-fit: cover;
+
+        border-radius: 10px;
+
+        box-shadow: 0 4px 8px #ccc;
+      }
+
+      /* =========================
+   TABLAS
+========================= */
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+      }
+
+      th {
+        background: #1976d2;
+        color: white;
+        padding: 12px;
+      }
+
+      td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        background: white;
+      }
+
+      /* =========================
+   PIE DE PAGINA
+========================= */
+
+      footer {
+        background: #0d47a1;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        margin-top: 40px;
+      }
+
+      /* =========================
+   RESPONSIVE CELULAR
+========================= */
+
+      @media (max-width: 768px) {
+        .timeline::before {
+          left: 10px;
+        }
+
+        .item,
+        .item:nth-child(even) {
+          width: 85%;
+          margin-left: 40px;
+        }
+
+        .imagenes {
+          flex-direction: column;
+        }
+
+        .imagenes img {
+          width: 100%;
+          max-width: 300px;
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Canvas utilizado para partículas y circuitos luminosos -->
+    <canvas id="fondoTecnologico" aria-hidden="true"></canvas>
+    <div class="circuit-overlay" aria-hidden="true"></div>
+
+    <header>
+      <h1>Historia de las Computadoras</h1>
+
+      <p>Línea del tiempo de la evolución tecnológica</p>
+    </header>
+
+    <div class="contenedor">
+      <section class="introduccion">
+        <h2>Introducción</h2>
+
+        <p>
+          La historia de las computadoras representa la evolución de las
+          herramientas creadas por el ser humano para realizar cálculos,
+          procesar información y automatizar tareas.
+        </p>
+
+        <p>
+          Desde los primeros instrumentos mecánicos hasta los modernos sistemas
+          basados en inteligencia artificial, las computadoras han transformado
+          la forma en que vivimos, trabajamos y nos comunicamos.
+        </p>
+      </section>
+
+      <h2 style="text-align: center; color: #0d47a1; margin-top: 50px">
+        Línea del Tiempo de la Evolución
+      </h2>
+
+      <div class="timeline">
+        <div class="item">
+          <span class="fecha">2500 a.C.</span>
+
+          <h3>Ábaco</h3>
+
+          <p>
+            Primer instrumento utilizado para realizar operaciones matemáticas.
+            Permitía sumar, restar y realizar cálculos mediante fichas
+            desplazables.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Primer dispositivo de cálculo conocido.
+          </p>
+          <div class="imagenes">
+            <img src="img/abaco1.jpg" alt="Ábaco antiguo" />
+
+            <img src="img/abaco2.jpg" alt="Uso del ábaco" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1642</span>
+
+          <h3>Pascalina</h3>
+
+          <p>
+            Máquina mecánica creada por Blaise Pascal para realizar operaciones
+            aritméticas automáticamente.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Primera calculadora mecánica funcional.
+          </p>
+          <div class="imagenes">
+            <img src="img/pascalina1.jpg" alt="pascalina" />
+
+            <img src="img/pascalina2.jpg" alt="Uso de la Pascalina" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1673</span>
+
+          <h3>Máquina de Leibniz</h3>
+
+          <p>
+            Gottfried Leibniz desarrolló una calculadora capaz de realizar
+            multiplicaciones y divisiones.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Mejoró los cálculos automáticos.
+          </p>
+          <div class="imagenes">
+            <img src="img/leibniz1.jpg" alt="Máquina de Leibniz" />
+            <img src="img/leibniz2.jpg" alt="Uso de la Máquina de Leibniz" />
+            <img src="img/leibniz3.jpg" alt="Uso de la Máquina de Leibniz" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1801</span>
+
+          <h3>Telar de Jacquard</h3>
+
+          <p>Utilizó tarjetas perforadas para controlar patrones de tejido.</p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Introdujo la idea de programación mediante instrucciones.
+          </p>
+          <div class="imagenes">
+            <img src="img/jacquard1.jpg" alt="Telar de Jacquard" />
+            <img src="img/jacquard2.jpg" alt="Uso del Telar de Jacquard" />
+            <img src="img/jacquard3.jpg" alt="Uso del Telar de Jacquard" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1837</span>
+
+          <h3>Máquina Analítica de Charles Babbage</h3>
+
+          <p>
+            Charles Babbage diseñó la Máquina Analítica, considerada el primer
+            diseño de una computadora programable.
+          </p>
+
+          <p>Incluía memoria, procesamiento y entrada de datos.</p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Primer diseño de computadora programable.
+          </p>
+          <div class="imagenes">
+            <img src="img/babbage1.jpg" alt="Máquina Analítica de Charles Babbage" />
+            <img src="img/babbage2.jpg" alt="Uso de la Máquina Analítica" />
+            <img src="img/babbage3.jpg" alt="Máquina Analítica de Charles Babbage" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1843</span>
+
+          <h3>Ada Lovelace - Primera Programadora</h3>
+
+          <p>
+            Ada Lovelace creó un algoritmo para la Máquina Analítica de Babbage.
+          </p>
+
+          <p>Es considerada la primera programadora de la historia.</p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Nacimiento de la programación informática.
+          </p>
+          <div class="imagenes">
+            <img src="img/lovelace1.jpg" alt="Ada Lovelace" />
+            <img src="img/lovelace2.jpg" alt="Ada Lovelace programando" />
+            <img src="img/lovelace3.jpg" alt="Ada Lovelace y la Máquina Analítica" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1890</span>
+
+          <h3>Tabuladora de Herman Hollerith</h3>
+
+          <p>
+            Máquina que utilizaba tarjetas perforadas para procesar información
+            del censo de Estados Unidos.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Automatización del procesamiento de datos.
+          </p>
+          <div class="imagenes">
+            <img src="img/hollerith1.jpg" alt="Tabuladora de Herman Hollerith" />
+            <img src="img/hollerith2.jpg" alt="Uso de la Tabuladora" />
+            <img src="img/hollerith3.jpg" alt="Tabuladora de Herman Hollerith" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1946</span>
+
+          <h3>ENIAC</h3>
+
+          <p>
+            Una de las primeras computadoras electrónicas de propósito general.
+          </p>
+
+          <p>
+            Utilizaba válvulas de vacío, ocupaba una habitación completa y
+            consumía gran cantidad de energía.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Inicio de la era electrónica.
+          </p>
+          <div class="imagenes">
+            <img src="img/eniac1.jpg" alt="ENIAC" />
+            <img src="img/eniac2.jpg" alt="ENIAC en funcionamiento" />
+            <img src="img/eniac3.jpg" alt="ENIAC en funcionamiento" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1951</span>
+
+          <h3>UNIVAC I</h3>
+
+          <p>
+            Primera computadora comercial fabricada para empresas y gobiernos.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Inicio de la comercialización de computadoras.
+          </p>
+          <div class="imagenes">
+            <img src="img/univac1.jpg" alt="UNIVAC I" />
+            <img src="img/univac2.jpg" alt="UNIVAC I en funcionamiento" />
+            <img src="img/univac3.jpg" alt="UNIVAC I en funcionamiento" />
+          </div>
+        </div>
+        <!-- PARTE 3 - GENERACIONES DE COMPUTADORAS -->
+
+        <div class="item">
+          <span class="fecha">1956</span>
+
+          <h3>Segunda Generación de Computadoras</h3>
+
+          <p>
+            Las computadoras comenzaron a utilizar transistores en lugar de
+            válvulas de vacío.
+          </p>
+
+          <p>
+            Los transistores permitieron crear equipos más pequeños, rápidos,
+            confiables y con menor consumo eléctrico.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Reemplazo de las válvulas por transistores.
+          </p>
+          <div class="imagenes">
+            <img src="img/transistor1.jpg" alt="Transistor" />
+            <img src="img/transistor2.jpg" alt="Uso de Transistores" />
+            <img src="img/transistor3.jpg" alt="Transistor en funcionamiento" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1964</span>
+
+          <h3>Tercera Generación - Circuitos Integrados</h3>
+
+          <p>
+            Aparecen los circuitos integrados, que permitieron colocar muchos
+            componentes electrónicos dentro de un solo chip.
+          </p>
+
+          <p>
+            Las computadoras aumentaron su velocidad y redujeron
+            considerablemente su tamaño.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Nacimiento de los chips electrónicos.
+          </p>
+          <div class="imagenes">
+            <img src="img/circuitointegrado1.jpg" alt="Circuito Integrado" />
+            <img src="img/circuitointegrado2.jpg" alt="Uso de Circuitos Integrados" />
+            <img src="img/circuitointegrado4.jpg" alt="Circuito Integrado en funcionamiento" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1971</span>
+
+          <h3>Cuarta Generación - Microprocesadores</h3>
+
+          <p>
+            La creación del microprocesador permitió integrar la unidad central
+            de procesamiento dentro de un solo circuito.
+          </p>
+
+          <p>
+            Esto permitió el desarrollo de las computadoras personales (PC).
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Nacimiento de las computadoras personales.
+          </p>
+          <div class="imagenes">
+            <img src="img/pc1.jpg" alt="Computadora Personal" />
+            <img src="img/pc2.jpg" alt="Uso de Computadoras Personales" />
+            <img src="img/pc3.png" alt="Computadora Personal en funcionamiento" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1981</span>
+
+          <h3>Computadora Personal (PC)</h3>
+
+          <p>
+            Empresas como IBM impulsaron el uso de computadoras personales en
+            hogares, empresas y centros educativos.
+          </p>
+
+          <p>
+            Las computadoras dejaron de ser exclusivas de grandes
+            organizaciones.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Popularización de la informática personal.
+          </p>
+          <div class="imagenes">
+            <img src="img/pc4.jpg" alt="Computadora Personal" />
+            <img src="img/pc5.jpg" alt="Uso de Computadoras Personales" />
+            <img src="img/pc6.jpg" alt="Computadora Personal en funcionamiento" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">1990</span>
+
+          <h3>Internet y la Era Digital</h3>
+
+          <p>
+            Internet permitió conectar millones de computadoras alrededor del
+            mundo, facilitando el intercambio de información.
+          </p>
+
+          <p>
+            Aparecieron servicios como páginas web, correo electrónico y
+            buscadores.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Comunicación global mediante redes informáticas.
+          </p>
+          <div class="imagenes">
+            <img src="img/internet1.jpg" alt="Internet" />
+            <img src="img/internet2.jpg" alt="Uso de Internet" />
+            <img src="img/internet3.jpg" alt="Computadora conectada a Internet" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">2000</span>
+
+          <h3>Computación Móvil</h3>
+
+          <p>
+            El desarrollo de teléfonos inteligentes, tablets y dispositivos
+            portátiles permitió acceder a la información desde cualquier lugar.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Computación disponible en dispositivos personales.
+          </p>
+          <div class="imagenes">
+            <img src="img/movil1.jpg" alt="Dispositivo Móvil" />
+            <img src="img/movil2.jpg" alt="Uso de Dispositivos Móviles" />
+            <img src="img/movil3.jpg" alt="Dispositivo Móvil en funcionamiento" />
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="fecha">2020</span>
+
+          <h3>Inteligencia Artificial y Computación en la Nube</h3>
+
+          <p>
+            Las computadoras actuales utilizan inteligencia artificial,
+            aprendizaje automático y servicios en la nube para procesar grandes
+            cantidades de datos.
+          </p>
+
+          <p>
+            Ejemplos: asistentes virtuales, análisis de datos, automatización y
+            sistemas inteligentes.
+          </p>
+
+          <p>
+            <b>Aporte principal:</b>
+            Computación inteligente y conectada globalmente.
+          </p>
+            <div class="imagenes">
+                <img src="img/ia1.jpg" alt="Inteligencia Artificial" />
+                <img src="img/ia2.jpg" alt="Uso de Inteligencia Artificial" />
+                <img src="img/ia3.jpg" alt="Computación en la Nube" />
+        </div>
+      </div>
+</div>
+      <h2 style="color: #0d47a1; text-align: center">
+        Resumen de avances tecnológicos
+      </h2>
+    
+      <table>
+        <tr>
+          <th>Año</th>
+
+          <th>Avance</th>
+
+          <th>Aporte principal</th>
+        </tr>
+
+        <tr>
+          <td>2500 a.C.</td>
+
+          <td>Ábaco</td>
+
+          <td>Primer instrumento de cálculo</td>
+        </tr>
+
+        <tr>
+          <td>1642</td>
+
+          <td>Pascalina</td>
+
+          <td>Primera calculadora mecánica</td>
+        </tr>
+
+        <tr>
+          <td>1673</td>
+
+          <td>Máquina de Leibniz</td>
+
+          <td>Operaciones matemáticas automáticas</td>
+        </tr>
+
+        <tr>
+          <td>1801</td>
+
+          <td>Telar de Jacquard</td>
+
+          <td>Programación mediante tarjetas</td>
+        </tr>
+
+        <tr>
+          <td>1837</td>
+
+          <td>Máquina Analítica</td>
+
+          <td>Primer diseño de computadora programable</td>
+        </tr>
+
+        <tr>
+          <td>1843</td>
+
+          <td>Ada Lovelace</td>
+
+          <td>Primer algoritmo informático</td>
+        </tr>
+
+        <tr>
+          <td>1890</td>
+
+          <td>Tabuladora Hollerith</td>
+
+          <td>Procesamiento automático de datos</td>
+        </tr>
+
+        <tr>
+          <td>1946</td>
+
+          <td>ENIAC</td>
+
+          <td>Primera computadora electrónica</td>
+        </tr>
+
+        <tr>
+          <td>1951</td>
+
+          <td>UNIVAC I</td>
+
+          <td>Primera computadora comercial</td>
+        </tr>
+        <tr>
+          <td>1956</td>
+
+          <td>Segunda Generación</td>
+
+          <td>Uso de transistores</td>
+        </tr>
+
+        <tr>
+          <td>1964</td>
+
+          <td>Tercera Generación</td>
+
+          <td>Circuitos integrados</td>
+        </tr>
+
+        <tr>
+          <td>1971</td>
+
+          <td>Cuarta Generación</td>
+
+          <td>Microprocesadores y PC</td>
+        </tr>
+
+        <tr>
+          <td>1990</td>
+
+          <td>Internet</td>
+
+          <td>Comunicación mundial de computadoras</td>
+        </tr>
+
+        <tr>
+          <td>2020</td>
+
+          <td>Inteligencia Artificial</td>
+
+          <td>Computación inteligente y nube</td>
+        </tr>
+      </table>
+    
+
+    <footer>
+      <p>Historia de las Computadoras - Evolución Tecnológica</p>
+    </footer>
+
+    <script>
+      /* ===============================================
+         FONDO TECNOLÓGICO: PARTÍCULAS + CIRCUITOS
+         + EFECTO DE MOVIMIENTO AL HACER SCROLL
+      =============================================== */
+      const canvas = document.getElementById("fondoTecnologico");
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+      let scrollY = 0;
+
+      function ajustarCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        crearParticulas();
+      }
+
+      function crearParticulas() {
+        const cantidad = Math.min(100, Math.floor(window.innerWidth / 14));
+        particles = [];
+
+        for (let i = 0; i < cantidad; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2 + 0.6,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            alpha: Math.random() * 0.6 + 0.2
+          });
+        }
+      }
+
+      function dibujarCircuitos() {
+        ctx.save();
+        ctx.strokeStyle = "rgba(41, 182, 246, 0.13)";
+        ctx.fillStyle = "rgba(41, 182, 246, 0.45)";
+        ctx.lineWidth = 1;
+
+        const separacion = 120;
+        const desplazamiento = (scrollY * 0.08) % separacion;
+
+        for (let x = -separacion; x < canvas.width + separacion; x += separacion) {
+          for (let y = -separacion; y < canvas.height + separacion; y += separacion) {
+            const px = x + desplazamiento;
+            const py = y;
+
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(px + 35, py);
+            ctx.lineTo(px + 35, py + 28);
+            ctx.lineTo(px + 75, py + 28);
+            ctx.lineTo(px + 75, py + 58);
+            ctx.lineTo(px + 105, py + 58);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(px + 35, py, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(px + 75, py + 28, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(px + 105, py + 58, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      function dibujarParticulas() {
+        particles.forEach((p, i) => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(79, 195, 247, ${p.alpha})`;
+          ctx.fill();
+
+          /* Conecta partículas cercanas como una red */
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const dx = p.x - q.x;
+            const dy = p.y - q.y;
+            const distancia = Math.sqrt(dx * dx + dy * dy);
+
+            if (distancia < 115) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(41, 182, 246, ${0.10 * (1 - distancia / 115)})`;
+              ctx.lineWidth = 0.7;
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.stroke();
+            }
+          }
+        });
+      }
+
+      function animarFondo() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        dibujarCircuitos();
+        dibujarParticulas();
+        requestAnimationFrame(animarFondo);
+      }
+
+      /* Movimiento del fondo según el desplazamiento de la página */
+      window.addEventListener("scroll", () => {
+        scrollY = window.scrollY;
+        document.documentElement.style.setProperty(
+          "--scroll-offset",
+          `${scrollY * 0.12}px`
+        );
+
+        /* Las tarjetas tienen un pequeño desplazamiento parallax */
+        document.querySelectorAll(".item").forEach((item) => {
+          const rect = item.getBoundingClientRect();
+          const centro = window.innerHeight / 2;
+          const distancia = (rect.top + rect.height / 2 - centro) / centro;
+
+          if (Math.abs(distancia) < 1.2) {
+            item.style.transform = `translateY(${distancia * -8}px)`;
+          }
+        });
+      }, { passive: true });
+
+      window.addEventListener("resize", ajustarCanvas);
+      ajustarCanvas();
+      animarFondo();
+    </script>
+  </body>
+</html>

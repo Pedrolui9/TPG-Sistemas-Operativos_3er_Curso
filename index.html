@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="img/computadora.png"
+    />
+
+    <title>Sistemas Operativos - Menú Principal</title>
+
+    <style>
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      /* =====================================================
+         FONDO GENERAL
+         ===================================================== */
+
+      body {
+        background:
+          linear-gradient(
+            135deg,
+            #071e3d,
+            #1f4287,
+            #278ea5
+          );
+
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+
+      /* =====================================================
+         IMAGEN TECNOLÓGICA DE FONDO
+         ===================================================== */
+
+      body::before {
+        content: "";
+
+        position: fixed;
+
+        width: 100%;
+        height: 100%;
+
+        background:
+          url("sistemas_operativos_fondo.png")
+          center center
+          no-repeat;
+
+        background-size: 70%;
+
+        opacity: 0.08;
+
+        z-index: -1;
+      }
+
+
+      /* =====================================================
+         ENCABEZADO
+         ===================================================== */
+
+      header {
+        text-align: center;
+
+        padding: 40px;
+
+        color: white;
+      }
+
+
+      header h1 {
+        font-size: 45px;
+
+        letter-spacing: 2px;
+      }
+
+
+      header h2 {
+        margin-top: 10px;
+
+        font-weight: normal;
+
+        color: #dbe9ff;
+      }
+
+
+      /* =====================================================
+         CONTENEDOR
+         ===================================================== */
+
+      .container {
+        width: 90%;
+
+        max-width: 1200px;
+
+        margin: auto;
+      }
+
+
+      /* =====================================================
+         MENÚ
+         ===================================================== */
+
+      .menu {
+        display: grid;
+
+        grid-template-columns:
+          repeat(
+            auto-fit,
+            minmax(250px, 1fr)
+          );
+
+        gap: 25px;
+
+        margin-top: 20px;
+      }
+
+
+      /* =====================================================
+         TARJETAS
+         ===================================================== */
+
+      .card {
+        background:
+          rgba(255, 255, 255, 0.15);
+
+        backdrop-filter: blur(10px);
+
+        border-radius: 20px;
+
+        padding: 30px;
+
+        text-align: center;
+
+        transition: 0.4s;
+
+        border:
+          1px solid
+          rgba(255, 255, 255, 0.2);
+      }
+
+
+      /* =====================================================
+         EFECTO HOVER
+         ===================================================== */
+
+      .card:hover {
+        transform:
+          translateY(-10px);
+
+        background:
+          rgba(255, 255, 255, 0.25);
+
+        box-shadow:
+          0 15px 35px
+          rgba(0, 0, 0, 0.25);
+      }
+
+
+      /* =====================================================
+         TÍTULO DE TARJETA
+         ===================================================== */
+
+      .card h3 {
+        color: white;
+
+        margin-bottom: 15px;
+
+        font-size: 24px;
+      }
+
+
+      /* =====================================================
+         DESCRIPCIÓN
+         ===================================================== */
+
+      .card p {
+        color: #eeeeee;
+
+        margin-bottom: 25px;
+
+        line-height: 1.5;
+      }
+
+
+      /* =====================================================
+         BOTÓN
+         ===================================================== */
+
+      .card a {
+        display: inline-block;
+
+        padding: 12px 30px;
+
+        background: #00b4ff;
+
+        color: white;
+
+        text-decoration: none;
+
+        border-radius: 30px;
+
+        font-weight: bold;
+
+        transition: 0.3s;
+      }
+
+
+      .card a:hover {
+        background: #0084c8;
+
+        transform: scale(1.05);
+      }
+
+
+      /* =====================================================
+         FOOTER
+         ===================================================== */
+
+      footer {
+        margin-top: 60px;
+
+        text-align: center;
+
+        padding: 20px;
+
+        color: white;
+
+        font-size: 14px;
+      }
+
+
+      /* =====================================================
+         RESPONSIVE
+         ===================================================== */
+
+      @media (max-width: 600px) {
+
+        header {
+          padding: 30px 15px;
+        }
+
+        header h1 {
+          font-size: 32px;
+        }
+
+        header h2 {
+          font-size: 20px;
+        }
+
+        .card {
+          padding: 25px 20px;
+        }
+
+      }
+
+    </style>
+  </head>
+
+
+  <body>
+
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+
+    <header>
+
+      <h1>
+        SISTEMAS OPERATIVOS
+      </h1>
+
+      <h2>
+        Material Didáctico
+      </h2>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTENEDOR PRINCIPAL
+         ===================================================== -->
+
+    <div class="container">
+
+
+      <div class="menu">
+
+
+        <!-- =================================================
+             UNIDAD 1
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            📘 Unidad 1
+          </h3>
+
+          <p>
+            Introducción a las Computadoras
+          </p>
+
+          <a href="unidad01_intro_computadoras.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 2
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            💻 Unidad 2
+          </h3>
+
+          <p>
+            Introducción a los Sistemas Operativos
+          </p>
+
+          <a href="unidad02_sistemas_operativos.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 3
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            ⚙️ Unidad 3
+          </h3>
+
+          <p>
+            Procesos y Administración de Procesos
+          </p>
+
+          <a href="unidad03_procesos.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 4
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            🔄 Unidad 4
+          </h3>
+
+          <p>
+            Gestión de Entrada y Salida
+          </p>
+
+          <a href="unidad04_entrada_salida.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 5
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            🧠 Unidad 5
+          </h3>
+
+          <p>
+            Administración de Memoria
+          </p>
+
+          <a href="unidad05_memoria.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 6
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            📁 Unidad 6
+          </h3>
+
+          <p>
+            Sistemas de Archivos
+          </p>
+
+          <a href="unidad06_archivos.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 7
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            🔐 Unidad 7
+          </h3>
+
+          <p>
+            Seguridad de los Sistemas Operativos
+          </p>
+
+          <a href="unidad07_seguridad.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             UNIDAD 8
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            🌐 Unidad 8
+          </h3>
+
+          <p>
+            Sistemas Operativos de Red
+          </p>
+
+          <a href="unidad08_so_red.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIVIDADES
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            🧪 Actividades
+          </h3>
+
+          <p>
+            Prácticas y ejercicios de Sistemas Operativos
+          </p>
+
+          <a href="actividades.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             CUESTIONARIO
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            🛡 Cuestionario
+          </h3>
+
+          <p>
+            Actividades de evaluación de las unidades
+          </p>
+
+          <a href="actividades/cuestionario.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+        <!-- =================================================
+             EVALUACIONES
+             ================================================= -->
+
+        <div class="card">
+
+          <h3>
+            📝 Evaluaciones
+          </h3>
+
+          <p>
+            Cuestionarios y Exámenes
+          </p>
+
+          <a href="actividades/evaluaciones.html">
+            Ingresar
+          </a>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PIE DE PÁGINA
+         ===================================================== -->
+
+    <footer>
+
+      Universidad Tecnológica Intercontinental
+      - Sistemas Operativos
+      <br />
+
+      © 2026 Miguel Ángel Segovia
+
+    </footer>
+
+
+  </body>
+
+</html>
