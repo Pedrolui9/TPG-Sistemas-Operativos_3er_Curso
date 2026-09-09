@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Unidad 4 - Entrada/Salida y Periféricos</title>
+    <title>Sistemas Operativos - Gestion de Entrada/Salida</title>
     <style>
         :root {
             --primary: #1e293b;
@@ -11,6 +11,8 @@
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #334155;
+            --success: #16a34a;
+            --danger: #dc2626;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -76,6 +78,62 @@
             padding: 1rem;
             margin: 1rem 0;
         }
+
+        /* Estilos de la sección interactiva */
+        .quiz-card {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .quiz-card p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .option-btn {
+            background-color: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            background-color: #e2e8f0;
+        }
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: #15803d;
+            font-weight: bold;
+        }
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: var(--danger);
+            color: #b91c1c;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: none;
+        }
+        .score-board {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-top: 1rem;
+        }
+
         footer {
             text-align: center;
             padding: 1.5rem;
@@ -89,7 +147,7 @@
 
 <header>
     <h1>Unidad de Entrada / Salida (E/S)</h1>
-    <p>Gestión de Periféricos y Almacenamiento en Sistemas Operativos</p>
+    <p>Gestión de Periféricos en Sistemas Operativos</p>
 </header>
 
 <nav>
@@ -102,6 +160,7 @@
         <li><a href="#raid">RAID & Cache</a></li>
         <li><a href="#so">E/S en SOs</a></li>
         <li><a href="#hardware-especifico">Hardware Específico</a></li>
+        <li><a href="#interactivo">Cuestionario Interactivo</a></li>
     </ul>
 </nav>
 
@@ -179,7 +238,7 @@
         <ul>
             <li><strong>UNIX SVR4:</strong> Utiliza tablas de dispositivos estructuradas como archivos de caracteres o de bloques. Integra streams para comunicación modular de periféricos.</li>
             <li><strong>Linux:</strong> Separa dispositivos en tres grandes tipos (Character, Block, Network). Implementa el Scheduler I/O (Deadline, BFQ) y una potente Page Cache unificada.</li>
-            <li><strong>Windows:</strong> Modelo basado en controladores por capas (WDM / KMDF). Toda operación de E/S genera un paquete **IRP** (I/O Request Packet) que viaja a través de los drivers.</li>
+            <li><strong>Windows:</strong> Modelo basado en controladores por capas (WDM / KMDF). Toda operación de E/S genera un paquete <strong>IRP</strong> (I/O Request Packet) que viaja a través de los drivers.</li>
         </ul>
     </section>
 
@@ -190,10 +249,64 @@
             <li><strong>Relojes (Clocks):</strong> Generan interrupciones periódicas necesarias para el rebanado de tiempo (time-slicing), contadores del sistema y alarmas.</li>
             <li><strong>Terminales:</strong> Manejo de entrada por teclado (modo canónico vs. modo no canónico/raw) y salida por pantalla mediante buffers de texto o framebuffers.</li>
         </ul>
-
     </section>
 
-     <!-- Navegación -->
+    <!-- SECCIÓN DE PREGUNTAS DINÁMICAS INTERACTIVAS -->
+    <section id="interactivo">
+        <h2>9. Autoevaluación Interactiva</h2>
+        <p>Selecciona las respuestas correctas para verificar tu conocimiento sobre la unidad:</p>
+
+        <!-- Pregunta 1 -->
+        <div class="quiz-card" id="q1">
+            <p>1. ¿Qué técnica de E/S permite transferir bloques de datos directamente a la RAM sin intervención constante de la CPU?</p>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer('q1', this, false)">E/S Programada</button>
+                <button class="option-btn" onclick="checkAnswer('q1', this, false)">E/S por Interrupciones</button>
+                <button class="option-btn" onclick="checkAnswer('q1', this, true)">DMA (Acceso Directo a Memoria)</button>
+                <button class="option-btn" onclick="checkAnswer('q1', this, false)">Buferizado Doble</button>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="quiz-card" id="q2">
+            <p>2. ¿Cuál nivel de RAID ofrece redundancia mediante espejo (mirroring) duplicando los datos por completo?</p>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer('q2', this, false)">RAID 0</button>
+                <button class="option-btn" onclick="checkAnswer('q2', this, true)">RAID 1</button>
+                <button class="option-btn" onclick="checkAnswer('q2', this, false)">RAID 5</button>
+                <button class="option-btn" onclick="checkAnswer('q2', this, false)">RAID 6</button>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="quiz-card" id="q3">
+            <p>3. ¿Qué algoritmo de planificación de disco funciona de forma similar a un ascensor, barriendo el disco de un extremo a otro?</p>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer('q3', this, false)">FIFO</button>
+                <button class="option-btn" onclick="checkAnswer('q3', this, false)">SSTF</button>
+                <button class="option-btn" onclick="checkAnswer('q3', this, true)">SCAN</button>
+                <button class="option-btn" onclick="checkAnswer('q3', this, false)">Round Robin</button>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="quiz-card" id="q4">
+            <p>4. En el sistema operativo Windows, ¿cómo se denomina a las estructuras de datos usadas para solicitar operaciones de E/S a los drivers?</p>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer('q4', this, true)">IRP (I/O Request Packet)</button>
+                <button class="option-btn" onclick="checkAnswer('q4', this, false)">Streams</button>
+                <button class="option-btn" onclick="checkAnswer('q4', this, false)">Page Faults</button>
+                <button class="option-btn" onclick="checkAnswer('q4', this, false)">Inodos</button>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="score-board" id="scoreBoard">Puntaje: 0 / 4</div>
+    </section>
+
     <div class="btn-container">
       <a href="index.html" class="btn btn-secondary">← Volver al Menú Principal</a>
 
@@ -203,6 +316,44 @@
 <footer>
     <p>Mathias Maldonado - Unidad de Entrada/Salida &copy; 2026</p>
 </footer>
+
+<script>
+    let correctAnswersCount = 0;
+    const answeredQuestions = new Set();
+
+    function checkAnswer(questionId, selectedBtn, isCorrect) {
+        const questionCard = document.getElementById(questionId);
+        const buttons = questionCard.querySelectorAll('.option-btn');
+        const feedback = questionCard.querySelector('.feedback');
+
+        // Deshabilitar todos los botones de esta pregunta una vez seleccionada
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (isCorrect) {
+            selectedBtn.classList.add('correct');
+            feedback.style.color = 'var(--success)';
+            feedback.textContent = '¡Correcto!';
+            if (!answeredQuestions.has(questionId)) {
+                correctAnswersCount++;
+                answeredQuestions.add(questionId);
+            }
+        } else {
+            selectedBtn.classList.add('incorrect');
+            feedback.style.color = 'var(--danger)';
+            feedback.textContent = 'Incorrecto.';
+            
+            // Marcar la respuesta correcta visualmente
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick').includes('true')) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        feedback.style.display = 'block';
+        document.getElementById('scoreBoard').textContent = `Puntaje: ${correctAnswersCount} / 4`;
+    }
+</script>
 
 </body>
 </html>
