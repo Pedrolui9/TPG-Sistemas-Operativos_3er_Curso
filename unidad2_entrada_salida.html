@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas Operativos - Entrada/Salida y Periféricos</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #334155;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { color: #94a3b8; font-size: 1.1rem; }
+        nav {
+            background-color: var(--accent);
+            padding: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        nav a:hover { text-decoration: underline; }
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        section {
+            background: var(--card);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: var(--accent);
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        ul { padding-left: 1.2rem; }
+        li { margin-bottom: 0.5rem; }
+        .highlight {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--primary);
+            color: #94a3b8;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Unidad de Entrada / Salida (E/S)</h1>
+    <p>Gestión de Periféricos y Almacenamiento en Sistemas Operativos</p>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#dispositivos">Dispositivos</a></li>
+        <li><a href="#organizacion">Organización</a></li>
+        <li><a href="#diseno">Aspectos de Diseño</a></li>
+        <li><a href="#buffers">Buffers</a></li>
+        <li><a href="#disco">Planificación de Disco</a></li>
+        <li><a href="#raid">RAID & Cache</a></li>
+        <li><a href="#so">E/S en SOs</a></li>
+        <li><a href="#hardware-especifico">Hardware Específico</a></li>
+    </ul>
+</nav>
+
+<main>
+    <section id="dispositivos">
+        <h2>1. Dispositivos de E/S y Principios de Software</h2>
+        <p>Los dispositivos de Entrada/Salida se clasifican principalmente en tres categorías:</p>
+        <ul>
+            <li><strong>Legibles por el usuario:</strong> Teclado, mouse, monitor, impresoras.</li>
+            <li><strong>Legibles por la máquina:</strong> Discos duros, SSDs, controladores USB.</li>
+            <li><strong>De comunicación:</strong> Tarjetas de red (NIC), módems.</li>
+        </ul>
+        <h3>Principios del Software de E/S</h3>
+        <p>El objetivo principal del software de E/S es la <strong>independencia del dispositivo</strong>, la asignación de nombres uniforme, la gestión de errores en la capa más baja posible y la transferencia bloqueante vs. no bloqueante.</p>
+    </section>
+
+    <section id="organizacion">
+        <h2>2. Organización del Sistema de E/S</h2>
+        <p>La E/S se puede ejecutar mediante tres técnicas principales de comunicación entre CPU y el dispositivo:</p>
+        <ul>
+            <li><strong>E/S Programada:</strong> La CPU espera activamente (polling) a que el módulo de E/S complete la operación. Es ineficiente.</li>
+            <li><strong>E/S Dirigida por Interrupciones:</strong> La CPU emite el comando y continúa haciendo otro trabajo. El controlador interrumpe a la CPU cuando está listo.</li>
+            <li><strong>Acceso Directo a Memoria (DMA):</strong> Un controlador especial (DMA) gestiona la transferencia directa de bloques de datos entre los periféricos y la memoria RAM sin pasar contínuamente por la CPU.</li>
+        </ul>
+    </section>
+
+    <section id="diseno">
+        <h2>3. Aspectos de Diseño del Sistema Operativo</h2>
+        <p>El Sistema Operativo busca cumplir dos objetivos clave en la gestión de E/S:</p>
+        <div class="highlight">
+            <ol>
+                <li><strong>Eficiencia:</strong> La E/S suele ser el cuello de botella del sistema debido a la diferencia de velocidad entre la memoria/CPU y los periféricos mecánicos o de red.</li>
+                <li><strong>Generalidad:</strong> Tratar a todos los dispositivos de la forma más uniforme posible (ejemplo: en UNIX todo se maneja como un archivo).</li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="buffers">
+        <h2>4. Utilización de Buffers de E/S</h2>
+        <p>El buferizado guarda datos en memoria temporal para suavizar los picos de transferencia e independizar el ritmo de la CPU del periférico:</p>
+        <ul>
+            <li><strong>Sin Buferizado:</strong> El SO transfiere directamente entre dispositivo y proceso.</li>
+            <li><strong>Buferizado Único:</strong> El SO asigna una memoria intermedia en RAM para leer el bloque antes de pasarlo al usuario.</li>
+            <li><strong>Buferizado Doble (Ping-Pong):</strong> Mientras un proceso consume datos de un búfer, el dispositivo llena el segundo búfer.</li>
+            <li><strong>Buferizado Circular:</strong> Se utiliza una cola circular de dos o más búferes para amortiguar ráfagas masivas de transferencia.</li>
+        </ul>
+    </section>
+
+    <section id="disco">
+        <h2>5. Planificación del Disco</h2>
+        <p>Para discos mecánicos (HDD), el tiempo de acceso depende del movimiento del cabezal. Los algoritmos optimizan el orden de lectura:</p>
+        <ul>
+            <li><strong>FIFO (First-In, First-Out):</strong> Atiende en orden de llegada. Justo pero ineficiente.</li>
+            <li><strong>SSTF (Shortest Seek Time First):</strong> Atiende la solicitud más cercana a la posición actual del cabezal. Puede provocar starvation (inaniación).</li>
+            <li><strong>SCAN (Algoritmo del Ascensor):</strong> El cabezal se mueve de un extremo al otro barriendo todas las peticiones en su camino.</li>
+            <li><strong>C-SCAN (Circular SCAN):</strong> Barre en una sola dirección y vuelve al principio sin atender peticiones en el retorno para asegurar uniformidad.</li>
+        </ul>
+    </section>
+
+    <section id="raid">
+        <h2>6. RAID y Caché de Disco</h2>
+        <h3>Estructura RAID (Redundant Array of Independent Disks)</h3>
+        <ul>
+            <li><strong>RAID 0:</strong> Distribuido (Striping). Mayor velocidad, sin redundancia.</li>
+            <li><strong>RAID 1:</strong> Espejo (Mirroring). Duplicado completo de datos, alta tolerancia a fallos.</li>
+            <li><strong>RAID 5:</strong> Paridad distribuida. Combina alta velocidad, almacenamiento eficiente y tolerancia a la falla de 1 disco.</li>
+            <li><strong>RAID 6:</strong> Doble paridad distribuida. Soporta la falla simultánea de 2 discos.</li>
+        </ul>
+        <h3>Caché de Disco (Page Cache)</h3>
+        <p>Memoria RAM asignada para almacenar bloques de disco leídos recientemente, reduciendo drásticamente las lecturas físicas al almacenamiento.</p>
+    </section>
+
+    <section id="so">
+        <h2>7. Comparativa de Sistemas de E/S en SOs</h2>
+        <ul>
+            <li><strong>UNIX SVR4:</strong> Utiliza tablas de dispositivos estructuradas como archivos de caracteres o de bloques. Integra streams para comunicación modular de periféricos.</li>
+            <li><strong>Linux:</strong> Separa dispositivos en tres grandes tipos (Character, Block, Network). Implementa el Scheduler I/O (Deadline, BFQ) y una potente Page Cache unificada.</li>
+            <li><strong>Windows:</strong> Modelo basado en controladores por capas (WDM / KMDF). Toda operación de E/S genera un paquete **IRP** (I/O Request Packet) que viaja a través de los drivers.</li>
+        </ul>
+    </section>
+
+    <section id="hardware-especifico">
+        <h2>8. Discos, Relojes y Terminales</h2>
+        <ul>
+            <li><strong>Discos:</strong> Control de bloques, cilindros y pistas. Transición de direccionamiento CHS al moderno LBA (Logical Block Addressing).</li>
+            <li><strong>Relojes (Clocks):</strong> Generan interrupciones periódicas necesarias para el rebanado de tiempo (time-slicing), contadores del sistema y alarmas.</li>
+            <li><strong>Terminales:</strong> Manejo de entrada por teclado (modo canónico vs. modo no canónico/raw) y salida por pantalla mediante buffers de texto o framebuffers.</li>
+        </ul>
+    </section>
+</main>
+
+<footer>
+    <p>Mathias Maldonado - Unidad de Entrada/Salida &copy; 2026</p>
+</footer>
+
+</body>
+</html>
