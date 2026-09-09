@@ -1,15 +1,339 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contenido en progreso.. Hugo Ramirez</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unidad 7 - Sistemas Operativos Distribuidos</title>
+  <style>
+    /* RESET & BASE */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ENCABEZADO */
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      flex: 1;
+    }
+
+    /* TARJETAS GLASSMORPHISM */
+    .card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p {
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+    }
+
+    /* CUADRÍCULAS DE PUNTOS CLAVE */
+    .grid-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.2rem;
+    }
+
+    .feature-box {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .feature-box:hover {
+      transform: translateY(-3px);
+      border-color: #38bdf8;
+    }
+
+    .feature-box h3 {
+      font-size: 1.1rem;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-box p {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      margin-bottom: 0;
+    }
+
+    /* BOTONES */
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      border: none;
+      border-radius: 50px;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: none;
+    }
+
+    /* CUESTIONARIO RÁPIDO */
+    .interactive-section {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: rgba(30, 41, 59, 0.8);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background: rgba(51, 65, 85, 1);
+    }
+
+    #feedback {
+      margin-top: 1rem;
+      font-weight: 600;
+      min-height: 1.5rem;
+    }
+
+    /* PIE DE PÁGINA */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #64748b;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
 <body>
-  <strong><h1>EN BREVE--SISTEMAS DISTRIBUIDOS</h1></strong>
-        <strong><p><h2>Aqui se podrían agregar más opciones para seleccionar.</p></h2></strong>
-</body> 
- </html>
+
+  <header>
+    <h1>UNIDAD 7</h1>
+    <p>Sistemas Operativos Distribuidos</p>
+  </header>
+
+  <main class="container">
+    
+    <!-- Introducción -->
+    <section class="card">
+      <h2>🌐 Introducción</h2>
+      <p>
+        Un <strong>Sistema Operativo Distribuido (SOD)</strong> es una colección de computadoras independientes conectadas a través de una red de comunicación, que aparecen ante los usuarios como un único sistema coherente y centralizado.
+      </p>
+    </section>
+
+    <!-- 1. OBJETIVOS -->
+    <section class="card">
+      <h2>🎯 1. Objetivos de los Sistemas Distribuidos</h2>
+      <p>Los principales propósitos que justifican la implementación de un sistema distribuido son:</p>
+      <div class="grid-features">
+        <div class="feature-box">
+          <h3>Transparencia</h3>
+          <p>Ocultar la distribución física de los recursos de modo que el sistema se perciba como una sola computadora.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Compartición de Recursos</h3>
+          <p>Permitir que usuarios y aplicaciones accedan e intercambien hardware, software y datos de forma remota y eficiente.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Apertura e Interoperabilidad</h3>
+          <p>Ofrecer interfaces estándar que permitan la integración flexible de componentes de distintos fabricantes.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Escalabilidad</h3>
+          <p>Capacidad de hacer crecer el sistema en tamaño, cobertura geográfica o administración sin degradar el rendimiento.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. HARDWARE -->
+    <section class="card">
+      <h2>🖥️ 2. Arquitecturas de Hardware</h2>
+      <p>Los sistemas distribuidos se sostienen sobre distintas clasificaciones según cómo se conectan y comparten la memoria los procesadores:</p>
+      <div class="grid-features">
+        <div class="feature-box">
+          <h3>Sistemas Fuertemente Acoplados</h3>
+          <p>Procesadores que comparten la misma memoria física y reloj (Multiprocesadores). Tienen alta velocidad de transferencia.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Sistemas Débilmente Acoplados</h3>
+          <p>Equipos (Multicomputadoras) con su propia memoria local y procesador, conectados a través de una red de comunicación.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Topologías de Red</h3>
+          <p>La estructura de interconexión (Estrella, Anillo, Bus o Malla) determina la latencia y la tolerancia a fallos del hardware.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SOFTWARE -->
+    <section class="card">
+      <h2>💻 3. Capas y Modelos de Software</h2>
+      <p>El software determina cómo interactúan las aplicaciones con los nodos de la red:</p>
+      <div class="grid-features">
+        <div class="feature-box">
+          <h3>Sistemas Operativos de Red (NOS)</h3>
+          <p>Cada nodo mantiene su propio SO. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
+        </div>
+        <div class="feature-box">
+          <h3>Sistemas Operativos Distribuidos (DOS)</h3>
+          <p>Un único SO gestiona globalmente todos los recursos. Los usuarios no perciben dónde se ejecutan sus procesos.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Middleware</h3>
+          <p>Capa de software situada entre las aplicaciones y el SO subyacente que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. ASPECTOS DEL DISEÑO -->
+    <section class="card">
+      <h2>🛠️ 4. Aspectos Críticos del Diseño</h2>
+      <p>Diseñar un sistema distribuido exige abordar desafíos clave de coordinación y fiabilidad:</p>
+      <div class="grid-features">
+        <div class="feature-box">
+          <h3>Transparencia en el Diseño</h3>
+          <p>Abarca transparencias de localización, acceso, migración, replicación y concurrencia.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Flexibilidad y Modularidad</h3>
+          <p>Uso del modelo micronúcleo (Kernel mínimo) para delegar servicios como archivos y red a servidores en espacio de usuario.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Fiabilidad y Tolerancia a Fallos</h3>
+          <p>Mecanismos para detectar caídas de nodos, mantener la disponibilidad y recuperarse sin perder consistencia.</p>
+        </div>
+        <div class="feature-box">
+          <h3>Rendimiento y Sincronización</h3>
+          <p>Balanceo de carga, optimización del ancho de banda y uso de relojes lógicos/físicos para coordinar eventos secuenciales.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actividad Interactiva -->
+    <section class="card">
+      <h2>🧪 Repaso Rápido</h2>
+      <div class="interactive-section">
+        <p style="color: #f8fafc; font-weight: 600;">¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</p>
+        
+        <button class="option-btn" onclick="checkAnswer(false)">A) El Microprocesador</button>
+        <button class="option-btn" onclick="checkAnswer(true)">B) El Middleware</button>
+        <button class="option-btn" onclick="checkAnswer(false)">C) La Topología en Anillo</button>
+
+        <div id="feedback"></div>
+      </div>
+    </section>
+
+    <!-- Navegación -->
+    <div class="btn-container">
+      <a href="index.html" class="btn btn-secondary">← Volver al Menú Principal</a>
+      <a href="#" class="btn">Siguiente Unidad →</a>
+    </div>
+
+  </main>
+
+  <footer>
+    Universidad Tecnológica Intercontinental - Sistemas Operativos © 2026
+  </footer>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    function checkAnswer(isCorrect) {
+      const feedback = document.getElementById('feedback');
+      if (isCorrect) {
+        feedback.style.color = '#4ade80'; // Verde
+        feedback.textContent = '¡Correcto! El Middleware proporciona abstracción e interoperabilidad entre plataformas heterogéneas.';
+      } else {
+        feedback.style.color = '#f87171'; // Rojo
+        feedback.textContent = 'Incorrecto. Inténtalo de nuevo.';
+      }
+    }
+  </script>
+</body>
+</html>
