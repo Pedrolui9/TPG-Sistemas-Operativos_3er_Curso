@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unidad 6 - Sistemas de Archivos | UTIC</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #1f2937;
+      color: #e5e7eb;
+      line-height: 1.65;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 285px;
+      height: 100vh;
+      overflow: auto;
+      background: #111827;
+      color: white;
+    }
+
+    .logo {
+      padding: 22px 15px;
+      text-align: center;
+      background: #007bff;
+    }
+
+    .logo h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .logo p {
+      margin: 5px 0 0;
+      font-size: 13px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar li {
+      border-bottom: 1px solid #4a4f54;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 11px 15px;
+      color: #ddd;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .content {
+      margin-left: 285px;
+      width: calc(100% - 285px);
+      padding: 28px;
+      max-width: 1500px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+      border-radius: 12px;
+      padding: 42px 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px #ccc;
+    }
+
+    .hero h1 {
+      font-size: 38px;
+      line-height: 1.2;
+      margin: 0 0 10px;
+    }
+
+    .hero p {
+      margin: 5px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #fff;
+      color: #0056b3;
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .card {
+      background: #2b3444;
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.28);
+    }
+
+    .card h2 {
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+
+    .card h3 {
+      margin-top: 22px;
+      color: #0056b3;
+    }
+
+    .figure {
+      margin: 20px 0;
+      border: 1px solid #475569;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #263241;
+    }
+
+    .figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      text-align: center;
+      background: #263241;
+      color: #cbd5e1;
+      padding: 9px;
+      font-size: 13px;
+    }
+
+    .info,
+    .warning,
+    .success,
+    .speech {
+      padding: 16px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .info {
+      background: #22364a;
+      border-left: 5px solid #38bdf8;
+    }
+
+    .warning {
+      background: #3a3322;
+      border-left: 5px solid #fbbf24;
+    }
+
+    .success {
+      background: #20372c;
+      border-left: 5px solid #34d399;
+    }
+
+    .speech {
+      background: #202a38;
+      border-left: 5px solid #94a3b8;
+    }
+
+    .speech strong {
+      color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    th {
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+      text-align: left;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #475569;
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) {
+      background: #243041;
+    }
+
+    code {
+      background: #111827;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #f9a8d4;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 15px;
+      margin: 18px 0;
+    }
+
+    .mini-card {
+      background: #263241;
+      border: 1px solid #475569;
+      border-radius: 9px;
+      padding: 17px;
+    }
+
+    .mini-card h3 {
+      margin-top: 0;
+      color: #007bff;
+      font-size: 18px;
+    }
+
+    .tree {
+      background: #212529;
+      color: #f8f9fa;
+      padding: 18px;
+      border-radius: 8px;
+      font-family: Consolas, "Courier New", monospace;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+    }
+
+    .steps li {
+      counter-increment: step;
+      margin: 12px 0;
+      padding: 14px 14px 14px 55px;
+      background: #263241;
+      border-radius: 8px;
+      position: relative;
+      border: 1px solid #475569;
+    }
+
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #007bff;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    footer {
+      background: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 25px;
+      border-radius: 9px;
+    }
+
+    footer a {
+      color: #9ed0ff;
+    }
+
+    .top {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.2);
+    }
+
+
+    a {
+      color: #7dd3fc;
+    }
+
+    ::selection {
+      background: #2563eb;
+      color: white;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #111827;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
+    @media (max-width: 850px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .content {
+        margin: 0;
+        width: 100%;
+        padding: 15px;
+      }
+
+      .sidebar ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero h1 {
+        font-size: 29px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .sidebar ul {
+        display: block;
+      }
+
+      .card {
+        padding: 19px;
+      }
+
+      .hero {
+        padding: 28px 20px;
+      }
+
+      .hero h1 {
+        font-size: 25px;
+      }
+
+      table {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body id="top">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <h2>Sistemas Operativos</h2>
+        <p>UTIC · Unidad 6</p>
+      </div>
+
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#sistemas">1. Sistemas de Archivos</a></li>
+        <li><a href="#archivos">2. Archivos</a></li>
+        <li><a href="#directorios">3. Directorios</a></li>
+        <li><a href="#implementacion">4. Implementación</a></li>
+        <li><a href="#seguridad">5. Seguridad</a></li>
+        <li><a href="#proteccion">6. Mecanismos de Protección</a></li>
+        <li><a href="#conclusion">7. Conclusión</a></li>
+        <li><a href="index.html">← Volver al menú principal</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+
+      <header class="hero" id="inicio">
+        <h1>Unidad 6: Sistemas de Archivos</h1>
+        <p><strong>Curso:</strong> Sistemas Operativos</p>
+        <p><strong>Temas:</strong> Archivos · Directorios · Implementación · Seguridad · Mecanismos de protección</p>
+        <span class="badge">Material didáctico · UTIC</span>
+      </header>
+
+      <section class="card" id="sistemas">
+        <h2>1. Sistemas de Archivos</h2>
+
+        <p>
+          Un <strong>sistema de archivos</strong> es la parte del sistema operativo encargada de
+          organizar, almacenar, localizar y proteger la información guardada en dispositivos como
+          discos duros, unidades SSD, memorias USB y tarjetas de memoria.
+        </p>
+
+        <p>
+          Cuando una persona crea una carpeta o guarda un documento, el sistema operativo debe registrar
+          dónde se encuentra esa información, qué nombre tiene, cuánto ocupa y quién puede utilizarla.
+          El sistema de archivos hace posible que el usuario trabaje con nombres y carpetas sin tener que
+          conocer la ubicación física exacta de los datos en el dispositivo.
+        </p>
+
+        <figure class="figure">
+          <svg viewBox="0 0 900 300" role="img" aria-label="Funcionamiento general de un sistema de archivos">
+            <rect width="900" height="300" fill="#243041" />
+            <rect x="55" y="95" width="170" height="90" rx="12" fill="#17a2b8" />
+            <text x="140" y="135" fill="white" text-anchor="middle" font-size="22">USUARIO</text>
+            <text x="140" y="163" fill="white" text-anchor="middle" font-size="16">Archivos y carpetas</text>
+
+            <rect x="360" y="75" width="190" height="130" rx="12" fill="#007bff" />
+            <text x="455" y="125" fill="white" text-anchor="middle" font-size="21">SISTEMA DE</text>
+            <text x="455" y="154" fill="white" text-anchor="middle" font-size="21">ARCHIVOS</text>
+            <text x="455" y="182" fill="white" text-anchor="middle" font-size="15">Organiza y administra</text>
+
+            <rect x="675" y="95" width="170" height="90" rx="12" fill="#28a745" />
+            <text x="760" y="135" fill="white" text-anchor="middle" font-size="22">DISCO</text>
+            <text x="760" y="163" fill="white" text-anchor="middle" font-size="16">Bloques de datos</text>
+
+            <path d="M225 140h135M550 140h125" stroke="#343a40" stroke-width="7"/>
+            <path d="M343 126l22 14-22 14M658 126l22 14-22 14" fill="#cbd5e1"/>
+          </svg>
+
+          <figcaption class="caption">
+            El sistema de archivos actúa como intermediario entre el usuario y el almacenamiento físico.
+          </figcaption>
+        </figure>
+
+        <div class="info">
+          <strong>Ejemplos:</strong> FAT32, NTFS, ext4, XFS y Btrfs son sistemas de archivos utilizados
+          en distintos sistemas operativos y dispositivos.
+        </div>
+
+        <div class="speech">
+          <strong>Para exponer:</strong> “El sistema de archivos es el encargado de organizar la información.
+          Nosotros vemos carpetas y nombres, pero el sistema operativo debe saber en qué bloques del disco
+          están realmente guardados esos datos.”
+        </div>
+      </section>
+
+      <section class="card" id="archivos">
+        <h2>2. Archivos</h2>
+
+        <p>
+          Un <strong>archivo</strong> es una colección de información relacionada almacenada bajo un nombre.
+          Puede contener texto, imágenes, música, videos, programas, bases de datos u otros tipos de información.
+        </p>
+
+        <h3>Atributos principales de un archivo</h3>
+        <div class="grid">
+          <div class="mini-card">
+            <h3> Nombre</h3>
+            <p>Permite identificar el archivo, por ejemplo <code>informe.pdf</code>.</p>
+          </div>
+
+          <div class="mini-card">
+            <h3> Tamaño</h3>
+            <p>Indica cuánto espacio ocupa en el dispositivo de almacenamiento.</p>
+          </div>
+
+          <div class="mini-card">
+            <h3> Ubicación</h3>
+            <p>Señala dónde se encuentra dentro de la estructura del sistema de archivos.</p>
+          </div>
+
+          <div class="mini-card">
+            <h3>Permisos</h3>
+            <p>Determinan quién puede leer, modificar o ejecutar el archivo.</p>
+          </div>
+        </div>
+
+        <h3>Operaciones comunes</h3>
+        <ul>
+          <li><strong>Crear:</strong> generar un nuevo archivo.</li>
+          <li><strong>Abrir:</strong> preparar el archivo para ser utilizado.</li>
+          <li><strong>Leer:</strong> consultar su contenido.</li>
+          <li><strong>Escribir:</strong> agregar o modificar información.</li>
+          <li><strong>Renombrar:</strong> cambiar su nombre.</li>
+          <li><strong>Copiar o mover:</strong> duplicarlo o cambiarlo de ubicación.</li>
+          <li><strong>Eliminar:</strong> quitarlo del sistema de archivos.</li>
+        </ul>
+
+        <h3>Métodos de acceso</h3>
+        <table>
+          <tr>
+            <th>Método</th>
+            <th>Descripción</th>
+            <th>Ejemplo sencillo</th>
+          </tr>
+          <tr>
+            <td>Secuencial</td>
+            <td>Los datos se leen en orden, uno detrás de otro.</td>
+            <td>Leer un archivo de texto desde el principio hasta el final.</td>
+          </tr>
+          <tr>
+            <td>Directo</td>
+            <td>Se puede acceder directamente a una parte determinada del archivo.</td>
+            <td>Ir a una posición concreta dentro de una base de datos.</td>
+          </tr>
+          <tr>
+            <td>Indexado</td>
+            <td>Se utiliza una estructura de índice para localizar la información.</td>
+            <td>Buscar un registro utilizando una referencia.</td>
+          </tr>
+        </table>
+
+        <div class="speech">
+          <strong>Para exponer:</strong> “Un archivo no es solamente su contenido. También posee información
+          como nombre, tamaño, ubicación y permisos, que el sistema operativo utiliza para administrarlo.”
+        </div>
+      </section>
+
+      <section class="card" id="directorios">
+        <h2>3. Directorios</h2>
+
+        <p>
+          Un <strong>directorio</strong>, también llamado carpeta, es una estructura utilizada para organizar
+          archivos y otros directorios. La forma más común de organización es jerárquica, similar a un árbol.
+        </p>
+
+        <div class="tree">/
+├── documentos
+│   ├── tarea.pdf
+│   └── informe.txt
+├── imagenes
+│   ├── foto.jpg
+│   └── logo.png
+└── programas
+    └── ejemplo.exe</div>
+
+        <h3>Directorio raíz</h3>
+        <p>
+          Es el punto principal desde el cual comienza la estructura de carpetas. A partir de él se crean
+          directorios y subdirectorios.
+        </p>
+
+        <h3>Rutas absolutas y relativas</h3>
+        <ul>
+          <li>
+            <strong>Ruta absoluta:</strong> muestra la ubicación completa desde la raíz.
+            Ejemplo: <code>/documentos/tarea.pdf</code>.
+          </li>
+          <li>
+            <strong>Ruta relativa:</strong> indica la ubicación desde el directorio en el que se encuentra
+            actualmente el usuario.
+          </li>
+        </ul>
+
+        <h3>Operaciones con directorios</h3>
+        <p>
+          Los directorios pueden crearse, eliminarse, renombrarse, copiarse, moverse y utilizarse para
+          buscar o clasificar archivos.
+        </p>
+
+        <div class="success">
+          <strong>Ventaja principal:</strong> la estructura de directorios permite mantener la información
+          ordenada y facilita la búsqueda de archivos.
+        </div>
+
+        <div class="speech">
+          <strong>Para exponer:</strong> “Los directorios funcionan como una estructura de organización.
+          Gracias a ellos podemos separar documentos, imágenes y programas en diferentes carpetas y subcarpetas.”
+        </div>
+      </section>
+
+      <section class="card" id="implementacion">
+        <h2>4. Implementación de Sistemas de Archivos</h2>
+
+        <p>
+          La implementación explica cómo el sistema operativo transforma la estructura lógica que ve el usuario
+          —archivos y carpetas— en datos almacenados físicamente dentro del dispositivo.
+        </p>
+
+        <h3>Bloques de almacenamiento</h3>
+        <p>
+          Los dispositivos se dividen en pequeñas unidades llamadas <strong>bloques</strong>. Cuando un archivo
+          se guarda, el sistema de archivos debe asignarle uno o varios de esos bloques.
+        </p>
+
+        <h3>Métodos de asignación</h3>
+        <table>
+          <tr>
+            <th>Método</th>
+            <th>Funcionamiento</th>
+            <th>Característica</th>
+          </tr>
+          <tr>
+            <td>Contigua</td>
+            <td>Los bloques del archivo se almacenan uno después de otro.</td>
+            <td>Es simple y rápida, pero puede dificultar el crecimiento del archivo.</td>
+          </tr>
+          <tr>
+            <td>Enlazada</td>
+            <td>Cada bloque guarda una referencia al siguiente.</td>
+            <td>Permite utilizar bloques dispersos en el disco.</td>
+          </tr>
+          <tr>
+            <td>Indexada</td>
+            <td>Se utiliza un bloque índice con las direcciones de los bloques del archivo.</td>
+            <td>Facilita el acceso directo a diferentes partes del archivo.</td>
+          </tr>
+        </table>
+
+        <h3>Administración del espacio libre</h3>
+        <p>
+          El sistema operativo también debe registrar qué bloques están ocupados y cuáles permanecen libres.
+          Una técnica común es el <strong>mapa de bits</strong>, donde cada bit representa el estado de un bloque.
+        </p>
+
+        <h3>Ejemplos importantes</h3>
+        <table>
+          <tr>
+            <th>Sistema de archivos</th>
+            <th>Uso general</th>
+          </tr>
+          <tr>
+            <td><strong>FAT / FAT32</strong></td>
+            <td>Muy conocido por su compatibilidad con memorias USB y dispositivos diversos.</td>
+          </tr>
+          <tr>
+            <td><strong>NTFS</strong></td>
+            <td>Utilizado principalmente por Windows y dispone de funciones de permisos y administración avanzada.</td>
+          </tr>
+          <tr>
+            <td><strong>ext4</strong></td>
+            <td>Muy utilizado en sistemas Linux.</td>
+          </tr>
+          <tr>
+            <td><strong>XFS</strong></td>
+            <td>Sistema de archivos utilizado en entornos Linux y orientado al manejo eficiente de grandes volúmenes de datos.</td>
+          </tr>
+          <tr>
+            <td><strong>Btrfs</strong></td>
+            <td>Sistema moderno para Linux con funciones avanzadas de administración de almacenamiento.</td>
+          </tr>
+        </table>
+
+        <figure class="figure">
+          <svg viewBox="0 0 900 300" role="img" aria-label="Archivo dividido en bloques">
+            <rect width="900" height="300" fill="#263241" />
+            <text x="450" y="45" text-anchor="middle" font-size="24" fill="#cbd5e1">
+              Ejemplo de asignación de bloques
+            </text>
+
+            <rect x="55" y="100" width="170" height="80" rx="12" fill="#007bff" />
+            <text x="140" y="132" fill="white" text-anchor="middle" font-size="21">archivo.txt</text>
+            <text x="140" y="158" fill="white" text-anchor="middle" font-size="15">Archivo lógico</text>
+
+            <path d="M225 140h90" stroke="#343a40" stroke-width="7"/>
+            <path d="M300 126l22 14-22 14" fill="#cbd5e1"/>
+
+            <g>
+              <rect x="340" y="90" width="95" height="95" rx="8" fill="#17a2b8"/>
+              <rect x="450" y="90" width="95" height="95" rx="8" fill="#28a745"/>
+              <rect x="560" y="90" width="95" height="95" rx="8" fill="#ffc107"/>
+              <rect x="670" y="90" width="95" height="95" rx="8" fill="#6f42c1"/>
+              <text x="387" y="145" text-anchor="middle" font-size="18" fill="white">Bloque 1</text>
+              <text x="497" y="145" text-anchor="middle" font-size="18" fill="white">Bloque 2</text>
+              <text x="607" y="145" text-anchor="middle" font-size="18" fill="#cbd5e1">Bloque 3</text>
+              <text x="717" y="145" text-anchor="middle" font-size="18" fill="white">Bloque 4</text>
+            </g>
+
+            <text x="552" y="225" text-anchor="middle" font-size="18" fill="#cbd5e1">
+              El archivo puede ocupar varios bloques físicos.
+            </text>
+          </svg>
+
+          <figcaption class="caption">
+            La implementación relaciona el archivo lógico con los bloques donde se almacenan sus datos.
+          </figcaption>
+        </figure>
+
+        <div class="speech">
+          <strong>Para exponer:</strong> “La implementación es la parte interna. El usuario ve un archivo,
+          pero el sistema operativo debe decidir en qué bloques guardarlo y cómo encontrar esos bloques más tarde.”
+        </div>
+      </section>
+
+      <section class="card" id="seguridad">
+        <h2>5. Seguridad</h2>
+
+        <p>
+          La <strong>seguridad de los archivos</strong> busca evitar que la información sea utilizada,
+          modificada, eliminada o divulgada por personas que no están autorizadas.
+        </p>
+
+        <h3>Principales riesgos</h3>
+        <ul>
+          <li>Acceso no autorizado a documentos privados.</li>
+          <li>Modificación accidental o intencional de archivos.</li>
+          <li>Eliminación de información importante.</li>
+          <li>Daños producidos por programas maliciosos.</li>
+          <li>Pérdida de información por fallas del dispositivo.</li>
+        </ul>
+
+        <h3>Medidas básicas de seguridad</h3>
+        <div class="grid">
+          <div class="mini-card">
+            <h3> Usuarios</h3>
+            <p>Cada persona puede tener una cuenta con determinados privilegios.</p>
+          </div>
+
+          <div class="mini-card">
+            <h3> Autenticación</h3>
+            <p>Permite comprobar la identidad de quien intenta acceder al sistema.</p>
+          </div>
+
+          <div class="mini-card">
+            <h3> Copias de seguridad</h3>
+            <p>Permiten recuperar información cuando un archivo se pierde o se daña.</p>
+          </div>
+
+          <div class="mini-card">
+            <h3> Cifrado</h3>
+            <p>Protege el contenido transformándolo para que solo pueda ser interpretado con autorización.</p>
+          </div>
+        </div>
+
+        <div class="warning">
+          <strong>Importante:</strong> guardar información no es suficiente. También es necesario controlar
+          quién puede utilizarla y disponer de mecanismos de recuperación.
+        </div>
+
+        <div class="speech">
+          <strong>Para exponer:</strong> “La seguridad busca proteger los datos frente a accesos no autorizados,
+          pérdida, modificación o eliminación. Por eso se utilizan usuarios, contraseñas, copias de seguridad
+          y otros controles.”
+        </div>
+      </section>
+
+      <section class="card" id="proteccion">
+        <h2>6. Mecanismos de Protección</h2>
+
+        <p>
+          Los <strong>mecanismos de protección</strong> son las herramientas que utiliza el sistema operativo
+          para controlar qué acciones puede realizar cada usuario sobre un archivo o directorio.
+        </p>
+
+        <h3>Permisos básicos</h3>
+        <table>
+          <tr>
+            <th>Permiso</th>
+            <th>Símbolo</th>
+            <th>Permite</th>
+          </tr>
+          <tr>
+            <td>Lectura</td>
+            <td><code>r</code></td>
+            <td>Consultar el contenido de un archivo.</td>
+          </tr>
+          <tr>
+            <td>Escritura</td>
+            <td><code>w</code></td>
+            <td>Modificar o agregar información.</td>
+          </tr>
+          <tr>
+            <td>Ejecución</td>
+            <td><code>x</code></td>
+            <td>Ejecutar un archivo cuando se trata de un programa o script.</td>
+          </tr>
+        </table>
+
+        <h3>Propietario, grupo y otros</h3>
+        <p>
+          En sistemas tipo UNIX/Linux, los permisos suelen organizarse en tres grupos:
+          <strong>propietario</strong>, <strong>grupo</strong> y <strong>otros usuarios</strong>.
+        </p>
+
+        <div class="info">
+          Ejemplo: <code>rwxr-xr--</code><br>
+          <strong>Propietario:</strong> lectura, escritura y ejecución.<br>
+          <strong>Grupo:</strong> lectura y ejecución.<br>
+          <strong>Otros:</strong> solo lectura.
+        </div>
+
+        <h3>Otros mecanismos</h3>
+        <ul>
+          <li><strong>Listas de Control de Acceso (ACL):</strong> permiten definir permisos específicos para distintos usuarios.</li>
+          <li><strong>Cifrado:</strong> protege el contenido del archivo frente a personas no autorizadas.</li>
+          <li><strong>Copias de seguridad:</strong> permiten restaurar datos perdidos o dañados.</li>
+          <li><strong>Registro de actividades:</strong> ayuda a controlar acciones realizadas sobre la información.</li>
+        </ul>
+
+      
+      </section>
+<section class="card" id="conclusion">
+  <h2>7. Conclusión</h2>
+
+  <p>
+    Los sistemas de archivos son una parte fundamental de los sistemas operativos,
+    ya que permiten organizar, almacenar, localizar y proteger la información
+    guardada en los dispositivos de almacenamiento.
+  </p>
+
+  <p>
+    Mediante los archivos y directorios, el usuario puede mantener sus datos de
+    forma ordenada, mientras que internamente el sistema operativo administra los
+    bloques de almacenamiento, los permisos de acceso y los mecanismos de protección.
+  </p>
+
+  <p>
+    Además, la seguridad es un aspecto esencial, por lo que se utilizan herramientas
+    como permisos, listas de control de acceso, cifrado y copias de seguridad para
+    evitar accesos no autorizados y reducir el riesgo de pérdida de información.
+  </p>
+
+  <div class="success">
+    <strong>En resumen:</strong> un sistema de archivos no solo guarda datos,
+    sino que también los organiza, administra y protege para que puedan ser
+    utilizados de manera eficiente y segura.
+  </div>
+</section>
+
+      <footer>
+        <p><strong>Unidad 6 · Sistemas de Archivos</strong></p>
+        <p>Sistemas Operativos · UTIC</p>
+        <p><a href="index.html">← Volver al Índice de Unidades</a></p>
+      </footer>
+
+    </main>
+  </div>
+
+  <a class="top" href="#top" title="Volver arriba">↑</a>
+</body>
+</html>
