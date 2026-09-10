@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instalación de VirtualBox y AlmaLinux 9 | UTIC</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f9;
+      color: #343a40;
+      line-height: 1.65;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 285px;
+      height: 100vh;
+      overflow: auto;
+      background: #343a40;
+      color: white;
+    }
+
+    .logo {
+      padding: 22px 15px;
+      text-align: center;
+      background: #007bff;
+    }
+
+    .logo h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .logo p {
+      margin: 5px 0 0;
+      font-size: 13px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar li {
+      border-bottom: 1px solid #4a4f54;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 10px 15px;
+      color: #ddd;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .content {
+      margin-left: 285px;
+      width: calc(100% - 285px);
+      padding: 28px;
+      max-width: 1500px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+      border-radius: 12px;
+      padding: 42px 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px #ccc;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      line-height: 1.2;
+      margin: 0 0 10px;
+    }
+
+    .hero p {
+      margin: 5px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #fff;
+      color: #0056b3;
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px #ddd;
+    }
+
+    .card h2 {
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+
+    .card h3 {
+      margin-top: 22px;
+      color: #0d47a1;
+    }
+
+    .figure {
+      margin: 0 0 20px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      text-align: center;
+      background: #fff;
+      color: #666;
+      padding: 9px;
+      font-size: 13px;
+    }
+
+    .info,
+    .warning,
+    .success,
+    .activity {
+      padding: 16px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .info {
+      background: #e8f4fd;
+      border-left: 5px solid #17a2b8;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border-left: 5px solid #ffc107;
+    }
+
+    .success {
+      background: #d4edda;
+      border-left: 5px solid #28a745;
+    }
+
+    .activity {
+      background: #f8f9fa;
+      border-left: 5px solid #6c757d;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    th {
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+      text-align: left;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    code {
+      background: #eef1f4;
+      color: #d6336c;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 14px;
+    }
+
+    pre {
+      background: #212529;
+      color: #e9ecef;
+      padding: 16px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 14px;
+      margin: 14px 0;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* ============ PASOS (steps) ============ */
+
+    .pasos {
+      counter-reset: paso;
+      list-style: none;
+      margin: 18px 0;
+      padding: 0;
+    }
+
+    .pasos li {
+      counter-increment: paso;
+      position: relative;
+      padding: 14px 18px 14px 56px;
+      margin-bottom: 12px;
+      background: #f8f9fa;
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+    }
+
+    .pasos li::before {
+      content: counter(paso);
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pasos li strong {
+      display: block;
+      color: #0d47a1;
+      margin-bottom: 3px;
+    }
+
+    /* ============ Tarjetas comparativas ============ */
+
+    .comparativa {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 18px 0;
+    }
+
+    .comparativa .col {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      border-top: 5px solid #007bff;
+    }
+
+    .comparativa .col.alt {
+      border-top-color: #28a745;
+    }
+
+    .comparativa .col h4 {
+      margin-top: 0;
+      color: #0d47a1;
+    }
+
+    /* ============ Grid de tarjetas simples ============ */
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .mini-card {
+      background: #f8f9fa;
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+      padding: 18px;
+      border-left: 4px solid #007bff;
+    }
+
+    .mini-card h4 {
+      margin: 0 0 6px;
+      color: #0d47a1;
+    }
+
+    footer {
+      background: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 25px;
+      border-radius: 9px;
+    }
+
+    .top {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+    }
+
+    @media (max-width: 850px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .content {
+        margin: 0;
+        width: 100%;
+        padding: 15px;
+      }
+
+      .sidebar ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero h1 {
+        font-size: 27px;
+      }
+
+      .comparativa,
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .sidebar ul {
+        display: block;
+      }
+
+      .card {
+        padding: 19px;
+      }
+
+      .hero {
+        padding: 28px 20px;
+      }
+
+      .hero h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <h2>Sistemas Operativos</h2>
+        <p>UTIC · VirtualBox + AlmaLinux 9</p>
+      </div>
+      <ul>
+        <li><a href="#inicio">🏠 Inicio</a></li>
+        <li><a href="#introduccion">1. Introducción</a></li>
+        <li><a href="#virtualbox">2. ¿Qué es VirtualBox?</a></li>
+        <li><a href="#instalacion-vbox">3. Instalación de VirtualBox</a></li>
+        <li><a href="#crear-vm">4. Crear una máquina virtual</a></li>
+        <li><a href="#instalar-alma">5. Instalar AlmaLinux 9</a></li>
+        <li><a href="#que-es-linux">6. ¿Qué es Linux?</a></li>
+        <li><a href="#que-es-alma">7. ¿Qué es AlmaLinux?</a></li>
+        <li><a href="#particionado">8. Particionado y sistemas de archivos</a></li>
+        <li><a href="#comandos">9. Comandos básicos</a></li>
+        <li><a href="#crear-directorio">10. Crear un directorio</a></li>
+        <li><a href="#crear-archivo">11. Crear un archivo</a></li>
+        <li><a href="#conclusion">12. Conclusión</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <header class="hero" id="inicio">
+        <h1>Instalación de VirtualBox y AlmaLinux 9</h1>
+        <p><strong>Curso:</strong> Sistemas Operativos</p>
+        <p><strong>Carrera:</strong> Análisis de Sistemas Informáticos</p>
+        <span class="badge">Material didáctico · UTIC</span>
+      </header>
+
+      <!-- =========================================================
+           1. INTRODUCCIÓN
+           ========================================================= -->
+      <section class="card" id="introduccion">
+        <h2>1. Introducción</h2>
+        <p>
+          En esta unidad práctica aprenderemos a instalar y configurar un
+          <strong>entorno de virtualización</strong> utilizando
+          <strong>VirtualBox</strong>, y sobre él instalaremos una
+          <strong>máquina virtual con AlmaLinux 9</strong>, una distribución
+          de Linux orientada a servidores y de uso profesional.
+        </p>
+        <p>
+          Este proceso permite experimentar con sistemas operativos, probar
+          comandos, crear archivos y directorios, y comprender el
+          funcionamiento de un sistema Linux sin necesidad de modificar la
+          computadora física del estudiante.
+        </p>
+        <div class="info">
+          <strong>Importante:</strong> trabajar con máquinas virtuales
+          permite cometer errores, reinstalar el sistema y practicar libremente
+          sin poner en riesgo el equipo real.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           2. QUÉ ES VIRTUALBOX
+           ========================================================= -->
+      <section class="card" id="virtualbox">
+        <h2>2. ¿Qué es VirtualBox, dónde nació y para qué se usa?</h2>
+        <p>
+          <strong>VirtualBox</strong> es un software de
+          <strong>virtualización de tipo hipervisor (Tipo 2 o "hosted")</strong>
+          que permite crear y ejecutar <strong>máquinas virtuales</strong>: 
+          computadoras simuladas por software que funcionan dentro de una
+          computadora física, llamada <strong>equipo anfitrión (host)</strong>.
+        </p>
+        <figure class="figure">
+          <svg viewBox="0 0 900 300" role="img" aria-label="Arquitectura de VirtualBox">
+            <rect width="900" height="300" fill="#eef7ff" />
+            <rect x="60" y="40" width="780" height="220" rx="12" fill="#343a40" />
+            <text x="450" y="70" text-anchor="middle" fill="white" font-size="18">
+              Computadora física (Host) — Windows / Linux / macOS
+            </text>
+            <rect x="100" y="95" width="700" height="60" rx="8" fill="#007bff" />
+            <text x="450" y="132" text-anchor="middle" fill="white" font-size="18">
+              VirtualBox (Hipervisor Tipo 2)
+            </text>
+            <rect x="120" y="175" width="200" height="65" rx="8" fill="#17a2b8" />
+            <text x="220" y="212" text-anchor="middle" fill="white" font-size="16">
+              MV: AlmaLinux 9
+            </text>
+            <rect x="350" y="175" width="200" height="65" rx="8" fill="#28a745" />
+            <text x="450" y="212" text-anchor="middle" fill="white" font-size="16">
+              MV: Windows
+            </text>
+            <rect x="580" y="175" width="200" height="65" rx="8" fill="#ffc107" />
+            <text x="680" y="212" text-anchor="middle" font-size="16">
+              MV: Ubuntu
+            </text>
+          </svg>
+          <figcaption class="caption">
+            VirtualBox permite ejecutar varias máquinas virtuales sobre un mismo equipo físico.
+          </figcaption>
+        </figure>
+
+        <h3>Origen de VirtualBox</h3>
+        <p>
+          VirtualBox fue creado originalmente por la empresa alemana
+          <strong>Innotek GmbH</strong>, que lanzó su primera versión en
+          <strong>enero de 2007</strong>. En <strong>2008</strong>,
+          Innotek fue adquirida por <strong>Sun Microsystems</strong>, que
+          continuó el desarrollo del proyecto como software libre y gratuito.
+          Finalmente, en <strong>2010</strong>, cuando
+          <strong>Oracle Corporation</strong> adquirió Sun Microsystems, el
+          producto pasó a llamarse oficialmente
+          <strong>Oracle VM VirtualBox</strong>, nombre que conserva hasta la
+          actualidad.
+        </p>
+
+        <h3>¿Para qué se utiliza?</h3>
+        <ul>
+          <li>Probar distintos sistemas operativos sin instalarlos físicamente.</li>
+          <li>Crear laboratorios de práctica para estudiantes de informática.</li>
+          <li>Desarrollar y probar software en entornos aislados.</li>
+          <li>Simular servidores, redes y entornos de producción de forma segura.</li>
+          <li>Realizar copias de seguridad completas del sistema (snapshots).</li>
+        </ul>
+
+        <table>
+          <tr>
+            <th>Característica</th>
+            <th>Descripción</th>
+          </tr>
+          <tr>
+            <td>Tipo de hipervisor</td>
+            <td>Tipo 2 (se ejecuta sobre un sistema operativo anfitrión).</td>
+          </tr>
+          <tr>
+            <td>Licencia</td>
+            <td>Software gratuito y de código abierto (GPL), propiedad de Oracle.</td>
+          </tr>
+          <tr>
+            <td>Sistemas anfitriones soportados</td>
+            <td>Windows, Linux, macOS.</td>
+          </tr>
+          <tr>
+            <td>Sistemas invitados soportados</td>
+            <td>Windows, Linux, BSD, Solaris, macOS (bajo ciertas condiciones), entre otros.</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           3. INSTALACIÓN DE VIRTUALBOX
+           ========================================================= -->
+      <section class="card" id="instalacion-vbox">
+        <h2>3. Instalación de VirtualBox</h2>
+        <p>
+          A continuación se detallan los pasos generales para instalar
+          VirtualBox en un equipo con Windows como sistema anfitrión.
+        </p>
+
+        <div class="warning">
+          <strong>Requisito:</strong> antes de instalar, verificar que la
+          <strong>virtualización (VT-x/AMD-V)</strong> esté habilitada en la
+          BIOS/UEFI del equipo.
+        </div>
+
+        <ol class="pasos">
+          <li>
+            <strong>Descargar el instalador</strong>
+            Ingresar al sitio oficial <code>virtualbox.org</code> y descargar
+            el paquete correspondiente al sistema operativo anfitrión (por
+            ejemplo, "Windows hosts").
+          </li>
+          <li>
+            <strong>Ejecutar el instalador</strong>
+            Hacer doble clic sobre el archivo <code>.exe</code> descargado y
+            aceptar los permisos de administrador solicitados.
+          </li>
+          <li>
+            <strong>Asistente de instalación</strong>
+            Seguir el asistente, aceptando las opciones predeterminadas de
+            componentes (VirtualBox USB, red, accesos directos).
+          </li>
+          <li>
+            <strong>Advertencia de red</strong>
+            El instalador puede reiniciar temporalmente los adaptadores de
+            red del equipo para instalar sus controladores; esto es normal.
+          </li>
+          <li>
+            <strong>Finalizar instalación</strong>
+            Al finalizar, VirtualBox se abre automáticamente mostrando el
+            <strong>Administrador de máquinas virtuales</strong>.
+          </li>
+          <li>
+            <strong>(Opcional) Instalar Extension Pack</strong>
+            Descargar el "Oracle VM VirtualBox Extension Pack" para agregar
+            soporte de USB 2.0/3.0, arranque por red y otras funciones
+            adicionales.
+          </li>
+        </ol>
+      </section>
+
+      <!-- =========================================================
+           4. CREAR UNA MÁQUINA VIRTUAL
+           ========================================================= -->
+      <section class="card" id="crear-vm">
+        <h2>4. Crear una máquina virtual</h2>
+        <p>
+          Una vez instalado VirtualBox, el siguiente paso es crear la máquina
+          virtual donde se instalará AlmaLinux 9.
+        </p>
+
+        <ol class="pasos">
+          <li>
+            <strong>Nueva máquina</strong>
+            En el Administrador de VirtualBox, hacer clic en
+            <code>Nueva</code>.
+          </li>
+          <li>
+            <strong>Nombre, carpeta y tipo</strong>
+            Escribir un nombre (por ejemplo, <code>AlmaLinux9</code>).
+            VirtualBox detecta automáticamente <strong>Tipo: Linux</strong> y
+            <strong>Versión: Red Hat (64-bit)</strong> u
+            <strong>Oracle Linux (64-bit)</strong>.
+          </li>
+          <li>
+            <strong>Memoria RAM</strong>
+            Asignar memoria para la máquina virtual. Se recomienda
+            <strong>2048 MB (2 GB)</strong> como mínimo, idealmente 4 GB.
+          </li>
+          <li>
+            <strong>Disco duro virtual</strong>
+            Seleccionar <code>Crear un disco duro virtual ahora</code> y
+            elegir el tipo <strong>VDI (VirtualBox Disk Image)</strong>.
+          </li>
+          <li>
+            <strong>Almacenamiento</strong>
+            Elegir <code>Reservado dinámicamente</code>, para que el disco
+            crezca según se use.
+          </li>
+          <li>
+            <strong>Tamaño del disco</strong>
+            Asignar como mínimo <strong>20 GB</strong> para AlmaLinux 9.
+          </li>
+          <li>
+            <strong>Crear</strong>
+            Confirmar y la máquina virtual aparecerá en la lista, apagada,
+            lista para instalar el sistema operativo.
+          </li>
+        </ol>
+
+        <table>
+          <tr>
+            <th>Recurso</th>
+            <th>Mínimo recomendado</th>
+          </tr>
+          <tr>
+            <td>Procesadores (CPU)</td>
+            <td>1 - 2 núcleos</td>
+          </tr>
+          <tr>
+            <td>Memoria RAM</td>
+            <td>2 GB (recomendado 4 GB)</td>
+          </tr>
+          <tr>
+            <td>Disco duro</td>
+            <td>20 GB o más</td>
+          </tr>
+          <tr>
+            <td>Tarjeta de red</td>
+            <td>NAT (por defecto) o Adaptador puente</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           5. INSTALAR ALMALINUX 9
+           ========================================================= -->
+      <section class="card" id="instalar-alma">
+        <h2>5. Instalar un sistema operativo AlmaLinux 9</h2>
+
+        <ol class="pasos">
+          <li>
+            <strong>Descargar la imagen ISO</strong>
+            Descargar el archivo <code>.iso</code> de AlmaLinux 9 desde el
+            sitio oficial <code>almalinux.org</code> (versión DVD o Minimal).
+          </li>
+          <li>
+            <strong>Montar la ISO en la máquina virtual</strong>
+            En Configuración → Almacenamiento, seleccionar la unidad óptica
+            vacía y elegir el archivo ISO descargado.
+          </li>
+          <li>
+            <strong>Iniciar la máquina virtual</strong>
+            Hacer clic en <code>Iniciar</code>; la máquina arrancará desde la
+            imagen ISO y se abrirá el instalador gráfico
+            <strong>Anaconda</strong>.
+          </li>
+          <li>
+            <strong>Seleccionar idioma</strong>
+            Elegir el idioma de instalación (por ejemplo, Español).
+          </li>
+          <li>
+            <strong>Resumen de instalación</strong>
+            Configurar: teclado, fecha/hora, destino de instalación (disco
+            virtual), conexión de red y selección de software (por ejemplo,
+            "Servidor con GUI" o "Servidor mínimo").
+          </li>
+          <li>
+            <strong>Destino de instalación</strong>
+            Seleccionar el disco virtual y elegir el particionado
+            (automático o manual, ver sección 8).
+          </li>
+          <li>
+            <strong>Contraseña de root y usuario</strong>
+            Definir la contraseña de administrador (<code>root</code>) y
+            crear un usuario estándar para el uso diario.
+          </li>
+          <li>
+            <strong>Comenzar la instalación</strong>
+            Hacer clic en <code>Comenzar instalación</code> y esperar a que
+            el proceso finalice.
+          </li>
+          <li>
+            <strong>Reiniciar</strong>
+            Al finalizar, hacer clic en <code>Reiniciar sistema</code> y
+            retirar la ISO virtual para arrancar desde el disco instalado.
+          </li>
+        </ol>
+
+        <div class="success">
+          <strong>Listo:</strong> al reiniciar, el sistema mostrará la
+          pantalla de inicio de sesión de AlmaLinux 9, confirmando que la
+          instalación fue exitosa.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           6. QUÉ ES LINUX
+           ========================================================= -->
+      <section class="card" id="que-es-linux">
+        <h2>6. ¿Qué es Linux? (breve introducción)</h2>
+        <p>
+          <strong>Linux</strong> es un <strong>núcleo (kernel)</strong> de
+          sistema operativo de <strong>código abierto</strong>, creado en
+          <strong>1991</strong> por el estudiante finlandés
+          <strong>Linus Torvalds</strong>. El kernel es el componente que se
+          comunica directamente con el hardware y administra los recursos
+          del sistema (procesador, memoria, dispositivos).
+        </p>
+        <p>
+          Alrededor de este núcleo se construyen las
+          <strong>distribuciones de Linux (distros)</strong>: conjuntos de
+          software (kernel + herramientas + gestor de paquetes + entorno
+          gráfico opcional) empaquetados para el uso final. Ejemplos:
+          Ubuntu, Debian, Fedora, AlmaLinux, openSUSE, entre otras.
+        </p>
+        <div class="info">
+          <strong>Dato:</strong> Linux es gratuito, modificable y
+          ampliamente utilizado en servidores, supercomputadoras,
+          dispositivos móviles (Android) y sistemas embebidos.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           7. QUÉ ES ALMALINUX
+           ========================================================= -->
+      <section class="card" id="que-es-alma">
+        <h2>7. ¿Qué es AlmaLinux? Origen y diferencias con RHEL</h2>
+        <p>
+          <strong>AlmaLinux</strong> es una distribución de Linux de tipo
+          empresarial, orientada a servidores, gratuita y de código abierto.
+        </p>
+
+        <h3>Origen</h3>
+        <p>
+          AlmaLinux fue creada en <strong>marzo de 2021</strong> por la
+          empresa <strong>CloudLinux Inc.</strong>, como respuesta a la
+          decisión de Red Hat de convertir a <strong>CentOS</strong> en
+          <strong>CentOS Stream</strong> (una rama de desarrollo previa a
+          RHEL, en lugar de un clon estable). AlmaLinux nació para ocupar el
+          espacio que dejó CentOS como distribución
+          <strong>1:1 compatible</strong> con Red Hat Enterprise Linux, y
+          actualmente es gestionada por la
+          <strong>AlmaLinux OS Foundation</strong>, una organización sin
+          fines de lucro.
+        </p>
+
+        <h3>Diferencias entre AlmaLinux y RHEL</h3>
+        <div class="comparativa">
+          <div class="col">
+            <h4>RHEL (Red Hat Enterprise Linux)</h4>
+            <ul>
+              <li>Distribución comercial de Red Hat / IBM.</li>
+              <li>Requiere suscripción/licencia paga para soporte y actualizaciones.</li>
+              <li>Incluye soporte técnico oficial de Red Hat.</li>
+              <li>Muy utilizada en grandes empresas con contratos de soporte.</li>
+            </ul>
+          </div>
+          <div class="col alt">
+            <h4>AlmaLinux</h4>
+            <ul>
+              <li>Distribución gratuita y de código abierto.</li>
+              <li>Binariamente compatible (1:1) con RHEL.</li>
+              <li>Sin costo de licencia; soporte comunitario.</li>
+              <li>Ideal para estudiantes, laboratorios, servidores propios y empresas que buscan reducir costos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <table>
+          <tr>
+            <th>Aspecto</th>
+            <th>RHEL</th>
+            <th>AlmaLinux</th>
+          </tr>
+          <tr>
+            <td>Costo</td>
+            <td>Pago (suscripción)</td>
+            <td>Gratuito</td>
+          </tr>
+          <tr>
+            <td>Código fuente</td>
+            <td>Abierto, restringido en su distribución binaria</td>
+            <td>Abierto</td>
+          </tr>
+          <tr>
+            <td>Compatibilidad</td>
+            <td>Base original</td>
+            <td>1:1 compatible con RHEL</td>
+          </tr>
+          <tr>
+            <td>Soporte</td>
+            <td>Oficial de Red Hat</td>
+            <td>Comunidad / AlmaLinux OS Foundation</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           8. PARTICIONADO Y SISTEMAS DE ARCHIVOS
+           ========================================================= -->
+      <section class="card" id="particionado">
+        <h2>8. Particionado y tipo de sistema de archivos</h2>
+        <p>
+          Durante la instalación de AlmaLinux 9, el instalador permite
+          definir cómo se dividirá el disco duro virtual en
+          <strong>particiones</strong>.
+        </p>
+
+        <figure class="figure">
+          <svg viewBox="0 0 900 220" role="img" aria-label="Particionado de disco">
+            <rect width="900" height="220" fill="#f1f3f5" />
+            <rect x="60" y="70" width="180" height="80" rx="8" fill="#007bff" />
+            <text x="150" y="115" text-anchor="middle" fill="white" font-size="17">/boot</text>
+            <rect x="260" y="70" width="180" height="80" rx="8" fill="#17a2b8" />
+            <text x="350" y="115" text-anchor="middle" fill="white" font-size="17">swap</text>
+            <rect x="460" y="70" width="180" height="80" rx="8" fill="#28a745" />
+            <text x="550" y="115" text-anchor="middle" fill="white" font-size="17">/ (root)</text>
+            <rect x="660" y="70" width="180" height="80" rx="8" fill="#ffc107" />
+            <text x="750" y="115" text-anchor="middle" font-size="17">/home</text>
+            <text x="450" y="190" text-anchor="middle" font-size="16">
+              Disco duro virtual dividido en particiones lógicas
+            </text>
+          </svg>
+          <figcaption class="caption">
+            Esquema básico de particionado recomendado para AlmaLinux 9.
+          </figcaption>
+        </figure>
+
+        <table>
+          <tr>
+            <th>Partición</th>
+            <th>Función</th>
+          </tr>
+          <tr>
+            <td><code>/boot</code></td>
+            <td>Almacena el kernel y los archivos necesarios para el arranque del sistema.</td>
+          </tr>
+          <tr>
+            <td><code>swap</code></td>
+            <td>Memoria de intercambio en disco, utilizada cuando la RAM se satura.</td>
+          </tr>
+          <tr>
+            <td><code>/</code> (root)</td>
+            <td>Partición raíz; contiene el sistema operativo y sus archivos principales.</td>
+          </tr>
+          <tr>
+            <td><code>/home</code></td>
+            <td>Almacena los archivos y configuraciones de los usuarios.</td>
+          </tr>
+        </table>
+
+        <h3>Tipos de sistema de archivos</h3>
+        <p>
+          El <strong>sistema de archivos</strong> define cómo se organizan y
+          almacenan los datos dentro de una partición.
+        </p>
+        <table>
+          <tr>
+            <th>Sistema de archivos</th>
+            <th>Descripción</th>
+          </tr>
+          <tr>
+            <td><strong>XFS</strong></td>
+            <td>Sistema de archivos por defecto en AlmaLinux/RHEL 9. Alto rendimiento con archivos grandes.</td>
+          </tr>
+          <tr>
+            <td><strong>ext4</strong></td>
+            <td>Muy utilizado en distintas distribuciones Linux; estable y confiable.</td>
+          </tr>
+          <tr>
+            <td><strong>Btrfs</strong></td>
+            <td>Sistema de archivos moderno con soporte para snapshots y compresión.</td>
+          </tr>
+          <tr>
+            <td><strong>FAT32/NTFS</strong></td>
+            <td>Utilizados principalmente en Windows; Linux puede leerlos/montarlos.</td>
+          </tr>
+        </table>
+
+        <div class="info">
+          <strong>Recomendación para el laboratorio:</strong> utilizar el
+          <strong>particionado automático</strong> del instalador y dejar
+          <strong>XFS</strong> como sistema de archivos predeterminado.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           9. COMANDOS BÁSICOS DE LINUX
+           ========================================================= -->
+      <section class="card" id="comandos">
+        <h2>9. Comandos básicos de Linux (Fedora/RHEL y Debian)</h2>
+        <p>
+          Los comandos de navegación y manejo de archivos son en su mayoría
+          <strong>iguales en todas las distribuciones</strong> de Linux. Las
+          diferencias principales aparecen en los
+          <strong>gestores de paquetes</strong>, ya que AlmaLinux (basado en
+          Fedora/RHEL) utiliza <code>dnf</code>, mientras que distribuciones
+          basadas en Debian (como Ubuntu) utilizan <code>apt</code>.
+        </p>
+
+        <h3>Comandos generales de navegación y archivos</h3>
+        <table>
+          <tr>
+            <th>Comando</th>
+            <th>Explicación</th>
+          </tr>
+          <tr>
+            <td><code>pwd</code></td>
+            <td>Muestra el directorio (carpeta) en el que se encuentra el usuario actualmente.</td>
+          </tr>
+          <tr>
+            <td><code>ls</code></td>
+            <td>Lista los archivos y directorios contenidos en la carpeta actual.</td>
+          </tr>
+          <tr>
+            <td><code>ls -l</code></td>
+            <td>Lista los archivos con detalles: permisos, propietario, tamaño y fecha.</td>
+          </tr>
+          <tr>
+            <td><code>cd nombre_carpeta</code></td>
+            <td>Cambia de directorio (se mueve hacia otra carpeta).</td>
+          </tr>
+          <tr>
+            <td><code>cd ..</code></td>
+            <td>Retrocede un nivel, hacia la carpeta superior.</td>
+          </tr>
+          <tr>
+            <td><code>mkdir nombre</code></td>
+            <td>Crea un nuevo directorio (carpeta).</td>
+          </tr>
+          <tr>
+            <td><code>touch archivo</code></td>
+            <td>Crea un archivo vacío.</td>
+          </tr>
+          <tr>
+            <td><code>rm archivo</code></td>
+            <td>Elimina un archivo.</td>
+          </tr>
+          <tr>
+            <td><code>rm -r carpeta</code></td>
+            <td>Elimina una carpeta y todo su contenido.</td>
+          </tr>
+          <tr>
+            <td><code>cp origen destino</code></td>
+            <td>Copia un archivo o carpeta.</td>
+          </tr>
+          <tr>
+            <td><code>mv origen destino</code></td>
+            <td>Mueve o renombra un archivo o carpeta.</td>
+          </tr>
+          <tr>
+            <td><code>cat archivo</code></td>
+            <td>Muestra el contenido de un archivo de texto en pantalla.</td>
+          </tr>
+          <tr>
+            <td><code>sudo comando</code></td>
+            <td>Ejecuta un comando con permisos de administrador (superusuario).</td>
+          </tr>
+          <tr>
+            <td><code>clear</code></td>
+            <td>Limpia la pantalla de la terminal.</td>
+          </tr>
+        </table>
+
+        <h3>Gestión de paquetes: Fedora/RHEL (AlmaLinux) vs Debian</h3>
+        <p>
+          AlmaLinux 9, al estar basado en la familia
+          <strong>Fedora/RHEL</strong>, utiliza el gestor de paquetes
+          <code>dnf</code>. Distribuciones como Ubuntu o Debian utilizan
+          <code>apt</code>. Ambos cumplen la misma función: instalar,
+          actualizar y eliminar programas.
+        </p>
+
+        <table>
+          <tr>
+            <th>Acción</th>
+            <th>Fedora / RHEL / AlmaLinux (<code>dnf</code>)</th>
+            <th>Debian / Ubuntu (<code>apt</code>)</th>
+          </tr>
+          <tr>
+            <td>Actualizar lista de paquetes</td>
+            <td><code>sudo dnf check-update</code></td>
+            <td><code>sudo apt update</code></td>
+          </tr>
+          <tr>
+            <td>Actualizar el sistema</td>
+            <td><code>sudo dnf update</code></td>
+            <td><code>sudo apt upgrade</code></td>
+          </tr>
+          <tr>
+            <td>Instalar un paquete</td>
+            <td><code>sudo dnf install nombre</code></td>
+            <td><code>sudo apt install nombre</code></td>
+          </tr>
+          <tr>
+            <td>Eliminar un paquete</td>
+            <td><code>sudo dnf remove nombre</code></td>
+            <td><code>sudo apt remove nombre</code></td>
+          </tr>
+          <tr>
+            <td>Buscar un paquete</td>
+            <td><code>dnf search nombre</code></td>
+            <td><code>apt search nombre</code></td>
+          </tr>
+        </table>
+
+        <div class="warning">
+          <strong>Nota:</strong> aunque los comandos de administración de
+          paquetes cambian entre familias de distribuciones, los comandos
+          básicos de navegación y manejo de archivos (<code>ls</code>,
+          <code>cd</code>, <code>mkdir</code>, <code>rm</code>, etc.) son
+          los mismos en cualquier distribución Linux.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           10. CREAR UN DIRECTORIO
+           ========================================================= -->
+      <section class="card" id="crear-directorio">
+        <h2>10. Pasos para crear un directorio</h2>
+        <p>
+          Un <strong>directorio</strong> (carpeta) permite organizar
+          archivos dentro del sistema. Se crea con el comando
+          <code>mkdir</code> (make directory).
+        </p>
+
+        <ol class="pasos">
+          <li>
+            <strong>Abrir la terminal</strong>
+            En AlmaLinux, abrir una terminal desde el menú de aplicaciones
+            o presionando <code>Ctrl + Alt + T</code> (según el entorno gráfico).
+          </li>
+          <li>
+            <strong>Ubicarse en la carpeta deseada</strong>
+            Usar <code>cd</code> para moverse hasta el lugar donde se creará
+            el nuevo directorio. Ejemplo: <code>cd /home/usuario</code>
+          </li>
+          <li>
+            <strong>Ejecutar el comando <code>mkdir</code></strong>
+            Escribir <code>mkdir nombre_carpeta</code> y presionar Enter.
+          </li>
+          <li>
+            <strong>Verificar la creación</strong>
+            Ejecutar <code>ls</code> para comprobar que la nueva carpeta
+            aparece en el listado.
+          </li>
+        </ol>
+
+        <pre><code>$ cd /home/usuario
+$ mkdir practica01
+$ ls
+practica01</code></pre>
+
+        <div class="info">
+          <strong>Tip:</strong> el parámetro <code>-p</code> permite crear
+          varias carpetas anidadas de una sola vez, por ejemplo:
+          <code>mkdir -p proyectos/os/practica01</code>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           11. CREAR UN ARCHIVO
+           ========================================================= -->
+      <section class="card" id="crear-archivo">
+        <h2>11. Pasos para crear un archivo</h2>
+        <p>
+          En Linux existen varias formas de crear archivos desde la
+          terminal. Las más comunes son con el comando <code>touch</code>
+          (para archivos vacíos) o con editores de texto como
+          <code>nano</code> o <code>vi</code>.
+        </p>
+
+        <h3>Opción 1: crear un archivo vacío con <code>touch</code></h3>
+        <ol class="pasos">
+          <li>
+            <strong>Ubicarse en el directorio deseado</strong>
+            Usar <code>cd</code> para posicionarse en la carpeta correspondiente.
+          </li>
+          <li>
+            <strong>Ejecutar <code>touch</code></strong>
+            Escribir <code>touch nombre_archivo.txt</code> y presionar Enter.
+          </li>
+          <li>
+            <strong>Verificar</strong>
+            Ejecutar <code>ls</code> para confirmar que el archivo fue creado.
+          </li>
+        </ol>
+
+        <pre><code>$ cd practica01
+$ touch notas.txt
+$ ls
+notas.txt</code></pre>
+
+        <h3>Opción 2: crear un archivo con contenido usando <code>nano</code></h3>
+        <ol class="pasos">
+          <li>
+            <strong>Abrir el editor</strong>
+            Escribir <code>nano nombre_archivo.txt</code> y presionar Enter.
+          </li>
+          <li>
+            <strong>Escribir el contenido</strong>
+            Redactar el texto deseado dentro del editor.
+          </li>
+          <li>
+            <strong>Guardar</strong>
+            Presionar <code>Ctrl + O</code> y luego Enter para guardar los cambios.
+          </li>
+          <li>
+            <strong>Salir</strong>
+            Presionar <code>Ctrl + X</code> para cerrar el editor.
+          </li>
+        </ol>
+
+        <pre><code>$ nano notas.txt
+(escribir contenido)
+Ctrl + O   → guardar
+Enter      → confirmar nombre
+Ctrl + X   → salir</code></pre>
+
+        <div class="success">
+          <strong>Resultado:</strong> el archivo quedará almacenado en el
+          directorio actual y podrá visualizarse con el comando
+          <code>cat notas.txt</code>.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           12. CONCLUSIÓN
+           ========================================================= -->
+      <section class="card" id="conclusion">
+        <h2>12. Conclusión</h2>
+        <p>
+          La virtualización con VirtualBox permite experimentar con sistemas
+          operativos como AlmaLinux 9 de forma segura y controlada. Conocer
+          el origen de las herramientas utilizadas, el particionado del
+          disco, los sistemas de archivos y los comandos básicos de Linux
+          es fundamental para desenvolverse en el estudio y la
+          administración de sistemas operativos.
+        </p>
+        <div class="success">
+          <strong>Idea fundamental:</strong> la práctica constante en un
+          entorno virtual es la mejor forma de aprender Linux sin riesgo
+          para el equipo físico.
+        </div>
+      </section>
+
+      <footer>
+        <p>
+          <strong>UTIC - Universidad Tecnológica Intercontinental</strong>
+        </p>
+        <p>Carrera: Análisis de Sistemas Informáticos</p>
+        <p>Curso: Sistemas Operativos · Instalación de VirtualBox y AlmaLinux 9</p>
+      </footer>
+    </main>
+  </div>
+  <a class="top" href="#inicio" title="Volver arriba">↑</a>
+</body>
+
+</html>
