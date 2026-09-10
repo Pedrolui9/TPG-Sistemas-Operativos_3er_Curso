@@ -79,6 +79,15 @@
             color: white;
         }
 
+        .btn-index {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
         /* CONTENEDOR PRINCIPAL */
         .content-wrapper {
             margin-left: var(--sidebar-width);
@@ -130,7 +139,13 @@
             margin-top: 0;
         }
 
-        ul { padding-left: 1.2rem; }
+        h3 {
+            color: var(--primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        ul, ol { padding-left: 1.2rem; }
         li { margin-bottom: 0.5rem; }
 
         .highlight {
@@ -215,14 +230,6 @@
             display: none;
         }
 
-        .score-board {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--accent);
-            margin-top: 1rem;
-        }
-
         footer {
             text-align: center;
             padding: 1.5rem;
@@ -252,7 +259,7 @@
 
 <!-- MENÚ LATERAL -->
 <aside class="sidebar">
-    <a href="index.html" class="btn-index">&#8592; Volver al Menù</a>
+    <a href="index.html" class="btn-index">&#8592; Volver al Menú</a>
     <h2>Navegación</h2>
     <ul>
         <li><a href="#introduccion">1. Introducción</a></li>
@@ -324,93 +331,153 @@
         <!-- DISPOSITIVOS Y PRINCIPIOS DE SOFTWARE -->
         <section id="dispositivos">
             <h2>3. Dispositivos de E/S y Principios de Software</h2>
-            <p>Los dispositivos de Entrada/Salida se clasifican principalmente en tres categorías:</p>
+            <p>
+                Arrancamos con la clasificación fundamental de los dispositivos de Entrada/Salida. Los periféricos no son todos iguales y los agrupamos en tres grandes familias según con quién se comunican:
+            </p>
             <ul>
-                <li><strong>Legibles por el usuario:</strong> Teclado, mouse, monitor, impresoras.</li>
-                <li><strong>Legibles por la máquina:</strong> Discos duros (HDD), unidades de estado sólido (SSD), controladores USB.</li>
-                <li><strong>De comunicación:</strong> Tarjetas de red (NIC), módems.</li>
+                <li><strong>Legibles por el usuario:</strong> Son aquellos pensados para la interacción humana directa. Ejemplos clásicos son el teclado, el mouse, la pantalla o una impresora. Su velocidad de transferencia es sumamente lenta comparada con la CPU.</li>
+                <li><strong>Legibles por la máquina:</strong> Son los dispositivos de almacenamiento o procesamiento secundario, como discos duros (HDD), unidades de estado sólido (SSD), o pendrives USB. Mueven grandes volúmenes de datos a mayor velocidad.</li>
+                <li><strong>De comunicación:</strong> Son los encargados de conectar al equipo con otros sistemas distantes, como las tarjetas de red (NIC) o los módems.</li>
             </ul>
+
             <h3>Principios del Software de E/S</h3>
-            <p>El objetivo principal del software de E/S es la <strong>independencia del dispositivo</strong>, la asignación de nombres uniforme, la gestión de errores en la capa más baja posible y la transferencia bloqueante vs. no bloqueante.</p>
+            <p>
+                El objetivo número uno se llama <strong>Independencia del dispositivo</strong>. Esto significa que los programas de usuario no deberían necesitar saber los detalles físicos o los comandos específicos de cada marca o modelo de hardware. Si escribo un código en C o Java para guardar un archivo de texto, la instrucción para escribir debe ser la misma independientemente de si el archivo se guarda en un SSD NVMe, un disco HDD mecánico o una memoria USB.
+            </p>
+            <p>Además de la independencia del dispositivo, el software de E/S debe encargarse de:</p>
+            <ul>
+                <li><strong>Nombres uniformes:</strong> Que todos los archivos y dispositivos se identifiquen con una convención clara (por ejemplo, en UNIX mediante rutas en <code>/dev/</code>).</li>
+                <li><strong>Manejo de errores en la capa más baja posible:</strong> Si ocurre un error de lectura en el disco, el controlador del disco o el driver deben reintentar solucionarlo antes de lanzar un error crítico a la aplicación del usuario.</li>
+                <li><strong>Transferencias bloqueantes vs. no bloqueantes:</strong> Decidir si un proceso se pone en espera mientras espera un dato, o si continúa su ejecución mientras la E/S se completa en segundo plano.</li>
+            </ul>
         </section>
 
         <!-- ORGANIZACIÓN DEL SISTEMA -->
         <section id="organizacion">
             <h2>4. Organización del Sistema de E/S</h2>
-            <p>La E/S se ejecuta mediante tres técnicas principales de comunicación entre hardware y CPU:</p>
-            <ul>
-                <li><strong>E/S Programada (Polling):</strong> La CPU espera activamente a que el módulo de E/S complete la operación. Ineficiente en uso de ciclos.</li>
-                <li><strong>E/S Dirigida por Interrupciones:</strong> La CPU emite el comando y continúa ejecutando procesos hasta que el controlador genera una señal IRQ.</li>
-                <li><strong>Acceso Directo a Memoria (DMA):</strong> Un co-procesador dedicado (DMA) gestiona la transferencia directa de bloques de datos entre los periféricos y la RAM sin pasar continuamente por los registros de la CPU.</li>
-            </ul>
+            <p>
+                A lo largo de la historia de la computación hemos evolucionado a través de tres técnicas principales para la comunicación física entre la CPU y los dispositivos periféricos:
+            </p>
+            <ol>
+                <li>
+                    <strong>E/S Programada (o Polling):</strong> Es la forma más primitiva. La CPU le envía una orden al controlador del dispositivo y se queda encerrada en un bucle esperando a que el dispositivo termine. Es como si pidiéramos una pizza y nos quedáramos parados frente a la puerta preguntando cada 5 segundos si ya llegó. Ineficiente al máximo, porque quema ciclos de procesador inútilmente.
+                </li>
+                <li>
+                    <strong>E/S Dirigida por Interrupciones:</strong> Para solucionar lo anterior, se introdujeron las interrupciones de hardware. La CPU le dice al dispositivo: <em>"Lee este bloque de datos y avísame cuando termines"</em>. Mientras tanto, la CPU pasa a ejecutar otros procesos. Cuando el hardware termina, genera una señal de interrupción que pausa momentáneamente a la CPU para procesar el dato. Siguiendo la analogía: pedimos la pizza, seguimos estudiando, y cuando suena el timbre (interrupción), atendemos la puerta.
+                </li>
+                <li>
+                    <strong>DMA (Acceso Directo a Memoria):</strong> Las interrupciones funcionan bien para datos pequeños (como pulsar una tecla), pero para mover gigabytes de información desde un disco a la RAM, interrumpir a la CPU por cada byte transferido sigue siendo costoso. Ahí entra el controlador DMA. La CPU le dice al chip DMA: <em>"Mueve 100 Megabytes desde el disco a esta dirección de RAM"</em>. El DMA gestiona la transferencia completa por el bus de datos de manera autónoma y, cuando termina los 100 MB, envía una única interrupción final a la CPU.
+                </li>
+            </ol>
         </section>
 
         <!-- ASPECTOS DE DISEÑO -->
         <section id="diseno">
             <h2>5. Aspectos de Diseño del Sistema Operativo</h2>
-            <p>El Sistema Operativo busca cumplir dos objetivos clave en la gestión de E/S:</p>
+            <p>Al diseñar la arquitectura de E/S, el Sistema Operativo persigue dos metas contrapuestas:</p>
             <div class="highlight">
-                <ol>
-                    <li><strong>Eficiencia:</strong> Mitigar el cuello de botella que representan los periféricos respecto a la velocidad del procesador.</li>
-                    <li><strong>Generalidad:</strong> Tratar a todos los dispositivos bajo una interfaz simplificada e integrada (ejemplo: abstracción de archivos en UNIX).</li>
-                </ol>
+                <ul>
+                    <li><strong>Eficiencia:</strong> Maximizar el rendimiento. Como la E/S es lenta respecto al procesador, debemos evitar que los procesos se congelen.</li>
+                    <li><strong>Generalidad:</strong> Tratar a todos los dispositivos bajo una interfaz simplificada e integrada para no volver loco al programador (por ejemplo, la abstracción de archivos en UNIX).</li>
+                </ul>
             </div>
         </section>
 
         <!-- BUFFERS Y CACHE -->
         <section id="buffers">
             <h2>6. Utilización de Buffers y Cache de Disco</h2>
-            <p>El buferizado guarda datos en memoria temporal para desacoplar las velocidades entre el emisor y el receptor:</p>
+            <p>
+                Un <strong>Búfer de E/S</strong> es un espacio reservado en la memoria RAM que almacena datos temporalmente mientras se transfieren entre la CPU y los periféricos.
+            </p>
+            <p><strong>¿Por qué los usamos?</strong></p>
             <ul>
-                <li><strong>Buferizado Único:</strong> Asigna un espacio en RAM del kernel para acumular un bloque antes de transferirlo al usuario.</li>
-                <li><strong>Buferizado Doble (Ping-Pong):</strong> Mientras se leen datos de un búfer, el dispositivo llena el segundo de forma paralela.</li>
-                <li><strong>Buferizado Circular:</strong> Cola en anillo de múltiples búferes para amortiguar ráfagas intensas de transferencia.</li>
+                <li>Para evitar desacoples de velocidad entre el emisor y el receptor.</li>
+                <li>Para adaptar dispositivos que manejan tamaños de bloque diferentes.</li>
             </ul>
+
+            <p>Existen cuatro esquemas principales de buferizado:</p>
+            <ul>
+                <li><strong>Sin buferizado:</strong> El dispositivo transfiere directo a la memoria del usuario. Si el proceso se suspende, la transferencia se pierde o se bloquea.</li>
+                <li><strong>Buferizado Único:</strong> El SO asigna una región de memoria del núcleo. El dispositivo llena el búfer y, recién cuando está lleno, el SO copia todo el bloque a la memoria del usuario.</li>
+                <li><strong>Buferizado Doble (o Esquema Ping-Pong):</strong> Asignamos dos búferes. Mientras el proceso de usuario consume la información del Búfer A, el controlador de E/S va llenando el Búfer B. Cuando ambos terminan, se invierten los roles. Esto permite que la lectura y el procesamiento ocurran en paralelo de forma continua.</li>
+                <li><strong>Buferizado Circular:</strong> Se utiliza una cola con tres o más búferes. Es ideal cuando el tráfico de entrada llega en ráfagas intensas (por ejemplo, tráfico de red masivo).</li>
+            </ul>
+
             <h3>Caché de Disco (Page Cache)</h3>
-            <p>Memoria RAM asignada para almacenar bloques de disco leídos recientemente, evitando accesos físicos lentos al almacenamiento masivo.</p>
+            <p>
+                A diferencia del búfer (que amortigua transferencias en tránsito), la Caché de Disco guarda copias de bloques que ya se leyeron del disco en la memoria RAM. Si un programa pide leer el mismo archivo un segundo después, el SO no va al disco físico: entrega el dato directamente desde la memoria RAM, haciendo que la operación sea miles de veces más rápida.
+            </p>
         </section>
 
         <!-- PLANIFICACIÓN DEL DISCO -->
         <section id="disco">
             <h2>7. Planificación del Disco</h2>
-            <p>En discos mecánicos (HDD), la latencia principal es el movimiento del brazo mecánico (Seek Time). Los algoritmos optimizan el orden de lectura:</p>
+            <p>
+                En los discos duros mecánicos (HDD), el tiempo de lectura depende principalmente del <strong>Tiempo de Búsqueda (Seek Time)</strong>, que es el tiempo físico que tarda el brazo mecánico en posicionar el cabezal sobre la pista correcta. Si las peticiones de lectura se atienden en orden aleatorio, el cabezal se mueve erráticamente y el disco se vuelve lentísimo.
+            </p>
+            <p>Para solucionar esto, el SO utiliza Algoritmos de Planificación de Disco:</p>
             <ul>
-                <li><strong>FIFO (First-In, First-Out):</strong> Atiende en estricto orden de llegada. Justo pero ineficiente.</li>
-                <li><strong>SSTF (Shortest Seek Time First):</strong> Atiende la solicitud más cercana a la posición actual del cabezal. Riesgo de inaniación (starvation).</li>
-                <li><strong>SCAN (Algoritmo del Ascensor):</strong> El cabezal se mueve de un extremo al otro barriendo todas las peticiones en su trayecto.</li>
-                <li><strong>C-SCAN (Circular SCAN):</strong> Barre en un solo sentido y retorna al origen sin atender peticiones en el regreso para garantizar uniformidad.</li>
+                <li><strong>FIFO (First-In, First-Out):</strong> Atiende en estricto orden de llegada. Es totalmente justo, pero muy ineficiente en desplazamientos del cabezal.</li>
+                <li><strong>SSTF (Shortest Seek Time First):</strong> Atiende primero la petición que esté más cerca de la posición actual del cabezal. Es muy rápido, pero puede causar <em>starvation</em> (inanición): si llegan peticiones continuas cerca de un área, las peticiones en los extremos lejanos del disco no se atenderán nunca.</li>
+                <li><strong>SCAN (El algoritmo del ascensor):</strong> El cabezal se mueve desde un extremo del disco hasta el otro, atendiendo todas las solicitudes que encuentra a su paso. Cuando llega al final, invierte el sentido y regresa. Funciona exactamente igual a un ascensor de edificio.</li>
+                <li><strong>C-SCAN (Circular SCAN):</strong> Al igual que SCAN, barre las peticiones en una sola dirección, pero al llegar al final, vuelve rápidamente al inicio sin atender peticiones durante el retorno. Esto brinda un tiempo de espera más uniforme para todos los cilindros.</li>
             </ul>
         </section>
 
         <!-- RAID -->
         <section id="raid">
             <h2>8. Estructura RAID</h2>
-            <p>Conjunto Redundante de Discos Independientes para combinar velocidad y tolerancia a fallos:</p>
+            <p>
+                <strong>RAID (Conjunto Redundante de Discos Independientes)</strong> es una tecnología que combina múltiples discos físicos para que el SO los vea como un único disco lógico. Se busca mayor velocidad, tolerancia a fallos, o ambas:
+            </p>
             <ul>
-                <li><strong>RAID 0:</strong> Distribuido (Striping). Alta velocidad de lectura/escritura, sin redundancia.</li>
-                <li><strong>RAID 1:</strong> Espejo (Mirroring). Duplicado completo de datos, alta tolerancia a fallos.</li>
-                <li><strong>RAID 5:</strong> Paridad distribuida. Excelente rendimiento y tolera la falla de 1 disco físico.</li>
-                <li><strong>RAID 6:</strong> Doble paridad distribuida. Soporta la falla simultánea de hasta 2 discos.</li>
+                <li><strong>RAID 0 (Striping / Distribuido):</strong> Divide los datos en bloques y los escribe alternadamente entre varios discos. Duplica la velocidad, pero no tiene redundancia: si falla un disco, se pierde todo.</li>
+                <li><strong>RAID 1 (Mirroring / Espejo):</strong> Duplica exactamente cada dato en dos discos idénticos. Si se rompe un disco, el sistema sigue funcionando normalmente sin perder información.</li>
+                <li><strong>RAID 5 (Paridad Distribuida):</strong> Requiere al menos 3 discos. Distribuye los datos y los bloques de paridad entre todos ellos. Ofrece excelente velocidad, aprovecha bien el espacio y tolera la falla simultánea de 1 disco.</li>
+                <li><strong>RAID 6 (Doble Paridad):</strong> Utiliza dos bloques de paridad distintos por cada franja. Tolera la falla de hasta 2 discos al mismo tiempo.</li>
             </ul>
         </section>
 
         <!-- COMPARATIVA DE SOs -->
         <section id="so">
-            <h2>9. Comparativa de Sistemas de E/S en SOs</h2>
+            <h2>9. Comparativa de Sistemas de E/S en SOs Reales</h2>
+            <p>Analizamos cómo aplican estos conceptos los sistemas operativos comerciales e industriales más importantes:</p>
             <ul>
-                <li><strong>UNIX SVR4:</strong> Utiliza archivos especiales en `/dev/` (caracteres o bloques) e integra la arquitectura modular STREAMS.</li>
-                <li><strong>Linux:</strong> Separa en Character, Block y Network Devices. Utiliza una Page Cache unificada y schedulers modernos como BFQ.</li>
-                <li><strong>Windows:</strong> Modelo basado en controladores en capas (WDM/KMDF). Toda operación genera un paquete <strong>IRP</strong> (I/O Request Packet).</li>
+                <li>
+                    <strong>UNIX SVR4 (System V Release 4):</strong> Sigue la filosofía clásica de UNIX: <em>"En UNIX, todo es un archivo"</em>. Trata a los dispositivos mediante archivos especiales alojados generalmente en <code>/dev/</code>. Mantiene dos grandes categorías: dispositivos de caracteres (como teclados o terminales, procesados byte a byte) y dispositivos de bloques (como discos, procesados en bloques de tamaño fijo). Introdujo el concepto de STREAMS para conectar controladores de E/S mediante módulos ensamblables.
+                </li>
+                <li>
+                    <strong>Linux:</strong> Hereda la estructura de UNIX dividiendo dispositivos en Caracteres, Bloques y Red (Network Devices). Lo más destacado de Linux es su <strong>Page Cache Unificada</strong>, que utiliza dinámicamente toda la memoria RAM que esté libre para cachear lecturas y escrituras de disco. Además, incluye planificadores de E/S modernos como BFQ (Budget Fair Queueing) y Deadline, optimizados no solo para discos rígidos sino para reducir la latencia en SSDs.
+                </li>
+                <li>
+                    <strong>Windows:</strong> Utiliza una arquitectura orientada a objetos basada en controladores en capas (WDM / KMDF). Toda operación de Entrada/Salida en Windows se traduce en una estructura de datos llamada <strong>IRP (I/O Request Packet)</strong>. Cuando una aplicación pide leer un archivo, el administrador de E/S crea un paquete IRP y lo va pasando en cascada a través de los diferentes drivers (driver de cifrado, driver del sistema de archivos, driver del disco) hasta llegar al hardware físico.
+                </li>
             </ul>
         </section>
 
         <!-- HARDWARE ESPECÍFICO -->
         <section id="hardware-especifico">
             <h2>10. Hardware Específico: Discos, Relojes y Terminales</h2>
+            <p>Repasamos tres componentes específicos esenciales de la arquitectura de hardware:</p>
             <ul>
-                <li><strong>Discos Físicos:</strong> Transición del direccionamiento mecánico CHS al direccionamiento lógico de bloques LBA. Unidades SSD mediante memorias NAND Flash.</li>
-                <li><strong>Relojes (Timers):</strong> Generan interrupciones periódicas mediante cristales de cuarzo, indispensables para la multitarea, contadores e impulsos del sistema.</li>
-                <li><strong>Terminales:</strong> Entrada por teclado en Modo Canónico (con búfer de edición) vs. Modo No Canónico / Raw (entrega directa evento por evento).</li>
+                <li>
+                    <strong>Discos (Physical Disk Management):</strong> Evolución del direccionamiento físico. Antiguamente se usaba CHS (Cilindro-Cabeza-Sector), donde el SO debía saber exactamente en qué plato y pista física buscar. Hoy se utiliza LBA (Logical Block Addressing), donde el disco se presenta como un array lineal de bloques numerados del 0 al N, abstrayendo toda la complejidad física interna.
+                </li>
+                <li>
+                    <strong>Relojes (Clocks / Timers):</strong> Los relojes no son periféricos de almacenamiento, pero son vitales para el SO. Generan interrupciones periódicas por hardware (llamadas <em>clock ticks</em>). Gracias al reloj, el SO puede:
+                    <ul>
+                        <li>Implementar la multitarea (rebanado de tiempo o time-slicing para quitarle el procesador a un proceso y dárselo a otro).</li>
+                        <li>Contabilizar el uso de CPU.</li>
+                        <li>Manejar temporizadores y alarmas programadas por el software.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Terminales (Manejo de Entrada/Salida de Consola):</strong> Gestionan la interacción vía texto. Existen dos modos principales de procesamiento de teclado:
+                    <ul>
+                        <li><strong>Modo Canónico (Cooked Mode):</strong> Las teclas presionadas se acumulan en un búfer de la terminal. El sistema no se las entrega al programa hasta que el usuario presiona la tecla ENTER. Permite corregir con Backspace.</li>
+                        <li><strong>Modo No Canónico (Raw Mode):</strong> Cada tecla presionada se entrega inmediatamente al programa de destino sin procesamiento previo. Es el modo que utilizan los editores de texto interactivos (como vim) o los videojuegos por consola.</li>
+                    </ul>
+                </li>
             </ul>
         </section>
 
@@ -466,66 +533,65 @@
                     <button class="option-btn" onclick="checkAnswer('q3', this, false)">FIFO</button>
                     <button class="option-btn" onclick="checkAnswer('q3', this, false)">SSTF</button>
                     <button class="option-btn" onclick="checkAnswer('q3', this, true)">SCAN</button>
-                    <button class="option-btn" onclick="checkAnswer('q3', this, false)">Round Robin</button>
+                    <button class="option-btn" onclick="checkAnswer('q3', this, false)">C-SCAN</button>
                 </div>
                 <div class="feedback"></div>
             </div>
 
             <!-- Pregunta 4 -->
             <div class="quiz-card" id="q4">
-                <p>4. En el sistema operativo Windows, ¿cómo se denomina a la estructura de datos usada para solicitar operaciones de E/S a los drivers?</p>
+                <p>4. ¿Cuál es el objetivo principal del software de Entrada/Salida dentro del Sistema Operativo?</p>
                 <div class="options">
-                    <button class="option-btn" onclick="checkAnswer('q4', this, true)">IRP (I/O Request Packet)</button>
-                    <button class="option-btn" onclick="checkAnswer('q4', this, false)">Streams</button>
-                    <button class="option-btn" onclick="checkAnswer('q4', this, false)">Page Faults</button>
-                    <button class="option-btn" onclick="checkAnswer('q4', this, false)">Inodos</button>
+                    <button class="option-btn" onclick="checkAnswer('q4', this, true)">Independencia del dispositivo</button>
+                    <button class="option-btn" onclick="checkAnswer('q4', this, false)">Aumentar el número de puertos de hardware</button>
+                    <button class="option-btn" onclick="checkAnswer('q4', this, false)">Eliminar el uso de la memoria RAM</button>
+                    <button class="option-btn" onclick="checkAnswer('q4', this, false)">Obligar al programador a conocer las especificaciones del fabricante</button>
                 </div>
                 <div class="feedback"></div>
             </div>
 
-            <div class="score-board" id="scoreBoard">Puntaje: 0 / 4</div>
+            <!-- Pregunta 5 -->
+            <div class="quiz-card" id="q5">
+                <p>5. En el contexto del manejo de terminales, ¿qué caracteriza al Modo No Canónico (Raw Mode)?</p>
+                <div class="options">
+                    <button class="option-btn" onclick="checkAnswer('q5', this, false)">Acumula las teclas en un búfer hasta presionar ENTER</button>
+                    <button class="option-btn" onclick="checkAnswer('q5', this, true)">Entrega cada tecla presionada inmediatamente al programa sin procesamiento previo</button>
+                    <button class="option-btn" onclick="checkAnswer('q5', this, false)">Solo permite la entrada de números</button>
+                    <button class="option-btn" onclick="checkAnswer('q5', this, false)">Corrige automáticamente los errores de escritura</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
         </section>
+
     </main>
 
     <footer>
-        <p>Presentación Académica - Unidad de Entrada/Salida &copy; 2026</p>
+        <p>&copy; 2026 Cátedra de Sistemas Operativos - Presentación de Entrada/Salida</p>
     </footer>
 
 </div>
 
 <script>
-    let correctAnswersCount = 0;
-    const answeredQuestions = new Set();
+    function checkAnswer(questionId, button, isCorrect) {
+        const card = document.getElementById(questionId);
+        const buttons = card.querySelectorAll('.option-btn');
+        const feedback = card.querySelector('.feedback');
 
-    function checkAnswer(questionId, selectedBtn, isCorrect) {
-        const questionCard = document.getElementById(questionId);
-        const buttons = questionCard.querySelectorAll('.option-btn');
-        const feedback = questionCard.querySelector('.feedback');
-
-        buttons.forEach(btn => btn.disabled = true);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.remove('correct', 'incorrect');
+        });
 
         if (isCorrect) {
-            selectedBtn.classList.add('correct');
-            feedback.style.color = 'var(--success)';
-            feedback.textContent = '¡Correcto!';
-            if (!answeredQuestions.has(questionId)) {
-                correctAnswersCount++;
-                answeredQuestions.add(questionId);
-            }
+            button.classList.add('correct');
+            feedback.textContent = "¡Correcto!";
+            feedback.style.color = "var(--success)";
         } else {
-            selectedBtn.classList.add('incorrect');
-            feedback.style.color = 'var(--danger)';
-            feedback.textContent = 'Incorrecto.';
-            
-            buttons.forEach(btn => {
-                if (btn.getAttribute('onclick').includes('true')) {
-                    btn.classList.add('correct');
-                }
-            });
+            button.classList.add('incorrect');
+            feedback.textContent = "Incorrecto. Revisa los conceptos explicados arriba.";
+            feedback.style.color = "var(--danger)";
         }
-
-        feedback.style.display = 'block';
-        document.getElementById('scoreBoard').textContent = `Puntaje: ${correctAnswersCount} / 4`;
+        feedback.style.display = "block";
     }
 </script>
 
