@@ -338,17 +338,69 @@
         </section>
 
         <section id="repaso" class="card">
-            <h2 class="section-title">🧪 Repaso Rápido</h2>
-            <p><em>¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</em></p>
-            
-            <div class="quiz-options">
-                <button class="quiz-btn" onclick="verificarRespuesta(this, false)">A) El Microprocesador</button>
-                <button class="quiz-btn" onclick="verificarRespuesta(this, true)">B) El Middleware</button>
-                <button class="quiz-btn" onclick="verificarRespuesta(this, false)">C) La Topología en Anillo</button>
-            </div>
-            
-            <p id="quiz-feedback"></p>
-        </section>
+  <h2 class="section-title">🧪 Repaso Rápido</h2>
+
+  <!-- Pregunta 1 -->
+  <div class="quiz-item" style="margin-bottom: 25px;">
+    <p><strong>1. ¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</strong></p>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">A) El Microprocesador</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 0)">B) El Middleware</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">C) La Topología en Anillo</button>
+    </div>
+    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+  </div>
+
+  <!-- Pregunta 2 -->
+  <div class="quiz-item" style="margin-bottom: 25px;">
+    <p><strong>2. ¿Cuál es el objetivo que busca ocultar la distribución física de los recursos para que el sistema se perciba como una sola computadora?</strong></p>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">A) Escalabilidad</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">B) Apertura</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 1)">C) Transparencia</button>
+    </div>
+    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+  </div>
+
+  <!-- Pregunta 3 -->
+  <div class="quiz-item" style="margin-bottom: 25px;">
+    <p><strong>3. En las arquitecturas de hardware, ¿qué caracteriza a los sistemas fuertemente acoplados?</strong></p>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 2)">A) Comparten la misma memoria física y reloj</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">B) Cada equipo tiene su propia memoria local independiente</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">C) Están conectados exclusivamente por red WAN</button>
+    </div>
+    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+  </div>
+
+  <!-- Pregunta 4 -->
+  <div class="quiz-item" style="margin-bottom: 25px;">
+    <p><strong>4. ¿En qué modelo de software el usuario NO percibe dónde se ejecutan sus procesos debido a una gestión global de recursos?</strong></p>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">A) Sistema Operativo de Red (NOS)</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 3)">B) Sistema Operativo Distribuido (DOS)</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">C) Navegador Web</button>
+    </div>
+    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+  </div>
+
+  <!-- Pregunta 5 -->
+  <div class="quiz-item" style="margin-bottom: 25px;">
+    <p><strong>5. ¿Qué modelo arquitectónico de SO se menciona como un aspecto crítico de diseño para brindar flexibilidad?</strong></p>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">A) Monolítico</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 4)">B) Micronúcleo (Microkernel)</button>
+      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">C) Jerárquico por capas</button>
+    </div>
+    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+  </div>
+
+  <!-- Resumen Final -->
+  <div id="resumen-quiz" style="margin-top: 20px; padding: 15px; border-radius: 6px; background-color: #0f172a; border: 1px solid #334155; text-align: center; display: none;">
+    <h3 style="margin: 0; color: #38bdf8;">📊 Resumen de Evaluación</h3>
+    <p id="puntaje-texto" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;"></p>
+  </div>
+</section>
 
         <footer>
             Universidad Tecnológica Intercontinental - Sistemas Operativos © 2026
@@ -356,25 +408,53 @@
     </main>
 
     <script>
-        function verificarRespuesta(boton, esCorrecto) {
-            // Limpiar estados de todos los botones
-            const botones = document.querySelectorAll('.quiz-btn');
-            botones.forEach(btn => {
-                btn.classList.remove('correct', 'incorrect');
-            });
+        // Arreglo para registrar el estado de cada una de las 5 preguntas (null = sin responder, true = correcta, false = incorrecta)
+const resultadosQuiz = [null, null, null, null, null];
 
-            const feedback = document.getElementById('quiz-feedback');
+function evaluarPregunta(boton, esCorrecto, indicePregunta) {
+  const contenedorPregunta = boton.closest('.quiz-item');
+  const botones = contenedorPregunta.querySelectorAll('.quiz-btn');
+  const feedback = contenedorPregunta.querySelector('.pregunta-feedback');
 
-            if (esCorrecto) {
-                boton.classList.add('correct');
-                feedback.textContent = "¡Correcto! 🎉 El Middleware actúa como capa intermedia entre las aplicaciones y el SO subyacente.";
-                feedback.className = "feedback-correct";
-            } else {
-                boton.classList.add('incorrect');
-                feedback.textContent = "Incorrecto. ❌ Inténtalo de nuevo.";
-                feedback.className = "feedback-incorrect";
-            }
-        }
+  // Marcar estado visual de los botones de esta pregunta
+  botones.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+
+  if (esCorrecto) {
+    boton.classList.add('correct');
+    feedback.textContent = "¡Correcto! 🎉";
+    feedback.className = "pregunta-feedback feedback-correct";
+  } else {
+    boton.classList.add('incorrect');
+    feedback.textContent = "Incorrecto. ❌";
+    feedback.className = "pregunta-feedback feedback-incorrect";
+  }
+
+  // Guardar resultado
+  resultadosQuiz[indicePregunta] = esCorrecto;
+
+  // Actualizar resumen final de puntuación
+  actualizarResumen();
+}
+
+function actualizarResumen() {
+  const respondidas = resultadosQuiz.filter(res => res !== null).length;
+  const correctas = resultadosQuiz.filter(res => res === true).length;
+  
+  const contenedorResumen = document.getElementById('resumen-quiz');
+  const textoPuntaje = document.getElementById('puntaje-texto');
+
+  if (respondidas > 0) {
+    contenedorResumen.style.display = "block";
+    
+    if (respondidas === 5) {
+      textoPuntaje.textContent = `¡Completaste la evaluación! Obtuviste ${correctas} de 5 puntos posibles.`;
+      textoPuntaje.style.color = correctas >= 3 ? "#34d399" : "#f87171";
+    } else {
+      textoPuntaje.textContent = `Puntuación actual: ${correctas} de 5 puntos (${respondidas}/5 respondidas).`;
+      textoPuntaje.style.color = "#cbd5e1";
+    }
+  }
+}
     </script>
 
 </body>
