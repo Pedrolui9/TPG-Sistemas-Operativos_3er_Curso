@@ -251,102 +251,27 @@
         </section>
 
         <section id="objetivos" class="card">
-  <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
-  <p>Los principales propósitos que justifican la implementación de un sistema distribuido son:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Transparencia</h3>
-      <p>Ocultar la distribución física de los recursos de modo que el sistema se perciba como una sola computadora.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Google Drive o Dropbox, donde no sabes en qué disco o país físico se almacena tu archivo.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Compartición de Recursos</h3>
-      <p>Permitir que usuarios y aplicaciones accedan e intercambien hardware, software y datos de forma remota y eficiente.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Impresoras corporativas de red o bases de datos bancarias consultadas por múltiples sucursales.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Apertura e Interoperabilidad</h3>
-      <p>Ofrecer interfaces estándar que permitan la integración flexible de componentes de distintos fabricantes.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> APIs REST con JSON que permiten a una app móvil consultar un servidor Mainframe antiguo.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Escalabilidad</h3>
-      <p>Capacidad de hacer crecer el sistema en tamaño, cobertura geográfica o administración sin degradar el rendimiento.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Netflix añadiendo servidores automáticamente durante estrenos masivos para evitar caídas.</p>
-    </div>
-  </div>
-</section>
-
-<section id="hardware" class="card">
-  <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
-  <p>Los sistemas distribuidos se sostienen sobre distintas clasificaciones según cómo se conectan y comparten la memoria los procesadores:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Fuertemente Acoplados</h3>
-      <p>Procesadores que comparten la misma memoria física y reloj (Multiprocesadores). Tienen alta velocidad de transferencia.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Supercomputadoras de simulación científica o servidores multiprocesador para IA.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Débilmente Acoplados</h3>
-      <p>Equipos (Multicomputadoras) con su propia memoria local y procesador, conectados a través de una red de comunicación.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Clusters de Kubernetes o proyectos de computación distribuida como BOINC / Folding@home.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Topologías de Red</h3>
-      <p>La estructura de interconexión (Estrella, Anillo, Bus o Malla) determina la latencia y la tolerancia a fallos del hardware.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Redes de fibra óptica interconectadas en Malla para evitar caídas si se rompe un cable.</p>
-    </div>
-  </div>
-</section>
-
-<section id="software" class="card">
-  <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
-  <p>El software determina cómo interactúan las aplicaciones con los nodos de la red:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>SO de Red (NOS)</h3>
-      <p>Cada nodo mantiene su propio SO. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Windows Server con Active Directory o Linux mediante conexiones explícitas por SSH/FTP.</p>
-    </div>
-    <div class="sub-card">
-      <h3>SO Distribuido (DOS)</h3>
-      <p>Un único SO gestiona globalmente todos los recursos. Los usuarios no perciben dónde se ejecutan sus procesos.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Sistemas de investigación como Amoeba o Plan 9 que unifican CPUs y memoria física.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Middleware</h3>
-      <p>Capa de software situada entre las aplicaciones y el SO subyacente que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Apache Kafka, RabbitMQ o gRPC actuando como traductores entre servicios.</p>
-    </div>
-  </div>
-</section>
-
-<section id="diseno" class="card">
-  <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
-  <p>Diseñar un sistema distribuido exige abordar desafíos clave de coordinación y fiabilidad:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Transparencia</h3>
-      <p>Abarca localización, acceso, migración, replicación y concurrencia.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Migración en vivo de contenedores Docker de un servidor a otro sin interrupción.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Flexibilidad</h3>
-      <p>Uso del modelo micronúcleo para delegar servicios a espacio de usuario.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Sistemas como QNX (usado en vehículos) o MINIX, donde la falla de un driver no apaga el sistema.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Fiabilidad</h3>
-      <p>Tolerancia a fallos para mantener disponibilidad y consistencia.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Réplicas bancarias internacionales que mantienen la operación aunque caiga un data center.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Rendimiento</h3>
-      <p>Balanceo de carga y sincronización con relojes lógicos/físicos.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Uso del protocolo NTP y Relojes de Lamport para registrar transacciones bancarias al milisegundo.</p>
-    </div>
-  </div>
-</section>
+            <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
+            <p>Los principales propósitos que justifican la implementación de un sistema distribuido son:</p>
+            <div class="grid-cards">
+                <div class="sub-card">
+                    <h3>Transparencia</h3>
+                    <p>Ocultar la distribución física de los recursos de modo que el sistema se perciba como una sola computadora.</p>
+                </div>
+                <div class="sub-card">
+                    <h3>Compartición de Recursos</h3>
+                    <p>Permitir que usuarios y aplicaciones accedan e intercambien hardware, software y datos de forma remota y eficiente.</p>
+                </div>
+                <div class="sub-card">
+                    <h3>Apertura e Interoperabilidad</h3>
+                    <p>Ofrecer interfaces estándar que permitan la integración flexible de componentes de distintos fabricantes.</p>
+                </div>
+                <div class="sub-card">
+                    <h3>Escalabilidad</h3>
+                    <p>Capacidad de hacer crecer el sistema en tamaño, cobertura geográfica o administración sin degradar el rendimiento.</p>
+                </div>
+            </div>
+        </section>
 
         <section id="hardware" class="card">
             <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
@@ -483,25 +408,53 @@
     </main>
 
     <script>
-        function verificarRespuesta(boton, esCorrecto) {
-            // Limpiar estados de todos los botones
-            const botones = document.querySelectorAll('.quiz-btn');
-            botones.forEach(btn => {
-                btn.classList.remove('correct', 'incorrect');
-            });
+        // Arreglo para registrar el estado de cada una de las 5 preguntas (null = sin responder, true = correcta, false = incorrecta)
+const resultadosQuiz = [null, null, null, null, null];
 
-            const feedback = document.getElementById('quiz-feedback');
+function evaluarPregunta(boton, esCorrecto, indicePregunta) {
+  const contenedorPregunta = boton.closest('.quiz-item');
+  const botones = contenedorPregunta.querySelectorAll('.quiz-btn');
+  const feedback = contenedorPregunta.querySelector('.pregunta-feedback');
 
-            if (esCorrecto) {
-                boton.classList.add('correct');
-                feedback.textContent = "¡Correcto! 🎉 El Middleware actúa como capa intermedia entre las aplicaciones y el SO subyacente.";
-                feedback.className = "feedback-correct";
-            } else {
-                boton.classList.add('incorrect');
-                feedback.textContent = "Incorrecto. ❌ Inténtalo de nuevo.";
-                feedback.className = "feedback-incorrect";
-            }
-        }
+  // Marcar estado visual de los botones de esta pregunta
+  botones.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+
+  if (esCorrecto) {
+    boton.classList.add('correct');
+    feedback.textContent = "¡Correcto! 🎉";
+    feedback.className = "pregunta-feedback feedback-correct";
+  } else {
+    boton.classList.add('incorrect');
+    feedback.textContent = "Incorrecto. ❌";
+    feedback.className = "pregunta-feedback feedback-incorrect";
+  }
+
+  // Guardar resultado
+  resultadosQuiz[indicePregunta] = esCorrecto;
+
+  // Actualizar resumen final de puntuación
+  actualizarResumen();
+}
+
+function actualizarResumen() {
+  const respondidas = resultadosQuiz.filter(res => res !== null).length;
+  const correctas = resultadosQuiz.filter(res => res === true).length;
+  
+  const contenedorResumen = document.getElementById('resumen-quiz');
+  const textoPuntaje = document.getElementById('puntaje-texto');
+
+  if (respondidas > 0) {
+    contenedorResumen.style.display = "block";
+    
+    if (respondidas === 5) {
+      textoPuntaje.textContent = `¡Completaste la evaluación! Obtuviste ${correctas} de 5 puntos posibles.`;
+      textoPuntaje.style.color = correctas >= 3 ? "#34d399" : "#f87171";
+    } else {
+      textoPuntaje.textContent = `Puntuación actual: ${correctas} de 5 puntos (${respondidas}/5 respondidas).`;
+      textoPuntaje.style.color = "#cbd5e1";
+    }
+  }
+}
     </script>
 
 </body>
