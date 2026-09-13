@@ -79,7 +79,7 @@
                     <div class="info-block border-blue" style="background-color: #111827;">
                         <h3>🧱 Particionamiento Estático (Fijo)</h3>
                         <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
-                            La memoria RAM se divide en regiones de **tamaño fijo e invariable** al inicializar el sistema operativo. Las particiones pueden ser todas del mismo tamaño o de tamaños diferentes.
+                            La memoria RAM se divide en regiones de <b>tamaño fijo e invariable</b> al inicializar el sistema operativo. Las particiones pueden ser todas del mismo tamaño o de tamaños diferentes.
                         </p>
                         <div class="concept-box" style="border-left: 3px solid var(--danger);">
                             <strong>Problema principal: Fragmentación Interna.</strong> Ocurre cuando un proceso es más pequeño que la partición asignada; el espacio sobrante dentro de ese bloque queda bloqueado y desperdiciado, ya que ningún otro programa puede usarlo.
@@ -88,7 +88,7 @@
                     <div class="info-block border-cyan" style="background-color: #111827;">
                         <h3>⚡ Particionamiento Dinámico (Variable)</h3>
                         <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
-                            Las particiones se crean de forma exacta y con el **tamaño justo** que necesita cada proceso al cargarse en la RAM. Al inicio no hay desperdicio de espacio, ya que la memoria se moldea según la demanda.
+                            Las particiones se crean de forma exacta y con el <b>tamaño justo</b> que necesita cada proceso al cargarse en la RAM. Al inicio no hay desperdicio de espacio, ya que la memoria se moldea según la demanda.
                         </p>
                         <div class="concept-box" style="border-left: 3px solid var(--warning);">
                             <strong>Problema principal: Fragmentación Externa.</strong> Conforme los procesos terminan y abandonan la RAM, dejan pequeños huecos libres dispersos por toda la memoria. Si llega un proceso grande, no podrá alojarse aunque la suma de todos los huecos sea suficiente, porque el espacio libre no está contiguo.
@@ -100,7 +100,7 @@
                 <div class="info-block border-cyan" style="margin-top: 1.5rem;">
                     <h3>⚙️ ¿Cómo soluciona el Sistema Operativo la Fragmentación Externa?</h3>
                     <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-muted);">
-                        La técnica principal por software se denomina <strong>Compactación de Memoria (o Desfragmentación)</strong>. Consiste en suspender temporalmente los programas, desplazar todos los procesos activos hacia un extremo de la RAM física para que queden agrupados de forma contigua, y unificar todos los pequeños huecos dispersos en un único bloque libre gigante al final de la memoria. *(Esta es la lógica exacta que puedes probar presionando el botón en nuestro simulador).*
+                        La técnica principal por software se denomina <strong>Compactación de Memoria (o Desfragmentación)</strong>. Consiste en suspender temporalmente los programas, desplazar todos los procesos activos hacia un extremo de la RAM física para que queden agrupados de forma contigua, y unificar todos los pequeños huecos dispersos en un único bloque libre gigante al final de la memoria.
                     </p>
                 </div>
             </section>
