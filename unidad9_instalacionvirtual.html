@@ -1,4 +1,4 @@
-<!doctype html>
+git<!doctype html>
 <html lang="es">
 
 <head>
@@ -323,6 +323,74 @@
       color: #0d47a1;
     }
 
+    /* ============ CUESTIONARIO ============ */
+
+    .quiz-pregunta {
+      background: #f8f9fa;
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-pregunta p.enunciado {
+      font-weight: bold;
+      color: #0d47a1;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .quiz-opciones label {
+      display: block;
+      padding: 9px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .quiz-opciones label:hover {
+      background: #eef7ff;
+    }
+
+    .quiz-opciones input {
+      margin-right: 10px;
+    }
+
+    .quiz-opciones label.correcta {
+      background: #d4edda;
+      font-weight: bold;
+    }
+
+    .quiz-opciones label.incorrecta {
+      background: #f8d7da;
+    }
+
+    .btn-corregir {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 13px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .btn-corregir:hover {
+      background: #0056b3;
+    }
+
+    .quiz-resultado {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 17px;
+      display: none;
+    }
+
     footer {
       background: #343a40;
       color: #fff;
@@ -419,7 +487,9 @@
         <li><a href="#comandos">9. Comandos básicos</a></li>
         <li><a href="#crear-directorio">10. Crear un directorio</a></li>
         <li><a href="#crear-archivo">11. Crear un archivo</a></li>
-        <li><a href="#conclusion">12. Conclusión</a></li>
+        <li><a href="#actividad">12. Actividad</a></li>
+        <li><a href="#cuestionario">13. Cuestionario</a></li>
+        <li><a href="#conclusion">14. Conclusión</a></li>
       </ul>
     </aside>
 
@@ -1163,10 +1233,172 @@ Ctrl + X   → salir</code></pre>
       </section>
 
       <!-- =========================================================
-           12. CONCLUSIÓN
+           12. ACTIVIDAD
+           ========================================================= -->
+      <section class="card" id="actividad">
+        <h2>12. Actividad Práctica</h2>
+        <div class="activity">
+          <h3>Actividad 1 – Instalación</h3>
+          <p>
+            Instalar VirtualBox en la computadora y crear una máquina virtual
+            con los recursos recomendados para AlmaLinux 9.
+          </p>
+          <h3>Actividad 2 – Instalación del sistema operativo</h3>
+          <p>
+            Instalar AlmaLinux 9 dentro de la máquina virtual creada,
+            utilizando particionado automático y sistema de archivos XFS.
+          </p>
+          <h3>Actividad 3 – Práctica de comandos</h3>
+          <ol>
+            <li>Abrir una terminal en AlmaLinux 9.</li>
+            <li>Crear un directorio llamado <code>practica_os</code>.</li>
+            <li>Ingresar al directorio creado.</li>
+            <li>Crear dos archivos: uno con <code>touch</code> y otro con <code>nano</code>.</li>
+            <li>Listar el contenido del directorio con <code>ls -l</code>.</li>
+            <li>Investigar la diferencia entre <code>dnf</code> y <code>apt</code>.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           13. CUESTIONARIO
+           ========================================================= -->
+      <section class="card" id="cuestionario">
+        <h2>13. Cuestionario de repaso</h2>
+        <p>
+          Responde las siguientes <strong>10 preguntas de selección
+          múltiple</strong> sobre los temas vistos: VirtualBox, AlmaLinux 9,
+          particionado, sistemas de archivos y comandos básicos de Linux.
+          Al finalizar, presiona <strong>"Corregir cuestionario"</strong>
+          para ver tu puntaje.
+        </p>
+
+        <form id="quiz-form">
+
+          <!-- PREGUNTA 1 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">1. ¿Quién creó originalmente VirtualBox y en qué año?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q1" value="a"> Oracle, en 2010</label>
+              <label><input type="radio" name="q1" value="b"> Innotek GmbH, en 2007</label>
+              <label><input type="radio" name="q1" value="c"> Sun Microsystems, en 2005</label>
+              <label><input type="radio" name="q1" value="d"> Red Hat, en 2008</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 2 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">2. ¿Qué tipo de hipervisor es VirtualBox?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q2" value="a"> Tipo 1 (bare-metal)</label>
+              <label><input type="radio" name="q2" value="b"> Tipo 2 (hosted, sobre un sistema anfitrión)</label>
+              <label><input type="radio" name="q2" value="c"> Un contenedor de aplicaciones</label>
+              <label><input type="radio" name="q2" value="d"> Un emulador de hardware puro</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 3 -->
+          <div class="quiz-pregunta" data-correcta="c">
+            <p class="enunciado">3. ¿Cuál es el tamaño mínimo de disco recomendado para instalar AlmaLinux 9 en una máquina virtual?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q3" value="a"> 5 GB</label>
+              <label><input type="radio" name="q3" value="b"> 10 GB</label>
+              <label><input type="radio" name="q3" value="c"> 20 GB</label>
+              <label><input type="radio" name="q3" value="d"> 50 GB</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 4 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">4. ¿Cómo se llama el instalador gráfico utilizado por AlmaLinux 9?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q4" value="a"> YaST</label>
+              <label><input type="radio" name="q4" value="b"> Anaconda</label>
+              <label><input type="radio" name="q4" value="c"> Calamares</label>
+              <label><input type="radio" name="q4" value="d"> Ubiquity</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 5 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">5. ¿En qué año y por qué empresa fue creado AlmaLinux?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q5" value="a"> 2019, por Red Hat</label>
+              <label><input type="radio" name="q5" value="b"> 2021, por CloudLinux</label>
+              <label><input type="radio" name="q5" value="c"> 2015, por Canonical</label>
+              <label><input type="radio" name="q5" value="d"> 2021, por Oracle</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 6 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">6. ¿Cuál es la principal diferencia entre AlmaLinux y RHEL?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q6" value="a"> AlmaLinux no es compatible con RHEL</label>
+              <label><input type="radio" name="q6" value="b"> RHEL requiere suscripción paga; AlmaLinux es gratuito</label>
+              <label><input type="radio" name="q6" value="c"> AlmaLinux solo funciona en máquinas virtuales</label>
+              <label><input type="radio" name="q6" value="d"> RHEL es de código abierto y AlmaLinux no</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 7 -->
+          <div class="quiz-pregunta" data-correcta="c">
+            <p class="enunciado">7. ¿Cuál es el sistema de archivos predeterminado en AlmaLinux 9?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q7" value="a"> ext4</label>
+              <label><input type="radio" name="q7" value="b"> NTFS</label>
+              <label><input type="radio" name="q7" value="c"> XFS</label>
+              <label><input type="radio" name="q7" value="d"> FAT32</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 8 -->
+          <div class="quiz-pregunta" data-correcta="c">
+            <p class="enunciado">8. ¿Qué partición almacena el kernel y los archivos necesarios para el arranque del sistema?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q8" value="a"> /home</label>
+              <label><input type="radio" name="q8" value="b"> swap</label>
+              <label><input type="radio" name="q8" value="c"> /boot</label>
+              <label><input type="radio" name="q8" value="d"> / (root)</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 9 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">9. ¿Qué gestor de paquetes utiliza AlmaLinux, por pertenecer a la familia Fedora/RHEL?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q9" value="a"> apt</label>
+              <label><input type="radio" name="q9" value="b"> dnf</label>
+              <label><input type="radio" name="q9" value="c"> pacman</label>
+              <label><input type="radio" name="q9" value="d"> zypper</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 10 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">10. ¿Qué comando se utiliza en Linux para crear un directorio?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q10" value="a"> touch</label>
+              <label><input type="radio" name="q10" value="b"> mkdir</label>
+              <label><input type="radio" name="q10" value="c"> newdir</label>
+              <label><input type="radio" name="q10" value="d"> cd</label>
+            </div>
+          </div>
+
+          <button type="button" class="btn-corregir" onclick="corregirQuiz()">
+            Corregir cuestionario
+          </button>
+
+          <div id="quiz-resultado" class="quiz-resultado"></div>
+
+        </form>
+      </section>
+
+      <!-- =========================================================
+           14. CONCLUSIÓN
            ========================================================= -->
       <section class="card" id="conclusion">
-        <h2>12. Conclusión</h2>
+        <h2>14. Conclusión</h2>
         <p>
           La virtualización con VirtualBox permite experimentar con sistemas
           operativos como AlmaLinux 9 de forma segura y controlada. Conocer
@@ -1192,6 +1424,53 @@ Ctrl + X   → salir</code></pre>
     </main>
   </div>
   <a class="top" href="#inicio" title="Volver arriba">↑</a>
+
+  <script>
+    function corregirQuiz() {
+      const preguntas = document.querySelectorAll(".quiz-pregunta");
+      let correctas = 0;
+
+      preguntas.forEach((pregunta, index) => {
+        const respuestaCorrecta = pregunta.getAttribute("data-correcta");
+        const nombre = "q" + (index + 1);
+        const opciones = pregunta.querySelectorAll(".quiz-opciones label");
+        const seleccionada = pregunta.querySelector('input[name="' + nombre + '"]:checked');
+
+        opciones.forEach((label) => {
+          label.classList.remove("correcta", "incorrecta");
+          const input = label.querySelector("input");
+          if (input.value === respuestaCorrecta) {
+            label.classList.add("correcta");
+          }
+        });
+
+        if (seleccionada) {
+          if (seleccionada.value === respuestaCorrecta) {
+            correctas++;
+          } else {
+            seleccionada.closest("label").classList.add("incorrecta");
+          }
+        }
+      });
+
+      const resultado = document.getElementById("quiz-resultado");
+      resultado.style.display = "block";
+      resultado.textContent = "Resultado: " + correctas + " de " + preguntas.length + " respuestas correctas.";
+
+      if (correctas === preguntas.length) {
+        resultado.style.background = "#d4edda";
+        resultado.style.color = "#1e7e34";
+      } else if (correctas >= preguntas.length * 0.6) {
+        resultado.style.background = "#fff3cd";
+        resultado.style.color = "#8a6200";
+      } else {
+        resultado.style.background = "#f8d7da";
+        resultado.style.color = "#a30000";
+      }
+
+      resultado.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  </script>
 </body>
 
 </html>
