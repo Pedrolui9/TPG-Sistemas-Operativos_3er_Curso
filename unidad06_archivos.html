@@ -387,6 +387,90 @@
         font-size: 13px;
       }
     }
+  
+
+    /* ================================
+       ACTIVIDADES / CUESTIONARIO
+       ================================ */
+    .quiz-nav {
+      margin: 12px 14px;
+      border-left: 4px solid #a855f7;
+      border-radius: 8px;
+      background: #172033;
+      color: #f3e8ff !important;
+      font-weight: bold;
+    }
+
+    .quiz-nav:hover {
+      background: #25304a !important;
+      color: #fff !important;
+    }
+
+    .quiz-intro {
+      margin-bottom: 18px;
+      color: #cbd5e1;
+    }
+
+    .quiz-question {
+      background: #263241;
+      border: 1px solid #475569;
+      border-radius: 9px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .quiz-question p {
+      margin-top: 0;
+      font-weight: bold;
+      color: #e5e7eb;
+    }
+
+    .quiz-option {
+      display: block;
+      padding: 10px 12px;
+      margin: 8px 0;
+      border: 1px solid #475569;
+      border-radius: 7px;
+      background: #1f2937;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .quiz-option:hover {
+      border-color: #38bdf8;
+      background: #243041;
+    }
+
+    .quiz-option input {
+      margin-right: 9px;
+    }
+
+    .quiz-button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 20px;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .quiz-button:hover {
+      background: #0056b3;
+    }
+
+    .quiz-result {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: #22364a;
+      border-left: 5px solid #38bdf8;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 
@@ -408,6 +492,7 @@
         <li><a href="#seguridad">5. Seguridad</a></li>
         <li><a href="#proteccion">6. Mecanismos de Protección</a></li>
         <li><a href="#conclusion">7. Conclusión</a></li>
+        <li><a class="quiz-nav" href="#actividades">📝 Ir a Actividades</a></li>
         <li><a href="index.html">← Volver al menú principal</a></li>
       </ul>
     </aside>
@@ -847,6 +932,62 @@
   </div>
 </section>
 
+
+<section class="card" id="actividades">
+  <h2>8. Actividades</h2>
+  <p class="quiz-intro">
+    Seleccioná una respuesta en cada actividad y luego presioná
+    <strong>Verificar respuestas</strong>.
+  </p>
+
+  <form id="quizForm">
+
+    <div class="quiz-question">
+      <p>1. ¿Cuál es la función principal de un sistema de archivos?</p>
+      <label class="quiz-option"><input type="radio" name="q1" value="a"> Navegar por Internet</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="b"> Organizar y almacenar información</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="c"> Crear usuarios</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="d"> Apagar la computadora</label>
+    </div>
+
+    <div class="quiz-question">
+      <p>2. ¿Cuál de los siguientes es un atributo de un archivo?</p>
+      <label class="quiz-option"><input type="radio" name="q2" value="a"> Nombre</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="b"> Teclado</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="c"> Monitor</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="d"> Procesador</label>
+    </div>
+
+    <div class="quiz-question">
+      <p>3. Un directorio también puede llamarse carpeta.</p>
+      <label class="quiz-option"><input type="radio" name="q3" value="v"> Verdadero</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="f"> Falso</label>
+    </div>
+
+    <div class="quiz-question">
+      <p>4. ¿Qué permiso permite modificar un archivo?</p>
+      <label class="quiz-option"><input type="radio" name="q4" value="a"> Lectura (r)</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="b"> Escritura (w)</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="c"> Ejecución (x)</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="d"> Ninguno</label>
+    </div>
+
+    <div class="quiz-question">
+      <p>5. ¿Qué opción ayuda a recuperar información perdida?</p>
+      <label class="quiz-option"><input type="radio" name="q5" value="a"> Copia de seguridad</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="b"> Cambiar el nombre del archivo</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="c"> Crear una carpeta</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="d"> Reiniciar la computadora</label>
+    </div>
+
+    <button class="quiz-button" type="button" onclick="verificarQuiz()">
+      Verificar respuestas
+    </button>
+
+    <div class="quiz-result" id="quizResult"></div>
+  </form>
+</section>
+
       <footer>
         <p><strong>Unidad 6 · Sistemas de Archivos</strong></p>
         <p>Sistemas Operativos · UTIC</p>
@@ -857,5 +998,43 @@
   </div>
 
   <a class="top" href="#top" title="Volver arriba">↑</a>
+
+
+  <script>
+    function verificarQuiz() {
+      const respuestas = {
+        q1: 'b',
+        q2: 'a',
+        q3: 'v',
+        q4: 'b',
+        q5: 'a'
+      };
+
+      let correctas = 0;
+      let respondidas = 0;
+
+      Object.keys(respuestas).forEach(function(pregunta) {
+        const seleccionada = document.querySelector('input[name="' + pregunta + '"]:checked');
+
+        if (seleccionada) {
+          respondidas++;
+          if (seleccionada.value === respuestas[pregunta]) {
+            correctas++;
+          }
+        }
+      });
+
+      const resultado = document.getElementById('quizResult');
+      resultado.style.display = 'block';
+
+      if (respondidas < 5) {
+        resultado.textContent = 'Respondé las 5 actividades antes de verificar.';
+        return;
+      }
+
+      resultado.textContent = 'Resultado: ' + correctas + ' de 5 respuestas correctas.';
+    }
+  </script>
+
 </body>
 </html>
