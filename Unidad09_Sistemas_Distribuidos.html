@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unidad 7 - Sistemas Operativos Distribuidos</title>
+    <title>Unidad 9 - Sistemas Operativos Distribuidos</title>
     <style>
         * {
             box-sizing: border-box;
@@ -242,7 +242,7 @@
 
     <!-- Contenido Principal -->
     <main class="main-content">
-        <h1>UNIDAD 7</h1>
+        <h1>UNIDAD 9</h1>
         <p class="subtitle">Sistemas Operativos Distribuidos</p>
 
         <section id="introduccion" class="card">
@@ -251,27 +251,173 @@
         </section>
 
         <section id="objetivos" class="card">
-            <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
-            <p>Los principales propósitos que justifican la implementación de un sistema distribuido son:</p>
-            <div class="grid-cards">
-                <div class="sub-card">
-                    <h3>Transparencia</h3>
-                    <p>Ocultar la distribución física de los recursos de modo que el sistema se perciba como una sola computadora.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Compartición de Recursos</h3>
-                    <p>Permitir que usuarios y aplicaciones accedan e intercambien hardware, software y datos de forma remota y eficiente.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Apertura e Interoperabilidad</h3>
-                    <p>Ofrecer interfaces estándar que permitan la integración flexible de componentes de distintos fabricantes.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Escalabilidad</h3>
-                    <p>Capacidad de hacer crecer el sistema en tamaño, cobertura geográfica o administración sin degradar el rendimiento.</p>
-                </div>
-            </div>
-        </section>
+  <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
+  <p>Los sistemas distribuidos unen varias computadoras para lograr los siguientes fines:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>Transparencia</h3>
+      <p>Hacer que muchas computadoras parezcan <strong>una sola</strong>. El usuario no necesita saber dónde están guardados los datos físicamente.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Cuando guardas una foto en Google Fotos o Dropbox, la ves al instante sin preocuparte en qué país o disco duro del mundo se almacenó.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Compartición de Recursos</h3>
+      <p>Permitir que varios usuarios usen los mismos equipos, programas o archivos a distancia sin interferir entre sí.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Una impresora en una oficina que todos usan desde sus distintas computadoras, o el sistema de un banco donde varios cajeros atienden cuentas al mismo tiempo.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Apertura e Interoperabilidad</h3>
+      <p>Usar reglas estándar para que computadoras de distintas marcas o con sistemas diferentes se entiendan sin problemas.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Es como un "traductor universal". Permite que la app de tu celular (Android o iPhone) consulte información en una computadora antigua del banco.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Escalabilidad</h3>
+      <p>La facilidad para agregar más computadoras al sistema si el trabajo aumenta, sin que el servicio se vuelva lento o se caiga.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Cuando Netflix estrena una serie muy popular, conecta automáticamente más servidores para que nadie sufra interrupciones.</p>
+    </div>
+  </div>
+</section>
+
+<section id="hardware" class="card">
+  <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
+  <p>Formas en que se conectan físicamente los componentes y las computadoras:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>Fuertemente Acoplados</h3>
+      <p>Varias pantallas o procesadores dentro de una misma caja que comparten la misma memoria RAM y trabajan muy pegados a gran velocidad.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Una supercomputadora para predecir el clima o entrenar Inteligencia Artificial, donde los chips se pasan datos de inmediato.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Débilmente Acoplados</h3>
+      <p>Computadoras independientes (cada una con su propio procesador y memoria) conectadas entre sí mediante cables de red o Wi-Fi.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Varias computadoras de un laboratorio de informática unidas por red para resolver un trabajo gigante juntas.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Topologías de Red</h3>
+      <p>El dibujo o la forma en que tiramos los cables de red para unir las computadoras (en forma de estrella, círculo o red de pesca/malla).</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Si conectamos todo en "malla" (varios caminos posibles), si un cable se rompe, la información busca otra ruta y no se corta la red.</p>
+    </div>
+  </div>
+</section>
+
+<section id="software" class="card">
+  <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
+  <p>Cómo organizamos los programas para administrar las computadoras de la red:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>Sistema Operativo de Red</h3>
+      <p>Cada computadora tiene su propio sistema independiente y el usuario sabe exactamente a qué equipo le está pidiendo un archivo o comando.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Cuando desde tu computadora accedes a una carpeta compartida en la PC del aula de al lado sabiendo el nombre de esa PC.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Sistema Operativo Distribuido</h3>
+      <p>Un sistema único que controla todas las computadoras de la red. El usuario ni se entera en qué máquina se está procesando su tarea.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Como si conectaras 5 computadoras y tu pantalla te mostrara que ahora tienes una "super computadora" con 5 veces más potencia.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Middleware (El Traductor)</h3>
+      <p>Un programa intermedio que sirve como puente entre aplicaciones diferentes para que puedan enviarse mensajes sin importar su idioma o marca.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Funciona como un mozo en un restaurante: toma el pedido de la mesa (tu app) y se lo lleva a la cocina (servidor) interpretando lo que ambos necesitan.</p>
+    </div>
+  </div>
+</section>
+
+<section id="diseno" class="card">
+  <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
+  <p>Los desafíos indispensables que debemos resolver al crear estos sistemas:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>Ocultar la Complejidad</h3>
+      <p>Lograr que los cambios, mudanzas de datos o copias de seguridad ocurran de fondo sin molestar al usuario ni interrumpir su pantalla.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Mientras usas una app, la empresa mueve tus datos a un servidor más rápido sin que se te trabe el video o el juego.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Sistemas Modulares (Micronúcleo)</h3>
+      <p>Diseñar el sistema en piezas pequeñas e independientes para que sea muy fácil de reparar o actualizar.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Como una casa construida con bloques LEGO. Si falla una pieza (como el sonido), la cambias sin tener que tirar abajo la casa entera.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Tolerancia a Fallos</h3>
+      <p>Garantizar que el sistema siga funcionando normalmente aunque se rompa un cable o se apague una computadora.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Los sistemas del banco guardan copias vivas en varios países. Si un centro de datos sufre un corte de luz, otro responde al instante.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Sincronización de Tiempos</h3>
+      <p>Asegurarse de que todas las computadoras tengan exactamente la misma hora al milisegundo para no confundir el orden de los eventos.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Necesario para saber exactamente qué persona compró primero el último ticket de un concierto cuando miles presionan clic a la vez.</p>
+    </div>
+  </div>
+</section>
+
+<section id="hardware" class="card">
+  <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
+  <p>Los sistemas distribuidos se sostienen sobre distintas clasificaciones según cómo se conectan y comparten la memoria los procesadores:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>Fuertemente Acoplados</h3>
+      <p>Procesadores que comparten la misma memoria física y reloj (Multiprocesadores). Tienen alta velocidad de transferencia.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Supercomputadoras de simulación científica o servidores multiprocesador para IA.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Débilmente Acoplados</h3>
+      <p>Equipos (Multicomputadoras) con su propia memoria local y procesador, conectados a través de una red de comunicación.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Clusters de Kubernetes o proyectos de computación distribuida como BOINC / Folding@home.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Topologías de Red</h3>
+      <p>La estructura de interconexión (Estrella, Anillo, Bus o Malla) determina la latencia y la tolerancia a fallos del hardware.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Redes de fibra óptica interconectadas en Malla para evitar caídas si se rompe un cable.</p>
+    </div>
+  </div>
+</section>
+
+<section id="software" class="card">
+  <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
+  <p>El software determina cómo interactúan las aplicaciones con los nodos de la red:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>SO de Red (NOS)</h3>
+      <p>Cada nodo mantiene su propio SO. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Windows Server con Active Directory o Linux mediante conexiones explícitas por SSH/FTP.</p>
+    </div>
+    <div class="sub-card">
+      <h3>SO Distribuido (DOS)</h3>
+      <p>Un único SO gestiona globalmente todos los recursos. Los usuarios no perciben dónde se ejecutan sus procesos.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Sistemas de investigación como Amoeba o Plan 9 que unifican CPUs y memoria física.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Middleware</h3>
+      <p>Capa de software situada entre las aplicaciones y el SO subyacente que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Apache Kafka, RabbitMQ o gRPC actuando como traductores entre servicios.</p>
+    </div>
+  </div>
+</section>
+
+<section id="diseno" class="card">
+  <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
+  <p>Diseñar un sistema distribuido exige abordar desafíos clave de coordinación y fiabilidad:</p>
+  <div class="grid-cards">
+    <div class="sub-card">
+      <h3>Transparencia</h3>
+      <p>Abarca localización, acceso, migración, replicación y concurrencia.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Migración en vivo de contenedores Docker de un servidor a otro sin interrupción.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Flexibilidad</h3>
+      <p>Uso del modelo micronúcleo para delegar servicios a espacio de usuario.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Sistemas como QNX (usado en vehículos) o MINIX, donde la falla de un driver no apaga el sistema.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Fiabilidad</h3>
+      <p>Tolerancia a fallos para mantener disponibilidad y consistencia.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Réplicas bancarias internacionales que mantienen la operación aunque caiga un data center.</p>
+    </div>
+    <div class="sub-card">
+      <h3>Rendimiento</h3>
+      <p>Balanceo de carga y sincronización con relojes lógicos/físicos.</p>
+      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Uso del protocolo NTP y Relojes de Lamport para registrar transacciones bancarias al milisegundo.</p>
+    </div>
+  </div>
+</section>
 
         <section id="hardware" class="card">
             <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
