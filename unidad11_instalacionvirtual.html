@@ -1,0 +1,2416 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instalación de VirtualBox y AlmaLinux 9 | UTIC</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f9;
+      color: #343a40;
+      line-height: 1.65;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 285px;
+      height: 100vh;
+      overflow: auto;
+      background: #343a40;
+      color: white;
+    }
+
+    .logo {
+      padding: 22px 15px;
+      text-align: center;
+      background: #007bff;
+    }
+
+    .logo h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .logo p {
+      margin: 5px 0 0;
+      font-size: 13px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar li {
+      border-bottom: 1px solid #4a4f54;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 10px 15px;
+      color: #ddd;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .content {
+      margin-left: 285px;
+      width: calc(100% - 285px);
+      padding: 28px;
+      max-width: 1500px;
+    }
+
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+      border-radius: 12px;
+      padding: 42px 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px #ccc;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      line-height: 1.2;
+      margin: 0 0 10px;
+    }
+
+    .hero p {
+      margin: 5px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #fff;
+      color: #0056b3;
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px #ddd;
+    }
+
+    .card h2 {
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+
+    .card h3 {
+      margin-top: 22px;
+      color: #0d47a1;
+    }
+
+    .figure {
+      margin: 0 0 20px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      text-align: center;
+      background: #fff;
+      color: #666;
+      padding: 9px;
+      font-size: 13px;
+    }
+
+    .info,
+    .warning,
+    .success,
+    .activity {
+      padding: 16px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .info {
+      background: #e8f4fd;
+      border-left: 5px solid #17a2b8;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border-left: 5px solid #ffc107;
+    }
+
+    .success {
+      background: #d4edda;
+      border-left: 5px solid #28a745;
+    }
+
+    .activity {
+      background: #f8f9fa;
+      border-left: 5px solid #6c757d;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    th {
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+      text-align: left;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    code {
+      background: #eef1f4;
+      color: #d6336c;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 14px;
+    }
+
+    pre {
+      background: #212529;
+      color: #e9ecef;
+      padding: 16px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 14px;
+      margin: 14px 0;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* ============ PASOS (steps) ============ */
+
+    .pasos {
+      counter-reset: paso;
+      list-style: none;
+      margin: 18px 0;
+      padding: 0;
+    }
+
+    .pasos li {
+      counter-increment: paso;
+      position: relative;
+      padding: 14px 18px 14px 56px;
+      margin-bottom: 12px;
+      background: #f8f9fa;
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+    }
+
+    .pasos li::before {
+      content: counter(paso);
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pasos li strong {
+      display: block;
+      color: #0d47a1;
+      margin-bottom: 3px;
+    }
+
+    /* ============ Tarjetas comparativas ============ */
+
+    .comparativa {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 18px 0;
+    }
+
+    .comparativa .col {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      border-top: 5px solid #007bff;
+    }
+
+    .comparativa .col.alt {
+      border-top-color: #28a745;
+    }
+
+    .comparativa .col h4 {
+      margin-top: 0;
+      color: #0d47a1;
+    }
+
+    /* ============ Grid de tarjetas simples ============ */
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .mini-card {
+      background: #f8f9fa;
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+      padding: 18px;
+      border-left: 4px solid #007bff;
+    }
+
+    .mini-card h4 {
+      margin: 0 0 6px;
+      color: #0d47a1;
+    }
+
+    /* ============ BUSCADOR FLOTANTE ============ */
+
+    .buscador-flotante {
+      position: absolute;
+      top: 26px;
+      right: 30px;
+      width: 300px;
+      z-index: 60;
+    }
+
+    .buscador-caja {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      border-radius: 10px;
+      padding: 4px 8px 4px 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+    }
+
+    .buscador-caja .icono-lupa {
+      color: #888;
+      font-size: 14px;
+    }
+
+    .buscador-caja input {
+      border: none;
+      outline: none;
+      flex: 1;
+      padding: 9px 4px;
+      font-size: 14px;
+      color: #343a40;
+      background: transparent;
+      min-width: 0;
+    }
+
+    .buscador-caja button {
+      border: none;
+      background: #e9ecef;
+      color: #495057;
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .buscador-caja button:hover {
+      background: #dee2e6;
+    }
+
+    .buscador-resultados {
+      margin-top: 8px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.3);
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .buscador-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .buscador-item:last-child {
+      border-bottom: none;
+    }
+
+    .buscador-item:hover {
+      background: #eef7ff;
+    }
+
+    .buscador-seccion {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      color: #007bff;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 3px;
+    }
+
+    .buscador-snippet {
+      display: block;
+      font-size: 13px;
+      color: #495057;
+      line-height: 1.4;
+    }
+
+    .buscador-snippet mark {
+      background: #ffe58a;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    .buscador-vacio,
+    .buscador-mas {
+      color: #888;
+      font-style: italic;
+      cursor: default;
+      text-align: center;
+    }
+
+    .buscador-mas:hover {
+      background: white;
+    }
+
+    @media (max-width: 850px) {
+      .buscador-flotante {
+        position: static;
+        width: 100%;
+        margin-top: 16px;
+      }
+    }
+
+    /* ============ ACORDEÓN "+" (CONTENIDO ADICIONAL) ============ */
+
+    .acordeon-item {
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .acordeon-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 20px;
+      background: #f8f9fa;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .acordeon-header:hover {
+      background: #eef7ff;
+    }
+
+    .acordeon-header-texto h3 {
+      margin: 0;
+      color: #0d47a1;
+      font-size: 16px;
+    }
+
+    .acordeon-header-texto span {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    .acordeon-btn {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      border-radius: 50%;
+      background: #007bff;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 1;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .acordeon-item.abierto .acordeon-btn {
+      transform: rotate(45deg);
+      background: #dc3545;
+    }
+
+    .acordeon-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 20px;
+    }
+
+    .acordeon-item.abierto .acordeon-body {
+      padding: 4px 20px 22px;
+    }
+
+    .acordeon-body h4 {
+      color: #0d47a1;
+      margin: 18px 0 8px;
+    }
+
+    .acordeon-body h4:first-child {
+      margin-top: 6px;
+    }
+
+    .acordeon-body p {
+      margin: 8px 0;
+    }
+
+    /* ============ CUESTIONARIO ============ */
+
+    .quiz-pregunta {
+      background: #f8f9fa;
+      border: 1px solid #e2e6ea;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-pregunta p.enunciado {
+      font-weight: bold;
+      color: #0d47a1;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .quiz-opciones label {
+      display: block;
+      padding: 9px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .quiz-opciones label:hover {
+      background: #eef7ff;
+    }
+
+    .quiz-opciones input {
+      margin-right: 10px;
+    }
+
+    .quiz-opciones label.correcta {
+      background: #d4edda;
+      font-weight: bold;
+    }
+
+    .quiz-opciones label.incorrecta {
+      background: #f8d7da;
+    }
+
+    .btn-corregir {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 13px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .btn-corregir:hover {
+      background: #0056b3;
+    }
+
+    .quiz-resultado {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 17px;
+      display: none;
+    }
+
+    footer {
+      background: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 25px;
+      border-radius: 9px;
+    }
+
+    .top {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+    }
+
+    @media (max-width: 850px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .content {
+        margin: 0;
+        width: 100%;
+        padding: 15px;
+      }
+
+      .sidebar ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero h1 {
+        font-size: 27px;
+      }
+
+      .comparativa,
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .sidebar ul {
+        display: block;
+      }
+
+      .card {
+        padding: 19px;
+      }
+
+      .hero {
+        padding: 28px 20px;
+      }
+
+      .hero h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <h2>Sistemas Operativos</h2>
+        <p>UTIC · VirtualBox + AlmaLinux 9</p>
+      </div>
+      <ul>
+        <li><a href="#inicio">🏠 Inicio</a></li>
+        <li><a href="#introduccion">1. Introducción</a></li>
+        <li><a href="#virtualbox">2. ¿Qué es VirtualBox?</a></li>
+        <li><a href="#instalacion-vbox">3. Instalación de VirtualBox</a></li>
+        <li><a href="#crear-vm">4. Crear una máquina virtual</a></li>
+        <li><a href="#instalar-alma">5. Instalar AlmaLinux 9</a></li>
+        <li><a href="#que-es-linux">6. ¿Qué es Linux?</a></li>
+        <li><a href="#que-es-alma">7. ¿Qué es AlmaLinux?</a></li>
+        <li><a href="#particionado">8. Particionado y sistemas de archivos</a></li>
+        <li><a href="#comandos">9. Comandos básicos</a></li>
+        <li><a href="#crear-directorio">10. Crear un directorio</a></li>
+        <li><a href="#crear-archivo">11. Crear un archivo</a></li>
+        <li><a href="#contenido-avanzado">12. Contenido adicional</a></li>
+        <li><a href="#actividad">13. Actividad</a></li>
+        <li><a href="#cuestionario">14. Cuestionario</a></li>
+        <li><a href="#conclusion">15. Conclusión</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <header class="hero" id="inicio">
+        <h1>Instalación de VirtualBox y AlmaLinux 9</h1>
+        <p><strong>Curso:</strong> Sistemas Operativos</p>
+        <p><strong>Carrera:</strong> Análisis de Sistemas Informáticos</p>
+        <span class="badge">Material didáctico · UTIC</span>
+
+        <div class="buscador-flotante" onclick="event.stopPropagation()">
+          <div class="buscador-caja">
+            <span class="icono-lupa">🔍</span>
+            <input
+              type="text"
+              id="buscador-input"
+              placeholder="Buscar en la página..."
+              autocomplete="off"
+              oninput="buscarContenido(this.value)"
+              onkeydown="manejarTeclaBuscador(event)"
+            />
+            <button type="button" id="buscador-limpiar" style="display:none;" onclick="limpiarBusqueda()" title="Limpiar">✕</button>
+          </div>
+          <div id="buscador-resultados" class="buscador-resultados" style="display:none;"></div>
+        </div>
+      </header>
+
+      <!-- =========================================================
+           1. INTRODUCCIÓN
+           ========================================================= -->
+      <section class="card" id="introduccion">
+        <h2>1. Introducción</h2>
+        <p>
+          En esta unidad práctica aprenderemos a instalar y configurar un
+          <strong>entorno de virtualización</strong> utilizando
+          <strong>VirtualBox</strong>, y sobre él instalaremos una
+          <strong>máquina virtual con AlmaLinux 9</strong>, una distribución
+          de Linux orientada a servidores y de uso profesional.
+        </p>
+        <p>
+          Este proceso permite experimentar con sistemas operativos, probar
+          comandos, crear archivos y directorios, y comprender el
+          funcionamiento de un sistema Linux sin necesidad de modificar la
+          computadora física del estudiante.
+        </p>
+        <div class="info">
+          <strong>Importante:</strong> trabajar con máquinas virtuales
+          permite cometer errores, reinstalar el sistema y practicar libremente
+          sin poner en riesgo el equipo real.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           2. QUÉ ES VIRTUALBOX
+           ========================================================= -->
+      <section class="card" id="virtualbox">
+        <h2>2. ¿Qué es VirtualBox, dónde nació y para qué se usa?</h2>
+        <p>
+          <strong>VirtualBox</strong> es un software de
+          <strong>virtualización de tipo hipervisor (Tipo 2 o "hosted")</strong>
+          que permite crear y ejecutar <strong>máquinas virtuales</strong>: 
+          computadoras simuladas por software que funcionan dentro de una
+          computadora física, llamada <strong>equipo anfitrión (host)</strong>.
+        </p>
+        <figure class="figure">
+          <svg viewBox="0 0 900 300" role="img" aria-label="Arquitectura de VirtualBox">
+            <rect width="900" height="300" fill="#eef7ff" />
+            <rect x="60" y="40" width="780" height="220" rx="12" fill="#343a40" />
+            <text x="450" y="70" text-anchor="middle" fill="white" font-size="18">
+              Computadora física (Host) — Windows / Linux / macOS
+            </text>
+            <rect x="100" y="95" width="700" height="60" rx="8" fill="#007bff" />
+            <text x="450" y="132" text-anchor="middle" fill="white" font-size="18">
+              VirtualBox (Hipervisor Tipo 2)
+            </text>
+            <rect x="120" y="175" width="200" height="65" rx="8" fill="#17a2b8" />
+            <text x="220" y="212" text-anchor="middle" fill="white" font-size="16">
+              MV: AlmaLinux 9
+            </text>
+            <rect x="350" y="175" width="200" height="65" rx="8" fill="#28a745" />
+            <text x="450" y="212" text-anchor="middle" fill="white" font-size="16">
+              MV: Windows
+            </text>
+            <rect x="580" y="175" width="200" height="65" rx="8" fill="#ffc107" />
+            <text x="680" y="212" text-anchor="middle" font-size="16">
+              MV: Ubuntu
+            </text>
+          </svg>
+          <figcaption class="caption">
+            VirtualBox permite ejecutar varias máquinas virtuales sobre un mismo equipo físico.
+          </figcaption>
+        </figure>
+
+        <h3>Origen de VirtualBox</h3>
+        <p>
+          VirtualBox fue creado originalmente por la empresa alemana
+          <strong>Innotek GmbH</strong>, que lanzó su primera versión en
+          <strong>enero de 2007</strong>. En <strong>2008</strong>,
+          Innotek fue adquirida por <strong>Sun Microsystems</strong>, que
+          continuó el desarrollo del proyecto como software libre y gratuito.
+          Finalmente, en <strong>2010</strong>, cuando
+          <strong>Oracle Corporation</strong> adquirió Sun Microsystems, el
+          producto pasó a llamarse oficialmente
+          <strong>Oracle VM VirtualBox</strong>, nombre que conserva hasta la
+          actualidad.
+        </p>
+
+        <h3>¿Para qué se utiliza?</h3>
+        <ul>
+          <li>Probar distintos sistemas operativos sin instalarlos físicamente.</li>
+          <li>Crear laboratorios de práctica para estudiantes de informática.</li>
+          <li>Desarrollar y probar software en entornos aislados.</li>
+          <li>Simular servidores, redes y entornos de producción de forma segura.</li>
+          <li>Realizar copias de seguridad completas del sistema (snapshots).</li>
+        </ul>
+
+        <table>
+          <tr>
+            <th>Característica</th>
+            <th>Descripción</th>
+          </tr>
+          <tr>
+            <td>Tipo de hipervisor</td>
+            <td>Tipo 2 (se ejecuta sobre un sistema operativo anfitrión).</td>
+          </tr>
+          <tr>
+            <td>Licencia</td>
+            <td>Software gratuito y de código abierto (GPL), propiedad de Oracle.</td>
+          </tr>
+          <tr>
+            <td>Sistemas anfitriones soportados</td>
+            <td>Windows, Linux, macOS.</td>
+          </tr>
+          <tr>
+            <td>Sistemas invitados soportados</td>
+            <td>Windows, Linux, BSD, Solaris, macOS (bajo ciertas condiciones), entre otros.</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           3. INSTALACIÓN DE VIRTUALBOX
+           ========================================================= -->
+      <section class="card" id="instalacion-vbox">
+        <h2>3. Instalación de VirtualBox</h2>
+        <p>
+          A continuación se detallan los pasos generales para instalar
+          VirtualBox en un equipo con Windows como sistema anfitrión.
+        </p>
+
+        <div class="warning">
+          <strong>Requisito:</strong> antes de instalar, verificar que la
+          <strong>virtualización (VT-x/AMD-V)</strong> esté habilitada en la
+          BIOS/UEFI del equipo.
+        </div>
+
+        <ol class="pasos">
+          <li>
+            <strong>Descargar el instalador</strong>
+            Ingresar al sitio oficial <code>virtualbox.org</code> y descargar
+            el paquete correspondiente al sistema operativo anfitrión (por
+            ejemplo, "Windows hosts").
+          </li>
+          <li>
+            <strong>Ejecutar el instalador</strong>
+            Hacer doble clic sobre el archivo <code>.exe</code> descargado y
+            aceptar los permisos de administrador solicitados.
+          </li>
+          <li>
+            <strong>Asistente de instalación</strong>
+            Seguir el asistente, aceptando las opciones predeterminadas de
+            componentes (VirtualBox USB, red, accesos directos).
+          </li>
+          <li>
+            <strong>Advertencia de red</strong>
+            El instalador puede reiniciar temporalmente los adaptadores de
+            red del equipo para instalar sus controladores; esto es normal.
+          </li>
+          <li>
+            <strong>Finalizar instalación</strong>
+            Al finalizar, VirtualBox se abre automáticamente mostrando el
+            <strong>Administrador de máquinas virtuales</strong>.
+          </li>
+          <li>
+            <strong>(Opcional) Instalar Extension Pack</strong>
+            Descargar el "Oracle VM VirtualBox Extension Pack" para agregar
+            soporte de USB 2.0/3.0, arranque por red y otras funciones
+            adicionales.
+          </li>
+        </ol>
+      </section>
+
+      <!-- =========================================================
+           4. CREAR UNA MÁQUINA VIRTUAL
+           ========================================================= -->
+      <section class="card" id="crear-vm">
+        <h2>4. Crear una máquina virtual</h2>
+        <p>
+          Una vez instalado VirtualBox, el siguiente paso es crear la máquina
+          virtual donde se instalará AlmaLinux 9.
+        </p>
+
+        <ol class="pasos">
+          <li>
+            <strong>Nueva máquina</strong>
+            En el Administrador de VirtualBox, hacer clic en
+            <code>Nueva</code>.
+          </li>
+          <li>
+            <strong>Nombre, carpeta y tipo</strong>
+            Escribir un nombre (por ejemplo, <code>AlmaLinux9</code>).
+            VirtualBox detecta automáticamente <strong>Tipo: Linux</strong> y
+            <strong>Versión: Red Hat (64-bit)</strong> u
+            <strong>Oracle Linux (64-bit)</strong>.
+          </li>
+          <li>
+            <strong>Memoria RAM</strong>
+            Asignar memoria para la máquina virtual. Se recomienda
+            <strong>2048 MB (2 GB)</strong> como mínimo, idealmente 4 GB.
+          </li>
+          <li>
+            <strong>Disco duro virtual</strong>
+            Seleccionar <code>Crear un disco duro virtual ahora</code> y
+            elegir el tipo <strong>VDI (VirtualBox Disk Image)</strong>.
+          </li>
+          <li>
+            <strong>Almacenamiento</strong>
+            Elegir <code>Reservado dinámicamente</code>, para que el disco
+            crezca según se use.
+          </li>
+          <li>
+            <strong>Tamaño del disco</strong>
+            Asignar como mínimo <strong>20 GB</strong> para AlmaLinux 9.
+          </li>
+          <li>
+            <strong>Crear</strong>
+            Confirmar y la máquina virtual aparecerá en la lista, apagada,
+            lista para instalar el sistema operativo.
+          </li>
+        </ol>
+
+        <table>
+          <tr>
+            <th>Recurso</th>
+            <th>Mínimo recomendado</th>
+          </tr>
+          <tr>
+            <td>Procesadores (CPU)</td>
+            <td>1 - 2 núcleos</td>
+          </tr>
+          <tr>
+            <td>Memoria RAM</td>
+            <td>2 GB (recomendado 4 GB)</td>
+          </tr>
+          <tr>
+            <td>Disco duro</td>
+            <td>20 GB o más</td>
+          </tr>
+          <tr>
+            <td>Tarjeta de red</td>
+            <td>NAT (por defecto) o Adaptador puente</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           5. INSTALAR ALMALINUX 9
+           ========================================================= -->
+      <section class="card" id="instalar-alma">
+        <h2>5. Instalar un sistema operativo AlmaLinux 9</h2>
+
+        <ol class="pasos">
+          <li>
+            <strong>Descargar la imagen ISO</strong>
+            Descargar el archivo <code>.iso</code> de AlmaLinux 9 desde el
+            sitio oficial <code>almalinux.org</code> (versión DVD o Minimal).
+          </li>
+          <li>
+            <strong>Montar la ISO en la máquina virtual</strong>
+            En Configuración → Almacenamiento, seleccionar la unidad óptica
+            vacía y elegir el archivo ISO descargado.
+          </li>
+          <li>
+            <strong>Iniciar la máquina virtual</strong>
+            Hacer clic en <code>Iniciar</code>; la máquina arrancará desde la
+            imagen ISO y se abrirá el instalador gráfico
+            <strong>Anaconda</strong>.
+          </li>
+          <li>
+            <strong>Seleccionar idioma</strong>
+            Elegir el idioma de instalación (por ejemplo, Español).
+          </li>
+          <li>
+            <strong>Resumen de instalación</strong>
+            Configurar: teclado, fecha/hora, destino de instalación (disco
+            virtual), conexión de red y selección de software (por ejemplo,
+            "Servidor con GUI" o "Servidor mínimo").
+          </li>
+          <li>
+            <strong>Destino de instalación</strong>
+            Seleccionar el disco virtual y elegir el particionado
+            (automático o manual, ver sección 8).
+          </li>
+          <li>
+            <strong>Contraseña de root y usuario</strong>
+            Definir la contraseña de administrador (<code>root</code>) y
+            crear un usuario estándar para el uso diario.
+          </li>
+          <li>
+            <strong>Comenzar la instalación</strong>
+            Hacer clic en <code>Comenzar instalación</code> y esperar a que
+            el proceso finalice.
+          </li>
+          <li>
+            <strong>Reiniciar</strong>
+            Al finalizar, hacer clic en <code>Reiniciar sistema</code> y
+            retirar la ISO virtual para arrancar desde el disco instalado.
+          </li>
+        </ol>
+
+        <div class="success">
+          <strong>Listo:</strong> al reiniciar, el sistema mostrará la
+          pantalla de inicio de sesión de AlmaLinux 9, confirmando que la
+          instalación fue exitosa.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           6. QUÉ ES LINUX
+           ========================================================= -->
+      <section class="card" id="que-es-linux">
+        <h2>6. ¿Qué es Linux? (breve introducción)</h2>
+        <p>
+          <strong>Linux</strong> es un <strong>núcleo (kernel)</strong> de
+          sistema operativo de <strong>código abierto</strong>, creado en
+          <strong>1991</strong> por el estudiante finlandés
+          <strong>Linus Torvalds</strong>. El kernel es el componente que se
+          comunica directamente con el hardware y administra los recursos
+          del sistema (procesador, memoria, dispositivos).
+        </p>
+        <p>
+          Alrededor de este núcleo se construyen las
+          <strong>distribuciones de Linux (distros)</strong>: conjuntos de
+          software (kernel + herramientas + gestor de paquetes + entorno
+          gráfico opcional) empaquetados para el uso final. Ejemplos:
+          Ubuntu, Debian, Fedora, AlmaLinux, openSUSE, entre otras.
+        </p>
+        <div class="info">
+          <strong>Dato:</strong> Linux es gratuito, modificable y
+          ampliamente utilizado en servidores, supercomputadoras,
+          dispositivos móviles (Android) y sistemas embebidos.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           7. QUÉ ES ALMALINUX
+           ========================================================= -->
+      <section class="card" id="que-es-alma">
+        <h2>7. ¿Qué es AlmaLinux? Origen y diferencias con RHEL</h2>
+        <p>
+          <strong>AlmaLinux</strong> es una distribución de Linux de tipo
+          empresarial, orientada a servidores, gratuita y de código abierto.
+        </p>
+
+        <h3>Origen</h3>
+        <p>
+          AlmaLinux fue creada en <strong>marzo de 2021</strong> por la
+          empresa <strong>CloudLinux Inc.</strong>, como respuesta a la
+          decisión de Red Hat de convertir a <strong>CentOS</strong> en
+          <strong>CentOS Stream</strong> (una rama de desarrollo previa a
+          RHEL, en lugar de un clon estable). AlmaLinux nació para ocupar el
+          espacio que dejó CentOS como distribución
+          <strong>1:1 compatible</strong> con Red Hat Enterprise Linux, y
+          actualmente es gestionada por la
+          <strong>AlmaLinux OS Foundation</strong>, una organización sin
+          fines de lucro.
+        </p>
+
+        <h3>Diferencias entre AlmaLinux y RHEL</h3>
+        <div class="comparativa">
+          <div class="col">
+            <h4>RHEL (Red Hat Enterprise Linux)</h4>
+            <ul>
+              <li>Distribución comercial de Red Hat / IBM.</li>
+              <li>Requiere suscripción/licencia paga para soporte y actualizaciones.</li>
+              <li>Incluye soporte técnico oficial de Red Hat.</li>
+              <li>Muy utilizada en grandes empresas con contratos de soporte.</li>
+            </ul>
+          </div>
+          <div class="col alt">
+            <h4>AlmaLinux</h4>
+            <ul>
+              <li>Distribución gratuita y de código abierto.</li>
+              <li>Binariamente compatible (1:1) con RHEL.</li>
+              <li>Sin costo de licencia; soporte comunitario.</li>
+              <li>Ideal para estudiantes, laboratorios, servidores propios y empresas que buscan reducir costos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <table>
+          <tr>
+            <th>Aspecto</th>
+            <th>RHEL</th>
+            <th>AlmaLinux</th>
+          </tr>
+          <tr>
+            <td>Costo</td>
+            <td>Pago (suscripción)</td>
+            <td>Gratuito</td>
+          </tr>
+          <tr>
+            <td>Código fuente</td>
+            <td>Abierto, restringido en su distribución binaria</td>
+            <td>Abierto</td>
+          </tr>
+          <tr>
+            <td>Compatibilidad</td>
+            <td>Base original</td>
+            <td>1:1 compatible con RHEL</td>
+          </tr>
+          <tr>
+            <td>Soporte</td>
+            <td>Oficial de Red Hat</td>
+            <td>Comunidad / AlmaLinux OS Foundation</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           8. PARTICIONADO Y SISTEMAS DE ARCHIVOS
+           ========================================================= -->
+      <section class="card" id="particionado">
+        <h2>8. Particionado y tipo de sistema de archivos</h2>
+        <p>
+          Durante la instalación de AlmaLinux 9, el instalador permite
+          definir cómo se dividirá el disco duro virtual en
+          <strong>particiones</strong>.
+        </p>
+
+        <figure class="figure">
+          <svg viewBox="0 0 900 220" role="img" aria-label="Particionado de disco">
+            <rect width="900" height="220" fill="#f1f3f5" />
+            <rect x="60" y="70" width="180" height="80" rx="8" fill="#007bff" />
+            <text x="150" y="115" text-anchor="middle" fill="white" font-size="17">/boot</text>
+            <rect x="260" y="70" width="180" height="80" rx="8" fill="#17a2b8" />
+            <text x="350" y="115" text-anchor="middle" fill="white" font-size="17">swap</text>
+            <rect x="460" y="70" width="180" height="80" rx="8" fill="#28a745" />
+            <text x="550" y="115" text-anchor="middle" fill="white" font-size="17">/ (root)</text>
+            <rect x="660" y="70" width="180" height="80" rx="8" fill="#ffc107" />
+            <text x="750" y="115" text-anchor="middle" font-size="17">/home</text>
+            <text x="450" y="190" text-anchor="middle" font-size="16">
+              Disco duro virtual dividido en particiones lógicas
+            </text>
+          </svg>
+          <figcaption class="caption">
+            Esquema básico de particionado recomendado para AlmaLinux 9.
+          </figcaption>
+        </figure>
+
+        <table>
+          <tr>
+            <th>Partición</th>
+            <th>Función</th>
+          </tr>
+          <tr>
+            <td><code>/boot</code></td>
+            <td>Almacena el kernel y los archivos necesarios para el arranque del sistema.</td>
+          </tr>
+          <tr>
+            <td><code>swap</code></td>
+            <td>Memoria de intercambio en disco, utilizada cuando la RAM se satura.</td>
+          </tr>
+          <tr>
+            <td><code>/</code> (root)</td>
+            <td>Partición raíz; contiene el sistema operativo y sus archivos principales.</td>
+          </tr>
+          <tr>
+            <td><code>/home</code></td>
+            <td>Almacena los archivos y configuraciones de los usuarios.</td>
+          </tr>
+        </table>
+
+        <h3>Tipos de sistema de archivos</h3>
+        <p>
+          El <strong>sistema de archivos</strong> define cómo se organizan y
+          almacenan los datos dentro de una partición.
+        </p>
+        <table>
+          <tr>
+            <th>Sistema de archivos</th>
+            <th>Descripción</th>
+          </tr>
+          <tr>
+            <td><strong>XFS</strong></td>
+            <td>Sistema de archivos por defecto en AlmaLinux/RHEL 9. Alto rendimiento con archivos grandes.</td>
+          </tr>
+          <tr>
+            <td><strong>ext4</strong></td>
+            <td>Muy utilizado en distintas distribuciones Linux; estable y confiable.</td>
+          </tr>
+          <tr>
+            <td><strong>Btrfs</strong></td>
+            <td>Sistema de archivos moderno con soporte para snapshots y compresión.</td>
+          </tr>
+          <tr>
+            <td><strong>FAT32/NTFS</strong></td>
+            <td>Utilizados principalmente en Windows; Linux puede leerlos/montarlos.</td>
+          </tr>
+        </table>
+
+        <div class="info">
+          <strong>Recomendación para el laboratorio:</strong> utilizar el
+          <strong>particionado automático</strong> del instalador y dejar
+          <strong>XFS</strong> como sistema de archivos predeterminado.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           9. COMANDOS BÁSICOS DE LINUX
+           ========================================================= -->
+      <section class="card" id="comandos">
+        <h2>9. Comandos básicos de Linux (Fedora/RHEL y Debian)</h2>
+        <p>
+          Los comandos de navegación y manejo de archivos son en su mayoría
+          <strong>iguales en todas las distribuciones</strong> de Linux. Las
+          diferencias principales aparecen en los
+          <strong>gestores de paquetes</strong>, ya que AlmaLinux (basado en
+          Fedora/RHEL) utiliza <code>dnf</code>, mientras que distribuciones
+          basadas en Debian (como Ubuntu) utilizan <code>apt</code>.
+        </p>
+
+        <h3>Comandos generales de navegación y archivos</h3>
+        <table>
+          <tr>
+            <th>Comando</th>
+            <th>Explicación</th>
+          </tr>
+          <tr>
+            <td><code>pwd</code></td>
+            <td>Muestra el directorio (carpeta) en el que se encuentra el usuario actualmente.</td>
+          </tr>
+          <tr>
+            <td><code>ls</code></td>
+            <td>Lista los archivos y directorios contenidos en la carpeta actual.</td>
+          </tr>
+          <tr>
+            <td><code>ls -l</code></td>
+            <td>Lista los archivos con detalles: permisos, propietario, tamaño y fecha.</td>
+          </tr>
+          <tr>
+            <td><code>cd nombre_carpeta</code></td>
+            <td>Cambia de directorio (se mueve hacia otra carpeta).</td>
+          </tr>
+          <tr>
+            <td><code>cd ..</code></td>
+            <td>Retrocede un nivel, hacia la carpeta superior.</td>
+          </tr>
+          <tr>
+            <td><code>mkdir nombre</code></td>
+            <td>Crea un nuevo directorio (carpeta).</td>
+          </tr>
+          <tr>
+            <td><code>touch archivo</code></td>
+            <td>Crea un archivo vacío.</td>
+          </tr>
+          <tr>
+            <td><code>rm archivo</code></td>
+            <td>Elimina un archivo.</td>
+          </tr>
+          <tr>
+            <td><code>rm -r carpeta</code></td>
+            <td>Elimina una carpeta y todo su contenido.</td>
+          </tr>
+          <tr>
+            <td><code>cp origen destino</code></td>
+            <td>Copia un archivo o carpeta.</td>
+          </tr>
+          <tr>
+            <td><code>mv origen destino</code></td>
+            <td>Mueve o renombra un archivo o carpeta.</td>
+          </tr>
+          <tr>
+            <td><code>cat archivo</code></td>
+            <td>Muestra el contenido de un archivo de texto en pantalla.</td>
+          </tr>
+          <tr>
+            <td><code>sudo comando</code></td>
+            <td>Ejecuta un comando con permisos de administrador (superusuario).</td>
+          </tr>
+          <tr>
+            <td><code>clear</code></td>
+            <td>Limpia la pantalla de la terminal.</td>
+          </tr>
+        </table>
+
+        <h3>Gestión de paquetes: Fedora/RHEL (AlmaLinux) vs Debian</h3>
+        <p>
+          AlmaLinux 9, al estar basado en la familia
+          <strong>Fedora/RHEL</strong>, utiliza el gestor de paquetes
+          <code>dnf</code>. Distribuciones como Ubuntu o Debian utilizan
+          <code>apt</code>. Ambos cumplen la misma función: instalar,
+          actualizar y eliminar programas.
+        </p>
+
+        <table>
+          <tr>
+            <th>Acción</th>
+            <th>Fedora / RHEL / AlmaLinux (<code>dnf</code>)</th>
+            <th>Debian / Ubuntu (<code>apt</code>)</th>
+          </tr>
+          <tr>
+            <td>Actualizar lista de paquetes</td>
+            <td><code>sudo dnf check-update</code></td>
+            <td><code>sudo apt update</code></td>
+          </tr>
+          <tr>
+            <td>Actualizar el sistema</td>
+            <td><code>sudo dnf update</code></td>
+            <td><code>sudo apt upgrade</code></td>
+          </tr>
+          <tr>
+            <td>Instalar un paquete</td>
+            <td><code>sudo dnf install nombre</code></td>
+            <td><code>sudo apt install nombre</code></td>
+          </tr>
+          <tr>
+            <td>Eliminar un paquete</td>
+            <td><code>sudo dnf remove nombre</code></td>
+            <td><code>sudo apt remove nombre</code></td>
+          </tr>
+          <tr>
+            <td>Buscar un paquete</td>
+            <td><code>dnf search nombre</code></td>
+            <td><code>apt search nombre</code></td>
+          </tr>
+        </table>
+
+        <div class="warning">
+          <strong>Nota:</strong> aunque los comandos de administración de
+          paquetes cambian entre familias de distribuciones, los comandos
+          básicos de navegación y manejo de archivos (<code>ls</code>,
+          <code>cd</code>, <code>mkdir</code>, <code>rm</code>, etc.) son
+          los mismos en cualquier distribución Linux.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           10. CREAR UN DIRECTORIO
+           ========================================================= -->
+      <section class="card" id="crear-directorio">
+        <h2>10. Pasos para crear un directorio</h2>
+        <p>
+          Un <strong>directorio</strong> (carpeta) permite organizar
+          archivos dentro del sistema. Se crea con el comando
+          <code>mkdir</code> (make directory).
+        </p>
+
+        <ol class="pasos">
+          <li>
+            <strong>Abrir la terminal</strong>
+            En AlmaLinux, abrir una terminal desde el menú de aplicaciones
+            o presionando <code>Ctrl + Alt + T</code> (según el entorno gráfico).
+          </li>
+          <li>
+            <strong>Ubicarse en la carpeta deseada</strong>
+            Usar <code>cd</code> para moverse hasta el lugar donde se creará
+            el nuevo directorio. Ejemplo: <code>cd /home/usuario</code>
+          </li>
+          <li>
+            <strong>Ejecutar el comando <code>mkdir</code></strong>
+            Escribir <code>mkdir nombre_carpeta</code> y presionar Enter.
+          </li>
+          <li>
+            <strong>Verificar la creación</strong>
+            Ejecutar <code>ls</code> para comprobar que la nueva carpeta
+            aparece en el listado.
+          </li>
+        </ol>
+
+        <pre><code>$ cd /home/usuario
+$ mkdir practica01
+$ ls
+practica01</code></pre>
+
+        <div class="info">
+          <strong>Tip:</strong> el parámetro <code>-p</code> permite crear
+          varias carpetas anidadas de una sola vez, por ejemplo:
+          <code>mkdir -p proyectos/os/practica01</code>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           11. CREAR UN ARCHIVO
+           ========================================================= -->
+      <section class="card" id="crear-archivo">
+        <h2>11. Pasos para crear un archivo</h2>
+        <p>
+          En Linux existen varias formas de crear archivos desde la
+          terminal. Las más comunes son con el comando <code>touch</code>
+          (para archivos vacíos) o con editores de texto como
+          <code>nano</code> o <code>vi</code>.
+        </p>
+
+        <h3>Opción 1: crear un archivo vacío con <code>touch</code></h3>
+        <ol class="pasos">
+          <li>
+            <strong>Ubicarse en el directorio deseado</strong>
+            Usar <code>cd</code> para posicionarse en la carpeta correspondiente.
+          </li>
+          <li>
+            <strong>Ejecutar <code>touch</code></strong>
+            Escribir <code>touch nombre_archivo.txt</code> y presionar Enter.
+          </li>
+          <li>
+            <strong>Verificar</strong>
+            Ejecutar <code>ls</code> para confirmar que el archivo fue creado.
+          </li>
+        </ol>
+
+        <pre><code>$ cd practica01
+$ touch notas.txt
+$ ls
+notas.txt</code></pre>
+
+        <h3>Opción 2: crear un archivo con contenido usando <code>nano</code></h3>
+        <ol class="pasos">
+          <li>
+            <strong>Abrir el editor</strong>
+            Escribir <code>nano nombre_archivo.txt</code> y presionar Enter.
+          </li>
+          <li>
+            <strong>Escribir el contenido</strong>
+            Redactar el texto deseado dentro del editor.
+          </li>
+          <li>
+            <strong>Guardar</strong>
+            Presionar <code>Ctrl + O</code> y luego Enter para guardar los cambios.
+          </li>
+          <li>
+            <strong>Salir</strong>
+            Presionar <code>Ctrl + X</code> para cerrar el editor.
+          </li>
+        </ol>
+
+        <pre><code>$ nano notas.txt
+(escribir contenido)
+Ctrl + O   → guardar
+Enter      → confirmar nombre
+Ctrl + X   → salir</code></pre>
+
+        <div class="success">
+          <strong>Resultado:</strong> el archivo quedará almacenado en el
+          directorio actual y podrá visualizarse con el comando
+          <code>cat notas.txt</code>.
+        </div>
+      </section>
+
+      <!-- =========================================================
+           12. CONTENIDO ADICIONAL (ACORDEÓN)
+           ========================================================= -->
+      <section class="card" id="contenido-avanzado">
+        <h2>12. Contenido adicional</h2>
+        <p>
+          Haz clic en el botón <strong>+</strong> de cada tema para desplegar
+          la información. Vuelve a hacer clic para ocultarla.
+        </p>
+
+        <!-- ============ 1. EXT4 vs XFS ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>1. Diferencias entre ext4 y XFS</h3>
+              <span>¿Cuál se usa más en Linux en general y en AlmaLinux? ¿Por qué?</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+            <table>
+              <tr>
+                <th>Aspecto</th>
+                <th>ext4</th>
+                <th>XFS</th>
+              </tr>
+              <tr>
+                <td>Origen</td>
+                <td>Evolución de ext2/ext3, desarrollado por la comunidad Linux.</td>
+                <td>Creado por Silicon Graphics (SGI) en 1994 para IRIX, luego portado a Linux.</td>
+              </tr>
+              <tr>
+                <td>Reducir tamaño (shrink)</td>
+                <td>Sí, se puede reducir y ampliar.</td>
+                <td>No se puede reducir, solo ampliar (grow).</td>
+              </tr>
+              <tr>
+                <td>Rendimiento con archivos grandes</td>
+                <td>Bueno para uso general.</td>
+                <td>Superior; optimizado para archivos muy grandes y alta concurrencia.</td>
+              </tr>
+              <tr>
+                <td>Journaling (registro de cambios)</td>
+                <td>Sí</td>
+                <td>Sí</td>
+              </tr>
+              <tr>
+                <td>Tamaño máximo de archivo</td>
+                <td>16 TB</td>
+                <td>8 EB (teórico)</td>
+              </tr>
+              <tr>
+                <td>Distribuciones que lo usan por defecto</td>
+                <td>Debian, Ubuntu, distribuciones de escritorio en general.</td>
+                <td>RHEL, AlmaLinux, CentOS, Rocky Linux, Fedora Server.</td>
+              </tr>
+            </table>
+
+            <h4>¿Cuál se usa más en Linux en general?</h4>
+            <p>
+              A nivel general (todas las distribuciones combinadas),
+              <strong>ext4 sigue siendo el más utilizado</strong>, principalmente
+              porque es el predeterminado en distribuciones de escritorio muy
+              populares (Debian, Ubuntu, Linux Mint) y porque permite
+              redimensionar particiones con mayor flexibilidad.
+            </p>
+
+            <h4>¿Cuál usa AlmaLinux y por qué?</h4>
+            <p>
+              AlmaLinux (al igual que RHEL, desde su versión 7) utiliza
+              <strong>XFS como sistema de archivos predeterminado</strong>. La
+              razón es que XFS ofrece mejor rendimiento en entornos de
+              <strong>servidor empresarial</strong>: maneja mejor archivos de
+              gran tamaño, bases de datos, alta concurrencia de
+              lectura/escritura y permite crecer el sistema de archivos en
+              caliente (sin desmontar), algo fundamental en servidores que no
+              pueden detenerse.
+            </p>
+          </div>
+        </div>
+
+        <!-- ============ 2. FS de Debian y Fedora ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>2. Sistemas de archivos de Debian y Fedora</h3>
+              <span>Qué usa cada distribución por defecto</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+            <table>
+              <tr>
+                <th>Distribución</th>
+                <th>Sistema de archivos por defecto</th>
+                <th>Observación</th>
+              </tr>
+              <tr>
+                <td>Debian</td>
+                <td>ext4</td>
+                <td>El instalador permite elegir también Btrfs, XFS o JFS manualmente.</td>
+              </tr>
+              <tr>
+                <td>Ubuntu (basado en Debian)</td>
+                <td>ext4</td>
+                <td>Algunas variantes ofrecen ZFS de forma experimental.</td>
+              </tr>
+              <tr>
+                <td>Fedora Workstation</td>
+                <td>Btrfs (desde Fedora 33)</td>
+                <td>Antes de Fedora 33 usaba ext4 por defecto. Btrfs permite snapshots del sistema.</td>
+              </tr>
+              <tr>
+                <td>Fedora Server</td>
+                <td>XFS</td>
+                <td>Mantiene coherencia con RHEL, ya que Fedora es la base de desarrollo de RHEL.</td>
+              </tr>
+              <tr>
+                <td>AlmaLinux / RHEL / CentOS</td>
+                <td>XFS</td>
+                <td>Orientado a servidores empresariales.</td>
+              </tr>
+            </table>
+            <p>
+              En resumen: las distribuciones de la <strong>familia Debian</strong>
+              (Debian, Ubuntu) priorizan <strong>ext4</strong> por su
+              estabilidad y simplicidad; las de la <strong>familia
+              Fedora/RHEL</strong> (Fedora, AlmaLinux) priorizan
+              <strong>XFS o Btrfs</strong> según el enfoque (servidor o
+              escritorio con snapshots).
+            </p>
+          </div>
+        </div>
+
+        <!-- ============ 3. Permisos rwx y numérico ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>3. Permisos rwx y notación numérica</h3>
+              <span>Ejemplos: 777, 741, 644, 755, entre otros</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+            <p>
+              En Linux, cada archivo o directorio tiene permisos definidos
+              para tres grupos: <strong>propietario (u)</strong>,
+              <strong>grupo (g)</strong> y <strong>otros (o)</strong>. Cada
+              grupo puede tener permiso de <strong>lectura (r)</strong>,
+              <strong>escritura (w)</strong> y <strong>ejecución (x)</strong>.
+            </p>
+
+            <h4>Valores numéricos</h4>
+            <table>
+              <tr>
+                <th>Permiso</th>
+                <th>Letra</th>
+                <th>Valor numérico</th>
+              </tr>
+              <tr>
+                <td>Lectura</td>
+                <td>r</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>Escritura</td>
+                <td>w</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Ejecución</td>
+                <td>x</td>
+                <td>1</td>
+              </tr>
+            </table>
+            <p>Se suman los valores para obtener el número de cada grupo (propietario / grupo / otros).</p>
+
+            <h4>Ejemplos comunes</h4>
+            <table>
+              <tr>
+                <th>Numérico</th>
+                <th>Notación rwx</th>
+                <th>Significado</th>
+              </tr>
+              <tr>
+                <td><code>777</code></td>
+                <td><code>rwxrwxrwx</code></td>
+                <td>Todos (propietario, grupo y otros) pueden leer, escribir y ejecutar. <strong>Riesgo de seguridad</strong> si se usa sin necesidad.</td>
+              </tr>
+              <tr>
+                <td><code>741</code></td>
+                <td><code>rwxr----x</code></td>
+                <td>Propietario: todo. Grupo: solo lectura. Otros: solo ejecución.</td>
+              </tr>
+              <tr>
+                <td><code>644</code></td>
+                <td><code>rw-r--r--</code></td>
+                <td>Típico en archivos de texto: propietario lee/escribe, grupo y otros solo leen.</td>
+              </tr>
+              <tr>
+                <td><code>755</code></td>
+                <td><code>rwxr-xr-x</code></td>
+                <td>Típico en directorios y ejecutables: propietario todo, grupo y otros leen/ejecutan.</td>
+              </tr>
+              <tr>
+                <td><code>700</code></td>
+                <td><code>rwx------</code></td>
+                <td>Solo el propietario tiene acceso total; nadie más puede acceder.</td>
+              </tr>
+              <tr>
+                <td><code>600</code></td>
+                <td><code>rw-------</code></td>
+                <td>Solo el propietario puede leer y escribir (usado en archivos de claves privadas, ej. SSH).</td>
+              </tr>
+            </table>
+
+            <h4>Comandos para modificar permisos</h4>
+            <pre><code>$ chmod 755 script.sh        # asigna rwxr-xr-x
+$ chmod 644 documento.txt     # asigna rw-r--r--
+$ chmod u+x script.sh         # agrega ejecución solo al propietario
+$ chmod go-w archivo.txt      # quita escritura a grupo y otros
+$ chmod -R 755 /var/www/html  # aplica de forma recursiva a una carpeta</code></pre>
+          </div>
+        </div>
+
+        <!-- ============ 4. BitLocker y encriptación en Linux ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>4. BitLocker y encriptación en Linux</h3>
+              <span>Cifrado de disco: Windows vs Linux</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+            <h4>BitLocker (Windows)</h4>
+            <p>
+              <strong>BitLocker</strong> es la tecnología de cifrado de disco
+              completo de Microsoft Windows. Cifra el volumen completo usando
+              el algoritmo <strong>AES</strong> y, cuando el equipo lo
+              soporta, almacena la clave de cifrado en un chip
+              <strong>TPM (Trusted Platform Module)</strong> de la placa
+              madre, lo que permite desbloquear el disco automáticamente al
+              iniciar sesión en el mismo equipo.
+            </p>
+
+            <h4>Encriptación en Linux: LUKS</h4>
+            <p>
+              El equivalente en Linux es <strong>LUKS (Linux Unified Key
+              Setup)</strong>, utilizado junto con <code>dm-crypt</code> (el
+              módulo del kernel que realiza el cifrado). LUKS cifra la
+              partición completa y solicita una contraseña (o llave) para
+              desbloquearla antes de montarla.
+            </p>
+
+            <pre><code>$ cryptsetup luksFormat /dev/sdb1     # cifra la partición
+$ cryptsetup open /dev/sdb1 datos_cifrados  # la desbloquea
+$ mkfs.xfs /dev/mapper/datos_cifrados  # crea el sistema de archivos
+$ mount /dev/mapper/datos_cifrados /mnt/datos</code></pre>
+
+            <table>
+              <tr>
+                <th>Aspecto</th>
+                <th>BitLocker</th>
+                <th>LUKS</th>
+              </tr>
+              <tr>
+                <td>Sistema operativo</td>
+                <td>Windows</td>
+                <td>Linux</td>
+              </tr>
+              <tr>
+                <td>Algoritmo</td>
+                <td>AES</td>
+                <td>AES (entre otros)</td>
+              </tr>
+              <tr>
+                <td>Uso de TPM</td>
+                <td>Sí (opcional/recomendado)</td>
+                <td>Opcional, generalmente se usa contraseña o archivo llave</td>
+              </tr>
+              <tr>
+                <td>Licencia</td>
+                <td>Propietaria (integrada en Windows Pro/Enterprise)</td>
+                <td>Software libre, integrado en el kernel Linux</td>
+              </tr>
+            </table>
+
+            <div class="info">
+              <strong>Nota:</strong> AlmaLinux permite habilitar el cifrado
+              LUKS directamente desde el instalador Anaconda, marcando la
+              opción <em>"Cifrar mis datos"</em> durante el particionado.
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ 5. SELinux ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>5. Permisos de SELinux</h3>
+              <span>Comandos para identificar y modificar el contexto de seguridad</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+            <p>
+              <strong>SELinux (Security-Enhanced Linux)</strong> es un sistema
+              de <strong>control de acceso obligatorio (MAC)</strong>
+              desarrollado originalmente por la NSA e integrado por defecto
+              en AlmaLinux, RHEL y Fedora. Añade una capa adicional de
+              seguridad además de los permisos tradicionales rwx, controlando
+              qué procesos pueden acceder a qué archivos según su
+              <strong>contexto de seguridad</strong>.
+            </p>
+
+            <h4>Modos de SELinux</h4>
+            <table>
+              <tr>
+                <th>Modo</th>
+                <th>Descripción</th>
+              </tr>
+              <tr>
+                <td><strong>Enforcing</strong></td>
+                <td>SELinux aplica las políticas y bloquea lo no permitido (modo por defecto en AlmaLinux).</td>
+              </tr>
+              <tr>
+                <td><strong>Permissive</strong></td>
+                <td>Registra las violaciones en el log, pero no bloquea nada. Útil para depurar.</td>
+              </tr>
+              <tr>
+                <td><strong>Disabled</strong></td>
+                <td>SELinux está completamente desactivado.</td>
+              </tr>
+            </table>
+
+            <h4>Comandos para identificar el estado y contexto</h4>
+            <pre><code>$ getenforce                  # muestra el modo actual (Enforcing/Permissive/Disabled)
+$ sestatus                    # muestra el estado detallado de SELinux
+$ ls -Z /var/www/html         # muestra el contexto de seguridad de archivos
+$ ps -Z                       # muestra el contexto de seguridad de los procesos</code></pre>
+
+            <p>Ejemplo de salida de <code>ls -Z</code>:</p>
+            <pre><code>-rw-r--r--. root root unconfined_u:object_r:httpd_sys_content_t:s0 index.html</code></pre>
+            <p>
+              El contexto se compone de cuatro partes:
+              <code>usuario_selinux:rol:tipo:nivel</code>. El campo más
+              relevante para la administración diaria es el
+              <strong>tipo</strong> (en el ejemplo, <code>httpd_sys_content_t</code>),
+              que indica que el archivo puede ser leído por el servicio web Apache.
+            </p>
+
+            <h4>Comandos para modificar</h4>
+            <pre><code>$ setenforce 1                       # activa modo Enforcing
+$ setenforce 0                       # cambia a modo Permissive
+$ chcon -t httpd_sys_content_t archivo.html   # cambia el tipo de contexto (temporal)
+$ restorecon -Rv /var/www/html       # restaura el contexto por defecto de forma recursiva
+$ semanage fcontext -a -t httpd_sys_content_t "/sitio(/.*)?"  # define regla permanente
+$ setsebool -P httpd_can_network_connect on   # activa un booleano de SELinux de forma persistente</code></pre>
+
+            <div class="warning">
+              <strong>Importante:</strong> <code>chcon</code> aplica cambios
+              temporales que se pierden si se reetiqueta el sistema; para
+              cambios permanentes se debe usar <code>semanage fcontext</code>
+              seguido de <code>restorecon</code>.
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ 6. ls -l / ps aux / ps / top ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>6. Explicación de ls -l, ps aux, ps y top</h3>
+              <span>Cómo interpretar cada columna de la salida</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+
+            <h4><code>ls -l</code> — detalle de archivos</h4>
+            <pre><code>-rwxr-xr-x. 1 root root 4096 sep 20 10:15 script.sh</code></pre>
+            <table>
+              <tr><th>Campo</th><th>Ejemplo</th><th>Significado</th></tr>
+              <tr><td>Tipo + permisos</td><td><code>-rwxr-xr-x</code></td><td>"-" archivo normal ("d" directorio); permisos rwx de propietario/grupo/otros.</td></tr>
+              <tr><td>Enlaces</td><td><code>1</code></td><td>Cantidad de enlaces duros al archivo.</td></tr>
+              <tr><td>Propietario</td><td><code>root</code></td><td>Usuario dueño del archivo.</td></tr>
+              <tr><td>Grupo</td><td><code>root</code></td><td>Grupo dueño del archivo.</td></tr>
+              <tr><td>Tamaño</td><td><code>4096</code></td><td>Tamaño en bytes.</td></tr>
+              <tr><td>Fecha</td><td><code>sep 20 10:15</code></td><td>Fecha de última modificación.</td></tr>
+              <tr><td>Nombre</td><td><code>script.sh</code></td><td>Nombre del archivo.</td></tr>
+            </table>
+
+            <h4><code>ps aux</code> — todos los procesos del sistema</h4>
+            <pre><code>USER   PID  %CPU %MEM   VSZ   RSS TTY  STAT START   TIME COMMAND
+root     1   0.0  0.2 16944  9200 ?    Ss   09:00   0:02 /usr/lib/systemd/systemd
+user  1523   0.5  1.1 345212 45012 ?   Sl   09:05   0:10 firefox</code></pre>
+            <table>
+              <tr><th>Columna</th><th>Significado</th></tr>
+              <tr><td>USER</td><td>Usuario propietario del proceso.</td></tr>
+              <tr><td>PID</td><td>Identificador único del proceso.</td></tr>
+              <tr><td>%CPU / %MEM</td><td>Porcentaje de CPU y memoria RAM utilizados.</td></tr>
+              <tr><td>VSZ / RSS</td><td>Memoria virtual y memoria física real usada (en KB).</td></tr>
+              <tr><td>STAT</td><td>Estado del proceso: <code>R</code> ejecutando, <code>S</code> durmiendo, <code>D</code> espera de E/S, <code>Z</code> zombi, <code>T</code> detenido.</td></tr>
+              <tr><td>START / TIME</td><td>Hora de inicio y tiempo total de CPU consumido.</td></tr>
+              <tr><td>COMMAND</td><td>Comando que originó el proceso.</td></tr>
+            </table>
+
+            <h4><code>ps</code> (sin opciones) — procesos de la sesión actual</h4>
+            <pre><code>  PID TTY          TIME CMD
+ 2044 pts/0    00:00:00 bash
+ 2101 pts/0    00:00:00 ps</code></pre>
+            <p>
+              A diferencia de <code>ps aux</code>, el comando <code>ps</code>
+              solo muestra los procesos asociados a la terminal actual del
+              usuario (columnas PID, TTY, TIME y CMD).
+            </p>
+
+            <h4><code>top</code> — monitor interactivo en tiempo real</h4>
+            <pre><code>top - 10:32:01 up 2:15,  2 users,  load average: 0.35, 0.20, 0.10
+Tasks: 145 total,   1 running, 144 sleeping
+%Cpu(s):  4.3 us,  1.1 sy,  0.0 ni, 94.2 id
+MiB Mem :  3900.0 total,  1200.5 free,  1500.2 used
+
+  PID USER  PR  NI    VIRT    RES    SHR S  %CPU %MEM   TIME+ COMMAND
+ 1523 user  20   0  345212  45012  30020 S   1.3   1.1   0:10.44 firefox</code></pre>
+            <table>
+              <tr><th>Campo</th><th>Significado</th></tr>
+              <tr><td>load average</td><td>Carga promedio del sistema en 1, 5 y 15 minutos.</td></tr>
+              <tr><td>PR / NI</td><td>Prioridad y "nice" (ajuste de prioridad, de -20 a 19).</td></tr>
+              <tr><td>VIRT / RES / SHR</td><td>Memoria virtual, residente y compartida.</td></tr>
+              <tr><td>S</td><td>Estado del proceso (mismo criterio que STAT en ps aux).</td></tr>
+            </table>
+            <p>
+              Teclas útiles dentro de <code>top</code>:
+              <code>q</code> salir, <code>k</code> matar un proceso (pide PID),
+              <code>M</code> ordenar por uso de memoria, <code>P</code> ordenar por uso de CPU.
+            </p>
+          </div>
+        </div>
+
+        <!-- ============ 7. Particionado física, lógica y LVM ============ -->
+        <div class="acordeon-item">
+          <div class="acordeon-header" onclick="toggleAcordeon(this)">
+            <div class="acordeon-header-texto">
+              <h3>7. Partición física, lógica y por grupos (LVM)</h3>
+              <span>Comandos y ejemplos, además del swap</span>
+            </div>
+            <div class="acordeon-btn">+</div>
+          </div>
+          <div class="acordeon-body">
+
+            <h4>Partición primaria (física)</h4>
+            <p>
+              En el esquema clásico <strong>MBR</strong>, un disco admite
+              hasta <strong>4 particiones primarias</strong>. En discos con
+              tabla <strong>GPT</strong> (la utilizada por defecto en
+              AlmaLinux 9), se permiten hasta 128 particiones.
+            </p>
+            <pre><code>$ sudo fdisk /dev/sdb
+Command (m for help): n      # nueva partición
+Partition type: p            # primaria
+Partition number (1-4): 1
+First sector: (Enter para el valor por defecto)
+Last sector: +10G            # tamaño de la partición
+Command (m for help): w      # escribir cambios en el disco</code></pre>
+
+            <h4>Partición extendida y lógica</h4>
+            <p>
+              Como el esquema MBR limita a 4 particiones primarias, si se
+              necesitan más se crea una <strong>partición extendida</strong>
+              (que ocupa uno de esos 4 espacios) y dentro de ella se crean
+              <strong>particiones lógicas</strong> ilimitadas (en la práctica).
+            </p>
+            <pre><code>Command (m for help): n
+Partition type: e            # extendida
+...
+Command (m for help): n
+Partition type: l            # lógica (dentro de la extendida)</code></pre>
+
+            <h4>Particionado con parted (GPT)</h4>
+            <pre><code>$ sudo parted /dev/sdb mklabel gpt
+$ sudo parted /dev/sdb mkpart primary xfs 0% 50%
+$ sudo parted /dev/sdb mkpart primary xfs 50% 100%
+$ sudo mkfs.xfs /dev/sdb1</code></pre>
+
+            <h4>Grupos de volúmenes: LVM (Logical Volume Manager)</h4>
+            <p>
+              LVM permite agrupar una o varias particiones/discos físicos en
+              un <strong>grupo de volúmenes (VG)</strong> y luego crear
+              <strong>volúmenes lógicos (LV)</strong> flexibles, que se pueden
+              ampliar o reducir sin depender de la posición física en el
+              disco. Es el esquema que utiliza AlmaLinux por defecto para la
+              partición raíz.
+            </p>
+            <pre><code>$ sudo pvcreate /dev/sdb1              # crea el volumen físico (PV)
+$ sudo vgcreate vg_datos /dev/sdb1     # crea el grupo de volúmenes (VG)
+$ sudo lvcreate -L 10G -n lv_datos vg_datos   # crea el volumen lógico (LV) de 10 GB
+$ sudo mkfs.xfs /dev/vg_datos/lv_datos # formatea el volumen lógico
+$ sudo mount /dev/vg_datos/lv_datos /mnt/datos # lo monta
+
+# Ampliar un volumen lógico ya existente en 5 GB más:
+$ sudo lvextend -L +5G /dev/vg_datos/lv_datos
+$ sudo xfs_growfs /dev/vg_datos/lv_datos</code></pre>
+
+            <table>
+              <tr>
+                <th>Nivel</th>
+                <th>Nombre técnico</th>
+                <th>Comando principal</th>
+              </tr>
+              <tr>
+                <td>Disco completo</td>
+                <td>Physical Volume (PV)</td>
+                <td><code>pvcreate</code></td>
+              </tr>
+              <tr>
+                <td>Agrupación de discos/particiones</td>
+                <td>Volume Group (VG)</td>
+                <td><code>vgcreate</code></td>
+              </tr>
+              <tr>
+                <td>Partición lógica flexible dentro del grupo</td>
+                <td>Logical Volume (LV)</td>
+                <td><code>lvcreate</code></td>
+              </tr>
+            </table>
+
+            <div class="info">
+              <strong>Nota:</strong> la partición <code>swap</code> ya fue
+              explicada en la sección 8 (Particionado y sistemas de
+              archivos); puede crearse tanto como partición física
+              tradicional (<code>mkswap</code> + <code>swapon</code>) como
+              dentro de un volumen lógico LVM.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =========================================================
+           13. ACTIVIDAD
+           ========================================================= -->
+      <section class="card" id="actividad">
+        <h2>13. Actividad Práctica</h2>
+        <div class="activity">
+          <h3>Actividad 1 – Instalación</h3>
+          <p>
+            Instalar VirtualBox en la computadora y crear una máquina virtual
+            con los recursos recomendados para AlmaLinux 9.
+          </p>
+          <h3>Actividad 2 – Instalación del sistema operativo</h3>
+          <p>
+            Instalar AlmaLinux 9 dentro de la máquina virtual creada,
+            utilizando particionado automático y sistema de archivos XFS.
+          </p>
+          <h3>Actividad 3 – Práctica de comandos</h3>
+          <ol>
+            <li>Abrir una terminal en AlmaLinux 9.</li>
+            <li>Crear un directorio llamado <code>practica_os</code>.</li>
+            <li>Ingresar al directorio creado.</li>
+            <li>Crear dos archivos: uno con <code>touch</code> y otro con <code>nano</code>.</li>
+            <li>Listar el contenido del directorio con <code>ls -l</code>.</li>
+            <li>Investigar la diferencia entre <code>dnf</code> y <code>apt</code>.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           14. CUESTIONARIO
+           ========================================================= -->
+      <section class="card" id="cuestionario">
+        <h2>14. Cuestionario de repaso</h2>
+        <p>
+          Responde las siguientes <strong>10 preguntas de selección
+          múltiple</strong> sobre los temas vistos: VirtualBox, AlmaLinux 9,
+          particionado, sistemas de archivos y comandos básicos de Linux.
+          Al finalizar, presiona <strong>"Corregir cuestionario"</strong>
+          para ver tu puntaje.
+        </p>
+
+        <form id="quiz-form">
+
+          <!-- PREGUNTA 1 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">1. ¿Quién creó originalmente VirtualBox y en qué año?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q1" value="a"> Oracle, en 2010</label>
+              <label><input type="radio" name="q1" value="b"> Innotek GmbH, en 2007</label>
+              <label><input type="radio" name="q1" value="c"> Sun Microsystems, en 2005</label>
+              <label><input type="radio" name="q1" value="d"> Red Hat, en 2008</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 2 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">2. ¿Qué tipo de hipervisor es VirtualBox?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q2" value="a"> Tipo 1 (bare-metal)</label>
+              <label><input type="radio" name="q2" value="b"> Tipo 2 (hosted, sobre un sistema anfitrión)</label>
+              <label><input type="radio" name="q2" value="c"> Un contenedor de aplicaciones</label>
+              <label><input type="radio" name="q2" value="d"> Un emulador de hardware puro</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 3 -->
+          <div class="quiz-pregunta" data-correcta="c">
+            <p class="enunciado">3. ¿Cuál es el tamaño mínimo de disco recomendado para instalar AlmaLinux 9 en una máquina virtual?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q3" value="a"> 5 GB</label>
+              <label><input type="radio" name="q3" value="b"> 10 GB</label>
+              <label><input type="radio" name="q3" value="c"> 20 GB</label>
+              <label><input type="radio" name="q3" value="d"> 50 GB</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 4 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">4. ¿Cómo se llama el instalador gráfico utilizado por AlmaLinux 9?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q4" value="a"> YaST</label>
+              <label><input type="radio" name="q4" value="b"> Anaconda</label>
+              <label><input type="radio" name="q4" value="c"> Calamares</label>
+              <label><input type="radio" name="q4" value="d"> Ubiquity</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 5 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">5. ¿En qué año y por qué empresa fue creado AlmaLinux?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q5" value="a"> 2019, por Red Hat</label>
+              <label><input type="radio" name="q5" value="b"> 2021, por CloudLinux</label>
+              <label><input type="radio" name="q5" value="c"> 2015, por Canonical</label>
+              <label><input type="radio" name="q5" value="d"> 2021, por Oracle</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 6 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">6. ¿Cuál es la principal diferencia entre AlmaLinux y RHEL?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q6" value="a"> AlmaLinux no es compatible con RHEL</label>
+              <label><input type="radio" name="q6" value="b"> RHEL requiere suscripción paga; AlmaLinux es gratuito</label>
+              <label><input type="radio" name="q6" value="c"> AlmaLinux solo funciona en máquinas virtuales</label>
+              <label><input type="radio" name="q6" value="d"> RHEL es de código abierto y AlmaLinux no</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 7 -->
+          <div class="quiz-pregunta" data-correcta="c">
+            <p class="enunciado">7. ¿Cuál es el sistema de archivos predeterminado en AlmaLinux 9?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q7" value="a"> ext4</label>
+              <label><input type="radio" name="q7" value="b"> NTFS</label>
+              <label><input type="radio" name="q7" value="c"> XFS</label>
+              <label><input type="radio" name="q7" value="d"> FAT32</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 8 -->
+          <div class="quiz-pregunta" data-correcta="c">
+            <p class="enunciado">8. ¿Qué partición almacena el kernel y los archivos necesarios para el arranque del sistema?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q8" value="a"> /home</label>
+              <label><input type="radio" name="q8" value="b"> swap</label>
+              <label><input type="radio" name="q8" value="c"> /boot</label>
+              <label><input type="radio" name="q8" value="d"> / (root)</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 9 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">9. ¿Qué gestor de paquetes utiliza AlmaLinux, por pertenecer a la familia Fedora/RHEL?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q9" value="a"> apt</label>
+              <label><input type="radio" name="q9" value="b"> dnf</label>
+              <label><input type="radio" name="q9" value="c"> pacman</label>
+              <label><input type="radio" name="q9" value="d"> zypper</label>
+            </div>
+          </div>
+
+          <!-- PREGUNTA 10 -->
+          <div class="quiz-pregunta" data-correcta="b">
+            <p class="enunciado">10. ¿Qué comando se utiliza en Linux para crear un directorio?</p>
+            <div class="quiz-opciones">
+              <label><input type="radio" name="q10" value="a"> touch</label>
+              <label><input type="radio" name="q10" value="b"> mkdir</label>
+              <label><input type="radio" name="q10" value="c"> newdir</label>
+              <label><input type="radio" name="q10" value="d"> cd</label>
+            </div>
+          </div>
+
+          <button type="button" class="btn-corregir" onclick="corregirQuiz()">
+            Corregir cuestionario
+          </button>
+
+          <div id="quiz-resultado" class="quiz-resultado"></div>
+
+        </form>
+      </section>
+
+      <!-- =========================================================
+           15. CONCLUSIÓN
+           ========================================================= -->
+      <section class="card" id="conclusion">
+        <h2>15. Conclusión</h2>
+        <p>
+          La virtualización con VirtualBox permite experimentar con sistemas
+          operativos como AlmaLinux 9 de forma segura y controlada. Conocer
+          el origen de las herramientas utilizadas, el particionado del
+          disco, los sistemas de archivos y los comandos básicos de Linux
+          es fundamental para desenvolverse en el estudio y la
+          administración de sistemas operativos.
+        </p>
+        <div class="success">
+          <strong>Idea fundamental:</strong> la práctica constante en un
+          entorno virtual es la mejor forma de aprender Linux sin riesgo
+          para el equipo físico.
+        </div>
+      </section>
+
+      <footer>
+        <p>
+          <strong>UTIC - Universidad Tecnológica Intercontinental</strong>
+        </p>
+        <p>Carrera: Análisis de Sistemas Informáticos</p>
+        <p>Curso: Sistemas Operativos · Instalación de VirtualBox y AlmaLinux 9</p>
+      </footer>
+    </main>
+  </div>
+  <a class="top" href="#inicio" title="Volver arriba">↑</a>
+
+  <script>
+
+    /* =========================================================
+       BUSCADOR FLOTANTE
+       ========================================================= */
+
+    let indiceBusqueda = [];
+
+    function construirIndiceBusqueda() {
+      indiceBusqueda = [];
+      const contenedor = document.querySelector("main.content");
+      if (!contenedor) return;
+
+      const elementos = contenedor.querySelectorAll("h2, h3, h4, p, li, td, pre, .caption, label");
+
+      elementos.forEach((el) => {
+        const texto = el.textContent.replace(/\s+/g, " ").trim();
+        if (texto.length < 3) return;
+
+        const seccionEl = el.closest("section, header.hero");
+        let tituloSeccion = "General";
+        if (seccionEl) {
+          const encabezado = seccionEl.querySelector("h2");
+          if (encabezado) {
+            tituloSeccion = encabezado.textContent.replace(/\s+/g, " ").trim();
+          } else if (seccionEl.id === "inicio") {
+            tituloSeccion = "Inicio";
+          }
+        }
+
+        indiceBusqueda.push({ el: el, texto: texto, seccion: tituloSeccion });
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function escapeRegExp(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function generarSnippet(texto, q) {
+      const lower = texto.toLowerCase();
+      const idx = lower.indexOf(q.toLowerCase());
+      let inicio = Math.max(0, idx - 30);
+      let fin = Math.min(texto.length, idx + q.length + 45);
+      let fragmento = (inicio > 0 ? "…" : "") + texto.substring(inicio, fin) + (fin < texto.length ? "…" : "");
+
+      const seguro = escapeHtml(fragmento);
+      const regex = new RegExp("(" + escapeRegExp(escapeHtml(q)) + ")", "ig");
+      return seguro.replace(regex, "<mark>$1</mark>");
+    }
+
+    function buscarContenido(valor) {
+      const resultadosDiv = document.getElementById("buscador-resultados");
+      const limpiarBtn = document.getElementById("buscador-limpiar");
+      const q = valor.trim();
+
+      limpiarBtn.style.display = q.length > 0 ? "flex" : "none";
+
+      if (q.length < 2) {
+        resultadosDiv.style.display = "none";
+        resultadosDiv.innerHTML = "";
+        return;
+      }
+
+      const qLower = q.toLowerCase();
+      const coincidencias = indiceBusqueda.filter((item) => item.texto.toLowerCase().includes(qLower));
+
+      resultadosDiv.innerHTML = "";
+
+      if (coincidencias.length === 0) {
+        const vacio = document.createElement("div");
+        vacio.className = "buscador-item buscador-vacio";
+        vacio.textContent = 'Sin resultados para "' + q + '"';
+        resultadosDiv.appendChild(vacio);
+        resultadosDiv.style.display = "block";
+        return;
+      }
+
+      const limite = 25;
+      const limitados = coincidencias.slice(0, limite);
+
+      limitados.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "buscador-item";
+        const snippet = generarSnippet(item.texto, q);
+        div.innerHTML =
+          '<span class="buscador-seccion">' + escapeHtml(item.seccion) + "</span>" +
+          '<span class="buscador-snippet">' + snippet + "</span>";
+        div.onclick = () => irAResultado(item.el);
+        resultadosDiv.appendChild(div);
+      });
+
+      if (coincidencias.length > limite) {
+        const mas = document.createElement("div");
+        mas.className = "buscador-item buscador-mas";
+        mas.textContent = "+" + (coincidencias.length - limite) + " resultados más. Afina tu búsqueda.";
+        resultadosDiv.appendChild(mas);
+      }
+
+      resultadosDiv.style.display = "block";
+    }
+
+    function irAResultado(el) {
+      const acordeonItem = el.closest(".acordeon-item");
+      const necesitaAbrirAcordeon = acordeonItem && !acordeonItem.classList.contains("abierto");
+
+      if (necesitaAbrirAcordeon) {
+        toggleAcordeon(acordeonItem.querySelector(".acordeon-header"));
+      }
+
+      limpiarBusqueda();
+
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        resaltarElemento(el);
+      }, necesitaAbrirAcordeon ? 400 : 50);
+    }
+
+    function resaltarElemento(el) {
+      const fondoOriginal = el.style.backgroundColor;
+      el.style.transition = "background-color 0.3s ease";
+      el.style.backgroundColor = "#fff3cd";
+
+      setTimeout(() => {
+        el.style.backgroundColor = fondoOriginal;
+        setTimeout(() => { el.style.transition = ""; }, 900);
+      }, 1300);
+    }
+
+    function limpiarBusqueda() {
+      document.getElementById("buscador-input").value = "";
+      document.getElementById("buscador-limpiar").style.display = "none";
+      document.getElementById("buscador-resultados").style.display = "none";
+      document.getElementById("buscador-resultados").innerHTML = "";
+    }
+
+    function manejarTeclaBuscador(event) {
+      if (event.key === "Escape") {
+        limpiarBusqueda();
+        event.target.blur();
+      } else if (event.key === "Enter") {
+        const primerResultado = document.querySelector(".buscador-item:not(.buscador-vacio):not(.buscador-mas)");
+        if (primerResultado) primerResultado.click();
+      }
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".buscador-flotante")) {
+        const resultadosDiv = document.getElementById("buscador-resultados");
+        if (resultadosDiv) resultadosDiv.style.display = "none";
+      }
+    });
+
+    construirIndiceBusqueda();
+
+    /* =========================================================
+       ACORDEÓN "+"
+       ========================================================= */
+
+    function toggleAcordeon(header) {
+      const item = header.parentElement;
+      const body = item.querySelector(".acordeon-body");
+      const estaAbierto = item.classList.contains("abierto");
+
+      if (estaAbierto) {
+        body.style.maxHeight = null;
+        item.classList.remove("abierto");
+      } else {
+        item.classList.add("abierto");
+        body.style.maxHeight = body.scrollHeight + "px";
+      }
+    }
+
+    function corregirQuiz() {
+      const preguntas = document.querySelectorAll(".quiz-pregunta");
+      let correctas = 0;
+
+      preguntas.forEach((pregunta, index) => {
+        const respuestaCorrecta = pregunta.getAttribute("data-correcta");
+        const nombre = "q" + (index + 1);
+        const opciones = pregunta.querySelectorAll(".quiz-opciones label");
+        const seleccionada = pregunta.querySelector('input[name="' + nombre + '"]:checked');
+
+        opciones.forEach((label) => {
+          label.classList.remove("correcta", "incorrecta");
+          const input = label.querySelector("input");
+          if (input.value === respuestaCorrecta) {
+            label.classList.add("correcta");
+          }
+        });
+
+        if (seleccionada) {
+          if (seleccionada.value === respuestaCorrecta) {
+            correctas++;
+          } else {
+            seleccionada.closest("label").classList.add("incorrecta");
+          }
+        }
+      });
+
+      const resultado = document.getElementById("quiz-resultado");
+      resultado.style.display = "block";
+      resultado.textContent = "Resultado: " + correctas + " de " + preguntas.length + " respuestas correctas.";
+
+      if (correctas === preguntas.length) {
+        resultado.style.background = "#d4edda";
+        resultado.style.color = "#1e7e34";
+      } else if (correctas >= preguntas.length * 0.6) {
+        resultado.style.background = "#fff3cd";
+        resultado.style.color = "#8a6200";
+      } else {
+        resultado.style.background = "#f8d7da";
+        resultado.style.color = "#a30000";
+      }
+
+      resultado.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  </script>
+</body>
+
+</html>
