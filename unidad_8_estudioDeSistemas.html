@@ -1,0 +1,5928 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=bb2ef987-b97d-44f7-9676-55510d8f407b
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+    <meta name="hosting-provider" content="Netlify" />
+    <meta
+      name="netlify-deploy"
+      content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=bb2ef987-b97d-44f7-9676-55510d8f407b"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Medio siglo de sistemas operativos — Unix, DOS, Windows, Linux
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #ece6d6;
+        --paper-2: #e2dac4;
+        --ink: #211d14;
+        --ink-soft: #5b5644;
+        --rule: #c9bfa0;
+
+        --punch: #e6dec4;
+        --punch-ink: #3a2f1b;
+        --teletype: #b5672a;
+
+        --dos-blue: #0000aa;
+        --dos-blue-2: #0000d8;
+        --dos-text: #c7c7c7;
+        --dos-bright: #ffff55;
+
+        --win-teal: #01807e;
+        --win-teal-2: #016765;
+        --win-chrome: #c3c3c3;
+        --win-chrome-lo: #7e7e7e;
+        --win-chrome-hi: #ffffff;
+        --win-navy: #00007b;
+
+        --term-bg: #0c0f0b;
+        --term-bg-2: #12160f;
+        --term-text: #86c08a;
+        --term-text-dim: #4c7a50;
+
+        --debian: #a80030;
+        --ubuntu: #e95420;
+        --redhat: #ee0000;
+        --arch: #1793d1;
+        --bsd: #ab2b28;
+
+        --font-mono: "Space Mono", monospace;
+        --font-serif: "Source Serif 4", serif;
+        --font-pixel: "VT323", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-serif);
+        font-size: 18px;
+        line-height: 1.65;
+        overflow-x: hidden;
+      }
+
+      ::selection {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.15;
+      }
+
+      p {
+        margin: 0 0 1.15em 0;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .col {
+        max-width: 660px;
+        margin: 0 auto;
+        padding: 0 28px;
+      }
+
+      .col-wide {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 28px;
+      }
+
+      .year {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .year::before {
+        content: "";
+        width: 26px;
+        height: 1px;
+        background: currentColor;
+        display: inline-block;
+      }
+
+      section {
+        position: relative;
+        padding: 120px 0;
+        overflow: hidden;
+      }
+
+      section.tight {
+        padding: 90px 0;
+      }
+
+      /* --------------------------------------------------------
+     Regla vertical de progreso: cronología a la derecha
+     -------------------------------------------------------- */
+      .timeline-rail {
+        position: fixed;
+        right: 22px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 22px;
+      }
+
+      .rail-stop {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink-soft);
+        opacity: 0.55;
+        transition: opacity 0.3s;
+      }
+
+      .rail-stop .ry {
+        letter-spacing: 0.03em;
+      }
+
+      .rail-stop .rd {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--ink-soft);
+        transition: all 0.3s;
+      }
+
+      .rail-stop.active {
+        opacity: 1;
+      }
+
+      .rail-stop.active .rd {
+        background: var(--teletype);
+        transform: scale(1.6);
+      }
+
+      @media (max-width: 900px) {
+        .timeline-rail {
+          display: none;
+        }
+      }
+
+      /* --------------------------------------------------------
+     Timeline scrubber horizontal — arrastrable, arriba de todo
+     -------------------------------------------------------- */
+      .timeline-scrubber {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 30px;
+        z-index: 700;
+        cursor: pointer;
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .ts-track {
+        position: absolute;
+        top: 13px;
+        left: 16px;
+        right: 16px;
+        height: 4px;
+        background: rgba(0, 0, 0, 0.09);
+        border-radius: 2px;
+      }
+
+      .ts-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0%;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+
+      .ts-tick {
+        position: absolute;
+        top: 50%;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--paper);
+        border: 2px solid var(--ink-soft);
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        z-index: 1;
+      }
+
+      .ts-tick.active {
+        border-color: var(--teletype);
+        background: var(--teletype);
+      }
+
+      .ts-tick-label {
+        position: absolute;
+        top: 13px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        color: var(--ink-soft);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+
+      .ts-tick:hover .ts-tick-label,
+      .ts-tick.active .ts-tick-label {
+        opacity: 1;
+      }
+
+      .ts-handle {
+        position: absolute;
+        top: 50%;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--ink);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.07);
+        cursor: grab;
+        z-index: 2;
+      }
+
+      .timeline-scrubber:active .ts-handle {
+        cursor: grabbing;
+      }
+
+      @media (max-width: 640px) {
+        .ts-tick-label {
+          display: none;
+        }
+      }
+
+      /* --------------------------------------------------------
+     Reveal genérico
+     -------------------------------------------------------- */
+      .reveal,
+      .qz-card,
+      .qz-summary {
+        opacity: 0;
+        transform: translateY(22px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+      }
+
+      .reveal.visible,
+      .qz-card.visible,
+      .qz-summary.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Variantes direccionales: el texto entra desde otro lado según el contexto */
+      .reveal-left {
+        transform: translateX(-52px);
+      }
+
+      .reveal-right {
+        transform: translateX(52px);
+      }
+
+      .reveal-scale {
+        transform: translateY(10px) scale(0.93);
+      }
+
+      .reveal-blur {
+        transform: translateY(8px);
+        filter: blur(9px);
+        transition:
+          opacity 0.9s ease,
+          transform 0.9s ease,
+          filter 0.9s ease;
+      }
+
+      .reveal-left.visible,
+      .reveal-right.visible,
+      .reveal-scale.visible {
+        transform: translateY(0) translateX(0) scale(1);
+      }
+
+      .reveal-blur.visible {
+        transform: translateY(0);
+        filter: blur(0);
+      }
+
+      /* Stagger: hijos directos de .stagger heredan .reveal y entran en cascada */
+      .stagger > *:nth-child(1) {
+        transition-delay: 0s;
+      }
+
+      .stagger > *:nth-child(2) {
+        transition-delay: 0.09s;
+      }
+
+      .stagger > *:nth-child(3) {
+        transition-delay: 0.18s;
+      }
+
+      .stagger > *:nth-child(4) {
+        transition-delay: 0.27s;
+      }
+
+      .stagger > *:nth-child(5) {
+        transition-delay: 0.36s;
+      }
+
+      .stagger > *:nth-child(6) {
+        transition-delay: 0.45s;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal {
+          opacity: 1;
+          transform: none;
+          filter: none;
+          transition: none;
+        }
+
+        html {
+          scroll-behavior: auto;
+        }
+      }
+
+      /* --------------------------------------------------------
+          HERO — monitor CRT sobre fondo papel
+          ------------------------------------------------------- */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 160px 28px 90px 28px;
+        background:
+          radial-gradient(
+            ellipse at 30% 0%,
+            rgba(181, 103, 42, 0.08),
+            transparent 55%
+          ),
+          var(--paper);
+      }
+
+      .hero .kicker {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--teletype);
+        margin-bottom: 22px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 5.4vw, 3.6rem);
+        max-width: 920px;
+        margin: 0 auto 20px auto;
+        letter-spacing: -0.01em;
+      }
+
+      .hero .dek {
+        font-family: var(--font-serif);
+        font-size: 19px;
+        color: var(--ink-soft);
+        max-width: 540px;
+        margin: 0 auto 56px auto;
+      }
+
+      .crt {
+        width: min(720px, 92vw);
+        background: linear-gradient(180deg, #e9e2cc, #d9d0b3);
+        border-radius: 18px;
+        padding: 22px 22px 34px 22px;
+        box-shadow:
+          0 30px 60px -20px rgba(33, 29, 20, 0.35),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+        position: relative;
+      }
+
+      .crt::after {
+        content: "●";
+        position: absolute;
+        bottom: 10px;
+        right: 24px;
+        color: rgba(58, 47, 27, 0.35);
+        font-size: 10px;
+      }
+
+      .crt-screen {
+        background: #0c0f0b;
+        border-radius: 6px;
+        padding: 26px 28px;
+        text-align: left;
+        min-height: 210px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+      }
+
+      .crt-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.035) 0px,
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+        pointer-events: none;
+        mix-blend-mode: overlay;
+      }
+
+      .crt-screen pre {
+        margin: 0;
+        color: var(--term-text);
+        font-family: var(--font-pixel);
+        font-size: 21px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        min-height: 1.5em;
+      }
+
+      .crt-screen .blink {
+        animation: blink 1s step-end infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .scrollcue {
+        margin-top: 46px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-soft);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .scrollcue .ln {
+        width: 1px;
+        height: 30px;
+        background: var(--ink-soft);
+        animation: growln 1.8s ease-in-out infinite;
+      }
+
+      @keyframes growln {
+        0%,
+        100% {
+          opacity: 0.2;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* --------------------------------------------------------
+     INTRO + índice de eras
+     -------------------------------------------------------- */
+      .intro p {
+        font-size: 19px;
+      }
+
+      .intro .lead {
+        font-size: 22px;
+        color: var(--ink-soft);
+      }
+
+      .era-index {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--rule);
+        border: 1px solid var(--rule);
+        margin-top: 54px;
+      }
+
+      @media (max-width: 700px) {
+        .era-index {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .era-chip {
+        background: var(--paper);
+        padding: 22px 18px;
+        text-decoration: none;
+        color: var(--ink);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: background 0.25s;
+      }
+
+      .era-chip:hover {
+        background: var(--paper-2);
+      }
+
+      .era-chip .ey {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--teletype);
+      }
+
+      .era-chip .en {
+        font-family: var(--font-serif);
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      /* --------------------------------------------------------
+     EXHIBIT — UNIX (teletipo sobre tarjetas perforadas)
+     -------------------------------------------------------- */
+      .exhibit {
+        position: relative;
+      }
+
+      .exhibit-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .exhibit h2 {
+        font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+        max-width: 620px;
+        margin-bottom: 26px;
+      }
+
+      /* -------- Glitch al entrar a cada exhibit (salto de época) -------- */
+      @keyframes exhibitGlitch {
+        0% {
+          transform: translate(0, 0);
+          filter: none;
+          clip-path: none;
+        }
+
+        8% {
+          transform: translate(-6px, 2px);
+          filter: hue-rotate(-12deg) saturate(1.6) contrast(1.15);
+        }
+
+        16% {
+          transform: translate(5px, -3px);
+          filter: hue-rotate(10deg) saturate(1.7);
+          clip-path: inset(8% 0 46% 0);
+        }
+
+        24% {
+          transform: translate(-4px, 1px);
+          filter: hue-rotate(-6deg);
+          clip-path: inset(58% 0 4% 0);
+        }
+
+        32% {
+          transform: translate(3px, -2px);
+          filter: none;
+          clip-path: inset(22% 0 55% 0);
+        }
+
+        40% {
+          transform: translate(-5px, 2px);
+          clip-path: none;
+        }
+
+        48% {
+          transform: translate(4px, -1px);
+          filter: hue-rotate(8deg) saturate(1.4);
+        }
+
+        60% {
+          transform: translate(-2px, 1px);
+          filter: none;
+        }
+
+        100% {
+          transform: translate(0, 0);
+          filter: none;
+          clip-path: none;
+        }
+      }
+
+      @keyframes exhibitGlitchScan {
+        0%,
+        100% {
+          opacity: 0;
+        }
+
+        8%,
+        16%,
+        24%,
+        32%,
+        40%,
+        48% {
+          opacity: 1;
+        }
+      }
+
+      .exhibit.glitching {
+        animation: exhibitGlitch 0.55s steps(1, end);
+      }
+
+      .exhibit.glitching::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+        background:
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.08) 0 1px,
+            transparent 1px 3px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(255, 0, 80, 0.14),
+            transparent 30%,
+            transparent 70%,
+            rgba(0, 200, 255, 0.14)
+          );
+        mix-blend-mode: overlay;
+        animation: exhibitGlitchScan 0.55s steps(1, end);
+      }
+
+      #unix {
+        background: var(--punch);
+        color: var(--punch-ink);
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      #unix .exhibit-eyebrow {
+        color: var(--teletype);
+      }
+
+      .punch-field {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.55;
+      }
+
+      .punch-card {
+        position: absolute;
+        will-change: transform;
+      }
+
+      #unix .col {
+        position: relative;
+        z-index: 1;
+      }
+
+      #unix p {
+        font-size: 17.5px;
+        color: var(--punch-ink);
+      }
+
+      .teletype {
+        background: #f1e9d4;
+        border: 1px solid rgba(58, 47, 27, 0.25);
+        box-shadow: 4px 4px 0 rgba(58, 47, 27, 0.12);
+        padding: 24px 26px;
+        margin: 34px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .teletype .tt-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--teletype);
+        margin-bottom: 12px;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .teletype pre {
+        margin: 0;
+        font-family: var(--font-pixel);
+        font-size: 20px;
+        line-height: 1.55;
+        color: var(--punch-ink);
+        white-space: pre-wrap;
+        min-height: 1.5em;
+      }
+
+      /* -------- Secuencias de arranque (boot) antes de cada terminal -------- */
+      .has-boot {
+        min-height: 230px;
+      }
+
+      .boot-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        padding: 24px 26px;
+        overflow-y: auto;
+        font-family: var(--font-pixel);
+        font-size: 17px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        transition:
+          opacity 0.55s ease,
+          visibility 0.55s;
+      }
+
+      .boot-overlay.done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .boot-overlay .boot-line {
+        animation: bootLineIn 0.18s ease both;
+      }
+
+      @keyframes bootLineIn {
+        from {
+          opacity: 0;
+          transform: translateY(3px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .boot-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 1em;
+        background: currentColor;
+        margin-left: 2px;
+        vertical-align: -2px;
+        animation: bootBlink 1s steps(1) infinite;
+      }
+
+      @keyframes bootBlink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .teletype .boot-overlay {
+        background: #f1e9d4;
+        color: var(--punch-ink);
+      }
+
+      .dos-screen .boot-overlay {
+        background: var(--dos-blue);
+        color: #fff;
+        font-size: 19px;
+      }
+
+      .term .boot-overlay {
+        background: var(--term-bg-2);
+        color: var(--term-text);
+        font-size: 14.5px;
+        line-height: 1.6;
+      }
+
+      .boot-replay {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        cursor: pointer;
+        background: transparent;
+        border: 1px solid currentColor;
+        opacity: 0.75;
+        padding: 2px 8px;
+        color: inherit;
+        flex-shrink: 0;
+      }
+
+      .boot-replay:hover {
+        opacity: 1;
+      }
+
+      .philosophy {
+        border-left: 2px solid var(--teletype);
+        padding-left: 22px;
+        margin: 34px 0 6px 0;
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 20px;
+        color: var(--punch-ink);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* -------- Extras del exhibit Unix: comparativas entre SO -------- */
+      .unix-extra {
+        position: relative;
+        z-index: 1;
+        margin-top: 26px;
+      }
+
+      .unix-extra .subhead {
+        font-family: var(--font-mono);
+        font-size: 14px;
+        letter-spacing: 0.01em;
+        color: var(--punch-ink);
+        margin: 54px 0 8px 0;
+        font-weight: 700;
+      }
+
+      .unix-extra .subhead::before {
+        content: "§ ";
+        color: var(--teletype);
+      }
+
+      .unix-extra > p.reveal:first-of-type {
+        margin-top: 0;
+      }
+
+      .path-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: rgba(58, 47, 27, 0.25);
+        border: 1px solid rgba(58, 47, 27, 0.25);
+        margin: 22px 0 6px 0;
+      }
+
+      @media (max-width: 760px) {
+        .path-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .path-card {
+        background: #f1e9d4;
+        padding: 20px 22px;
+      }
+
+      .path-card .pc-os {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--teletype);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+
+      .path-card code {
+        display: block;
+        font-family: var(--font-pixel);
+        font-size: 19px;
+        color: var(--punch-ink);
+        word-break: break-all;
+        line-height: 1.4;
+      }
+
+      .flow-block {
+        background: #f1e9d4;
+        border: 1px solid rgba(58, 47, 27, 0.25);
+        box-shadow: 4px 4px 0 rgba(58, 47, 27, 0.12);
+        padding: 22px 26px;
+        margin: 22px 0 6px 0;
+      }
+
+      .flow-block pre {
+        margin: 0;
+        font-family: var(--font-pixel);
+        font-size: 19px;
+        line-height: 1.45;
+        color: var(--punch-ink);
+        white-space: pre;
+        overflow-x: auto;
+      }
+
+      .flow-block .fb-node {
+        color: var(--teletype);
+        font-weight: 700;
+      }
+
+      .cmd-filter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 22px 0 14px 0;
+      }
+
+      .cmd-filter input {
+        font-family: var(--font-pixel);
+        font-size: 18px;
+        background: #f1e9d4;
+        border: 1px solid rgba(58, 47, 27, 0.35);
+        padding: 8px 12px;
+        color: var(--punch-ink);
+        width: 240px;
+        max-width: 60vw;
+      }
+
+      .cmd-filter input::placeholder {
+        color: rgba(58, 47, 27, 0.5);
+      }
+
+      .cmd-filter .cf-label {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--punch-ink);
+        opacity: 0.7;
+      }
+
+      table.cmd-compare {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 0 6px 0;
+        font-size: 15px;
+      }
+
+      table.cmd-compare th,
+      table.cmd-compare td {
+        border: 1px solid rgba(58, 47, 27, 0.25);
+        padding: 10px 14px;
+        text-align: left;
+      }
+
+      table.cmd-compare th {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        background: rgba(58, 47, 27, 0.08);
+        color: var(--punch-ink);
+      }
+
+      table.cmd-compare td {
+        font-family: var(--font-serif);
+        color: var(--punch-ink);
+      }
+
+      table.cmd-compare td.mono {
+        font-family: var(--font-pixel);
+        font-size: 17px;
+      }
+
+      table.cmd-compare tr.cmd-hidden {
+        display: none;
+      }
+
+      table.cmd-compare tbody tr:hover {
+        background: rgba(181, 103, 42, 0.08);
+      }
+
+      .cmd-empty {
+        display: none;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--punch-ink);
+        opacity: 0.7;
+        padding: 14px 2px;
+      }
+
+      .cmd-empty.show {
+        display: block;
+      }
+
+      /* --------------------------------------------------------
+     Simulador de terminal (Unix / DOS / Linux) — 5 comandos c/u
+     Reutiliza el look de .teletype / .dos-screen / .term
+     -------------------------------------------------------- */
+      .sim-output {
+        font-family: var(--font-pixel);
+        font-size: 19px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 260px;
+        overflow-y: auto;
+        margin-bottom: 4px;
+      }
+
+      .sim-output:empty {
+        margin-bottom: 0;
+      }
+
+      .sim-output div {
+        padding: 1px 0;
+      }
+
+      .sim-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .sim-prompt {
+        font-family: var(--font-pixel);
+        font-size: 19px;
+        flex-shrink: 0;
+      }
+
+      .sim-input {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: var(--font-pixel);
+        font-size: 19px;
+        padding: 2px 0;
+      }
+
+      .sim-input::placeholder {
+        color: inherit;
+        opacity: 0.45;
+      }
+
+      .teletype .sim-output,
+      .teletype .sim-prompt,
+      .teletype .sim-input {
+        color: var(--punch-ink);
+      }
+
+      .teletype .sim-err {
+        color: var(--teletype);
+      }
+
+      .teletype .sim-line {
+        border-top: 1px dashed rgba(58, 47, 27, 0.3);
+        padding-top: 10px;
+      }
+
+      .dos-screen .sim-output,
+      .dos-screen .sim-prompt,
+      .dos-screen .sim-input {
+        color: #fff;
+      }
+
+      .dos-screen .sim-err {
+        color: var(--dos-bright);
+      }
+
+      .dos-screen .sim-line {
+        border-top: 1px dashed rgba(255, 255, 255, 0.3);
+        padding-top: 10px;
+      }
+
+      .term .sim-output,
+      .term .sim-prompt,
+      .term .sim-input {
+        color: var(--term-text);
+      }
+
+      .term .sim-err {
+        color: #e2777a;
+      }
+
+      .term .sim-line {
+        border-top: 1px dashed #223019;
+        padding-top: 10px;
+      }
+
+      /* --------------------------------------------------------
+     EXHIBIT — MS-DOS (pantalla azul de comandos)
+     -------------------------------------------------------- */
+      #dos {
+        background: linear-gradient(
+          180deg,
+          var(--dos-blue) 0%,
+          var(--dos-blue-2) 100%
+        );
+        color: var(--dos-text);
+      }
+
+      #dos .exhibit-eyebrow {
+        color: var(--dos-bright);
+      }
+
+      #dos h2 {
+        color: #fff;
+      }
+
+      #dos p {
+        font-size: 17.5px;
+        color: var(--dos-text);
+      }
+
+      #dos strong {
+        color: #fff;
+      }
+
+      .floppy-field {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .floppy {
+        position: absolute;
+        will-change: transform;
+        opacity: 0.5;
+      }
+
+      #dos .col {
+        position: relative;
+        z-index: 1;
+      }
+
+      .dos-screen {
+        background: var(--dos-blue);
+        border: 3px solid #7777cc;
+        padding: 22px 24px;
+        margin: 34px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .dos-screen .ds-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--dos-bright);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .dos-screen pre {
+        margin: 0;
+        font-family: var(--font-pixel);
+        font-size: 22px;
+        line-height: 1.5;
+        color: #fff;
+        white-space: pre-wrap;
+        min-height: 1.5em;
+      }
+
+      .dos-barrier {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        margin: 40px 0 6px 0;
+        font-family: var(--font-mono);
+        position: relative;
+        z-index: 1;
+      }
+
+      .dos-barrier .num {
+        font-size: 2.6rem;
+        color: var(--dos-bright);
+        font-weight: 700;
+      }
+
+      .dos-barrier .lbl {
+        font-size: 14px;
+        color: var(--dos-text);
+        max-width: 340px;
+      }
+
+      /* --------------------------------------------------------
+          EXHIBIT — WINDOWS (escritorio interactivo, arrastrable)
+          -------------------------------------------------------- */
+      #windows {
+        background:
+          repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.035) 0px,
+            rgba(255, 255, 255, 0.035) 2px,
+            transparent 2px,
+            transparent 14px
+          ),
+          var(--win-teal);
+        color: #eaf6f5;
+      }
+
+      #windows .exhibit-eyebrow {
+        color: #bfffee;
+      }
+
+      #windows h2 {
+        color: #fff;
+      }
+
+      #windows p {
+        font-size: 17.5px;
+        color: #ddf3f1;
+      }
+
+      #windows strong {
+        color: #fff;
+      }
+
+      .win-versions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 26px 0 6px 0;
+      }
+
+      .win-v {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 3px;
+        padding: 5px 10px;
+      }
+
+      .desktop {
+        position: relative;
+        height: 460px;
+        margin: 44px 0 0 0;
+        background: var(--win-teal-2);
+        border-top: 2px solid rgba(255, 255, 255, 0.35);
+        border-left: 2px solid rgba(255, 255, 255, 0.35);
+        border-right: 2px solid rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .desktop-hint {
+        position: absolute;
+        top: 14px;
+        left: 16px;
+        z-index: 1;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .winbox {
+        position: absolute;
+        width: 300px;
+        background: var(--win-chrome);
+        border: 2px solid;
+        border-color: var(--win-chrome-hi) var(--win-chrome-lo)
+          var(--win-chrome-lo) var(--win-chrome-hi);
+        box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+        user-select: none;
+      }
+
+      .winbox .titlebar {
+        background: linear-gradient(90deg, var(--win-navy), #3a6ea5);
+        color: #fff;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        padding: 5px 6px 5px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: grab;
+      }
+
+      .winbox .titlebar:active {
+        cursor: grabbing;
+      }
+
+      .winbox .tb-btns {
+        display: flex;
+        gap: 3px;
+      }
+
+      .winbox .tb-btns span {
+        width: 15px;
+        height: 14px;
+        background: var(--win-chrome);
+        border: 1px solid;
+        border-color: var(--win-chrome-hi) var(--win-chrome-lo)
+          var(--win-chrome-lo) var(--win-chrome-hi);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #000;
+        line-height: 1;
+      }
+
+      .winbox .winbody {
+        background: #fff;
+        color: #111;
+        font-family: var(--font-serif);
+        font-size: 13.5px;
+        padding: 16px;
+        min-height: 90px;
+        line-height: 1.5;
+      }
+
+      .winbox .winbody.mono {
+        font-family: var(--font-pixel);
+        font-size: 17px;
+        background: #000;
+        color: #c0c0c0;
+      }
+
+      .taskbar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 34px;
+        background: var(--win-chrome);
+        border-top: 2px solid var(--win-chrome-hi);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 8px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #111;
+      }
+
+      .taskbar .start {
+        background: var(--win-chrome);
+        border: 2px solid;
+        border-color: var(--win-chrome-hi) var(--win-chrome-lo)
+          var(--win-chrome-lo) var(--win-chrome-hi);
+        padding: 3px 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .taskbar .clock {
+        margin-left: auto;
+        border: 1px inset #7e7e7e;
+        padding: 3px 10px;
+        background: var(--win-chrome);
+      }
+
+      /* -------- Instalador falso de Windows 95 -------- */
+      .win-installer {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        background: var(--win-chrome);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        transition:
+          opacity 0.7s ease,
+          visibility 0.7s;
+      }
+
+      .win-installer.done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .wi-box {
+        width: min(380px, 100%);
+        background: var(--win-chrome);
+        border: 2px solid;
+        border-color: var(--win-chrome-hi) var(--win-chrome-lo)
+          var(--win-chrome-lo) var(--win-chrome-hi);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+      }
+
+      .wi-title {
+        background: linear-gradient(90deg, var(--win-navy), #3a6ea5);
+        color: #fff;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        padding: 6px 10px;
+      }
+
+      .wi-body {
+        background: #fff;
+        padding: 26px 24px 22px 24px;
+        text-align: center;
+      }
+
+      .wi-logo {
+        font-size: 30px;
+        margin-bottom: 12px;
+        color: var(--win-navy);
+      }
+
+      .wi-step {
+        font-family: var(--font-serif);
+        font-size: 13.5px;
+        color: #111;
+        min-height: 2.7em;
+        margin-bottom: 16px;
+      }
+
+      .wi-bar {
+        height: 16px;
+        background: #fff;
+        border: 1px inset #7e7e7e;
+        padding: 2px;
+        margin-bottom: 12px;
+      }
+
+      .wi-fill {
+        height: 100%;
+        width: 0%;
+        background: repeating-linear-gradient(
+          90deg,
+          var(--win-navy) 0 6px,
+          #3a6ea5 6px 12px
+        );
+        transition: width 0.6s linear;
+      }
+
+      .wi-hint {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: #555;
+      }
+
+      .win-reinstall {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #111;
+        background: var(--win-chrome);
+        border: 2px solid;
+        border-color: var(--win-chrome-hi) var(--win-chrome-lo)
+          var(--win-chrome-lo) var(--win-chrome-hi);
+        padding: 3px 9px;
+        cursor: pointer;
+      }
+
+      .win-reinstall:active {
+        border-color: var(--win-chrome-lo) var(--win-chrome-hi)
+          var(--win-chrome-hi) var(--win-chrome-lo);
+      }
+
+      /* --------------------------------------------------------
+          EXHIBIT — LINUX (terminal + distros)
+          -------------------------------------------------------- */
+      #linux {
+        background: var(--term-bg);
+        color: var(--term-text);
+        border-top: 1px solid #1c2417;
+      }
+
+      #linux .exhibit-eyebrow {
+        color: var(--term-text);
+      }
+
+      #linux h2 {
+        color: #e7f3e3;
+      }
+
+      #linux p {
+        font-size: 17.5px;
+        color: #a9c7a6;
+      }
+
+      #linux strong {
+        color: #e7f3e3;
+      }
+
+      .logfeed {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.4;
+        pointer-events: none;
+        -webkit-mask-image: linear-gradient(
+          180deg,
+          transparent,
+          rgba(0, 0, 0, 0.6) 18%,
+          rgba(0, 0, 0, 0.6) 82%,
+          transparent
+        );
+        mask-image: linear-gradient(
+          180deg,
+          transparent,
+          rgba(0, 0, 0, 0.6) 18%,
+          rgba(0, 0, 0, 0.6) 82%,
+          transparent
+        );
+      }
+
+      #linuxRain {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      #linux .col {
+        position: relative;
+        z-index: 1;
+      }
+
+      .term {
+        background: var(--term-bg-2);
+        border: 1px solid #223019;
+        padding: 22px 24px;
+        margin: 34px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .term .tm-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--term-text-dim);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .term pre {
+        margin: 0;
+        font-family: var(--font-pixel);
+        font-size: 20px;
+        line-height: 1.55;
+        color: var(--term-text);
+        white-space: pre-wrap;
+        min-height: 1.5em;
+      }
+
+      .distro-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin: 40px 0 6px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .distro {
+        border: 1px solid #223019;
+        padding: 14px 14px;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        color: #cfe6cc;
+        border-top: 3px solid var(--d, var(--term-text));
+      }
+
+      .distro .dname {
+        font-weight: 700;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      .distro .duse {
+        color: var(--term-text-dim);
+        font-size: 11.5px;
+      }
+
+      /* --------------------------------------------------------
+     SÍNTESIS + FOOTER
+     -------------------------------------------------------- */
+      #synthesis {
+        background: var(--paper);
+        border-top: 1px solid var(--rule);
+      }
+
+      #synthesis p {
+        font-size: 18px;
+      }
+
+      #synthesis .exhibit-eyebrow {
+        color: var(--teletype);
+      }
+
+      .compare-wrap {
+        overflow-x: auto;
+        margin: 40px 0;
+      }
+
+      table.compare {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+        min-width: 720px;
+      }
+
+      table.compare th,
+      table.compare td {
+        border: 1px solid var(--rule);
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      table.compare th {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-soft);
+        background: var(--paper-2);
+        font-weight: 700;
+      }
+
+      table.compare td:first-child {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      footer {
+        padding: 60px 0 90px 0;
+        border-top: 1px solid var(--rule);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+
+      footer .col {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+      }
+
+      /* --------------------------------------------------------
+     ACTIVIDADES — preguntas de repaso
+     -------------------------------------------------------- */
+      #quiz {
+        background: var(--paper-2);
+        border-top: 1px solid var(--rule);
+      }
+
+      #quiz p {
+        font-size: 18px;
+      }
+
+      #quiz .exhibit-eyebrow {
+        color: var(--teletype);
+      }
+
+      .qz-progress {
+        display: flex;
+        gap: 8px;
+        margin: 8px 0 40px 0;
+      }
+
+      .qz-progress .qd {
+        width: 28px;
+        height: 3px;
+        background: var(--rule);
+        transition: background 0.3s;
+      }
+
+      .qz-progress .qd.done {
+        background: #3f7d4a;
+      }
+
+      .qz-progress .qd.current {
+        background: var(--teletype);
+      }
+
+      .qz-card {
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        padding: 30px 32px 26px 32px;
+        margin: 0 0 22px 0;
+      }
+
+      .qz-card .qz-num {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--teletype);
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .qz-card h4 {
+        font-family: var(--font-serif);
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 1.4;
+        margin-bottom: 22px;
+        max-width: 620px;
+      }
+
+      .qz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .qz-opt {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        text-align: left;
+        width: 100%;
+        background: var(--paper-2);
+        border: 1px solid var(--rule);
+        padding: 13px 16px;
+        color: var(--ink);
+        font-family: var(--font-serif);
+        font-size: 15.5px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          transform 0.15s;
+      }
+
+      .qz-opt:hover:not(:disabled) {
+        border-color: var(--teletype);
+        transform: translateX(2px);
+      }
+
+      .qz-opt:disabled {
+        cursor: default;
+      }
+
+      .qz-opt .qz-letter {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--ink-soft);
+        border: 1px solid var(--rule);
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+      }
+
+      .qz-opt.correct {
+        border-color: #3f7d4a;
+        background: rgba(63, 125, 74, 0.08);
+      }
+
+      .qz-opt.correct .qz-letter {
+        background: #3f7d4a;
+        color: #fff;
+        border-color: #3f7d4a;
+      }
+
+      .qz-opt.incorrect {
+        border-color: #b33a3a;
+        background: rgba(179, 58, 58, 0.08);
+      }
+
+      .qz-opt.incorrect .qz-letter {
+        background: #b33a3a;
+        color: #fff;
+        border-color: #b33a3a;
+      }
+
+      .qz-feedback {
+        display: none;
+        margin-top: 18px;
+        padding: 14px 16px;
+        font-family: var(--font-serif);
+        font-size: 14.5px;
+        border-left: 3px solid var(--rule);
+        color: var(--ink-soft);
+      }
+
+      .qz-feedback.show {
+        display: block;
+      }
+
+      .qz-feedback.ok {
+        border-left-color: #3f7d4a;
+      }
+
+      .qz-feedback.ok strong {
+        color: #3f7d4a;
+      }
+
+      .qz-feedback.bad {
+        border-left-color: #b33a3a;
+      }
+
+      .qz-feedback.bad strong {
+        color: #b33a3a;
+      }
+
+      .qz-summary {
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        padding: 40px 32px;
+        text-align: center;
+        display: none;
+      }
+
+      .qz-summary.show {
+        display: block;
+      }
+
+      .qz-summary .qz-score {
+        font-family: var(--font-mono);
+        font-size: 3rem;
+        color: var(--teletype);
+        font-weight: 700;
+      }
+
+      .qz-summary p {
+        color: var(--ink-soft);
+        max-width: 460px;
+        margin: 10px auto 22px auto;
+      }
+
+      .qz-retry {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--paper);
+        background: var(--ink);
+        border: none;
+        border-radius: 999px;
+        padding: 11px 26px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .qz-retry:hover {
+        opacity: 0.85;
+      }
+
+      /* --------------------------------------------------------
+     EXHIBIT — BSD / macOS / iOS / ANDROID (scroll horizontal)
+     Por defecto es una lista vertical normal (accesible).
+     Con JS + GSAP disponibles y sin prefers-reduced-motion,
+     se convierte en una pista horizontal fijada (pin) al hacer scroll.
+     -------------------------------------------------------- */
+      .horiz-exhibit {
+        background: var(--paper);
+        border-top: 1px solid var(--rule);
+      }
+
+      /* .horiz-section {
+               position: relative;
+          } */
+      .horiz-section {
+        position: relative;
+      }
+
+      /* la altura la fija el JS */
+      .horiz-section:not(.horiz-enabled) {
+        height: auto !important;
+      }
+
+      .horiz-sticky {
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        height: 100%;
+        will-change: transform;
+        /* height: 100vh; */
+        /* height: 100svh; */
+        overflow: hidden;
+        /* display: flex; */
+        align-items: center;
+      }
+
+      .horiz-track {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .h-panel {
+        /* position: relative; */
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        min-height: 440px;
+        /* display: flex; */
+        flex: 0 0 100vw;
+        width: 100vw;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 30px;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .h-panel-content {
+        /* position: relative; */
+        /* z-index: 2; */
+        position: relative;
+        z-index: 1;
+        width: min(720px, 90vw);
+        padding: 2rem 1.5rem;
+        will-change: transform;
+        max-width: 560px;
+        text-align: center;
+      }
+
+      .h-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.03em;
+        margin-bottom: 12px;
+        opacity: 0.75;
+      }
+
+      .h-panel h3 {
+        font-size: clamp(2.1rem, 5vw, 3.4rem);
+        margin-bottom: 16px;
+        line-height: 1.05;
+      }
+
+      .h-panel p {
+        font-size: 16.5px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .h-tags {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .h-tags span {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        padding: 5px 12px;
+        border: 1px solid currentColor;
+        border-radius: 999px;
+        opacity: 0.85;
+      }
+
+      .h-panel-bg {
+        /* position: absolute; */
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+        font-size: 13rem;
+        opacity: 0.16;
+        line-height: 1;
+        position: absolute;
+        inset: -15% -25%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        will-change: transform;
+      }
+
+      /* Paletas por sistema */
+      .h-bsd {
+        background: #ede6d6;
+        color: #2c2416;
+      }
+
+      .h-macos {
+        background: #f4f5f7;
+        color: #1d1d1f;
+      }
+
+      .h-ios {
+        background: #111114;
+        color: #fff;
+      }
+
+      .h-android {
+        background: #0e1f14;
+        color: #dff6d6;
+      }
+
+      /* -------- Vida propia: cada emoji respira distinto -------- */
+      @keyframes bsdBreathe {
+        0%,
+        100% {
+          transform: scale(1) rotate(-2deg);
+        }
+
+        50% {
+          transform: scale(1.06) rotate(2deg);
+        }
+      }
+
+      .h-bsd .h-panel-bg {
+        animation: bsdBreathe 4.5s ease-in-out infinite;
+      }
+
+      @keyframes macosDrift {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+          filter: hue-rotate(0deg);
+        }
+
+        50% {
+          transform: translateY(-14px) scale(1.03);
+          filter: hue-rotate(8deg);
+        }
+      }
+
+      .h-macos .h-panel-bg {
+        animation: macosDrift 6s ease-in-out infinite;
+      }
+
+      @keyframes iosFloat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-3deg);
+        }
+
+        50% {
+          transform: translateY(-18px) rotate(3deg);
+        }
+      }
+
+      .h-ios .h-panel-bg {
+        animation: iosFloat 3.6s ease-in-out infinite;
+      }
+
+      @keyframes androidWobble {
+        0%,
+        100% {
+          transform: rotate(-4deg);
+        }
+
+        50% {
+          transform: rotate(4deg);
+        }
+      }
+
+      .h-android .h-panel-bg {
+        animation: androidWobble 2.2s ease-in-out infinite;
+        transform-origin: 50% 85%;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .h-panel-bg {
+          animation: none !important;
+        }
+      }
+
+      /* Estado habilitado: JS detectó GSAP + ScrollTrigger disponibles */
+      .horiz-section.horiz-enabled {
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .horiz-section.horiz-enabled .horiz-track {
+        flex-direction: row;
+        height: 100%;
+        will-change: transform;
+      }
+
+      .horiz-section.horiz-enabled .h-panel {
+        width: 100vw;
+        height: 100%;
+        flex-shrink: 0;
+        min-height: 0;
+        border-bottom: none;
+      }
+
+      .h-progress,
+      .h-hint {
+        position: absolute;
+        z-index: 5;
+      }
+
+      .horiz-section:not(.horiz-enabled) .horiz-sticky {
+        position: static;
+        height: auto;
+        overflow: visible;
+      }
+
+      .horiz-section:not(.horiz-enabled) .horiz-track {
+        flex-direction: column;
+        height: auto;
+        transform: none !important;
+      }
+
+      .horiz-section:not(.horiz-enabled) .h-panel {
+        width: 100%;
+        flex: none;
+        height: auto;
+      }
+
+      .h-progress {
+        /* position: absolute; */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(127, 127, 127, 0.25);
+        z-index: 5;
+        display: none;
+      }
+
+      .horiz-enabled .h-progress {
+        display: block;
+      }
+
+      .h-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--teletype), #7cd957, #3a6ea5);
+      }
+
+      .h-hint {
+        position: absolute;
+        bottom: 26px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        z-index: 5;
+        opacity: 0.7;
+        display: none;
+        color: var(--ink-soft);
+        transition: opacity 0.4s ease;
+      }
+
+      .horiz-enabled .h-hint {
+        display: block;
+      }
+
+      .h-hint.hidden {
+        opacity: 0;
+      }
+
+      @media (max-width: 820px) {
+        .h-panel {
+          min-height: 380px;
+          padding: 46px 22px;
+        }
+
+        .h-panel-bg {
+          font-size: 8rem;
+        }
+      }
+
+      /* ============================================
+   SALA VERTICAL — riel sticky a la izquierda
+   ============================================ */
+      .vchrono {
+        --vc-bg: var(--paper, #ece6d6);
+        --vc-bg-2: var(--paper-2, #e2dac4);
+        --vc-ink: var(--ink, #211d14);
+        --vc-ink-soft: var(--ink-soft, #5b5644);
+        --vc-rule: var(--rule, #c9bfa0);
+        --vc-punch: var(--punch, #e6dec4);
+        --vc-punch-ink: var(--punch-ink, #3a2f1b);
+        --vc-accent: var(--teletype, #b5672a);
+        --vc-accent-soft: rgba(181, 103, 42, 0.14);
+        --vc-shadow: rgba(33, 29, 20, 0.12);
+        --vc-rail-w: 240px;
+        --vc-tape: 26px;
+        --vc-radius: 6px;
+
+        position: relative;
+        background: var(--vc-bg);
+        color: var(--vc-ink);
+        overflow: hidden;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+
+      /* textura de puntos */
+      .vchrono::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(33, 29, 20, 0.05) 1px,
+          transparent 1.5px
+        );
+        background-size: 20px 20px;
+        mask-image: radial-gradient(
+          ellipse at center,
+          black 55%,
+          transparent 95%
+        );
+        -webkit-mask-image: radial-gradient(
+          ellipse at center,
+          black 55%,
+          transparent 95%
+        );
+        pointer-events: none;
+      }
+
+      /* --- Intro --- */
+      .vchrono__intro {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 5rem 1.5rem 3rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .vchrono__eyebrow {
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.32em;
+        font-size: 0.72rem;
+        color: var(--vc-punch-ink);
+        padding: 0.4rem 1rem;
+        background: var(--vc-punch);
+        border: 1px solid var(--vc-rule);
+        box-shadow: 3px 3px 0 var(--vc-shadow);
+        font-family: ui-monospace, Menlo, monospace;
+        margin-bottom: 1.1rem;
+      }
+
+      .vchrono__title {
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.08;
+        margin: 0 0 1rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: var(--vc-ink);
+      }
+
+      .vchrono__title::after {
+        content: "";
+        display: block;
+        width: 72px;
+        height: 5px;
+        margin: 0.8rem auto 0;
+        background: var(--vc-accent);
+      }
+
+      .vchrono__subtitle {
+        color: var(--vc-ink-soft);
+        font-size: 1.05rem;
+        margin: 0 auto;
+        max-width: 560px;
+      }
+
+      /* --- Layout: riel + tarjetas --- */
+      .vchrono__layout {
+        position: relative;
+        z-index: 1;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 1.5rem 6rem;
+        display: grid;
+        grid-template-columns: var(--vc-rail-w) 1fr;
+        gap: 3rem;
+        align-items: start;
+      }
+
+      /* --- Riel izquierdo (sticky) --- */
+      .vchrono__rail {
+        position: sticky;
+        top: 96px;
+        align-self: start;
+      }
+
+      .vchrono__rail-track {
+        position: absolute;
+        left: 12px;
+        top: 10px;
+        bottom: 10px;
+        width: 2px;
+        background: var(--vc-rule);
+        opacity: 0.6;
+        overflow: hidden;
+        border-radius: 2px;
+      }
+
+      .vchrono__rail-fill {
+        position: absolute;
+        inset: 0;
+        background: var(--vc-accent);
+        transform: scaleY(0);
+        transform-origin: top center;
+      }
+
+      .vchrono__rail-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        position: relative;
+      }
+
+      .vchrono__rail-item {
+        display: grid;
+        grid-template-columns: 26px 26px 1fr;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45rem 0.6rem 0.45rem 0.35rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--vc-ink-soft);
+        transition:
+          background 0.25s,
+          color 0.25s,
+          transform 0.25s;
+      }
+
+      .vchrono__rail-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid var(--vc-rule);
+        background: var(--vc-bg);
+        justify-self: center;
+        transition: all 0.25s;
+      }
+
+      .vchrono__rail-num {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.72rem;
+        color: var(--vc-ink-soft);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .vchrono__rail-label {
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .vchrono__rail-item:hover {
+        background: var(--vc-accent-soft);
+        color: var(--vc-ink);
+      }
+
+      .vchrono__rail-item.is-active {
+        color: var(--vc-ink);
+        background: var(--vc-accent-soft);
+        transform: translateX(4px);
+      }
+
+      .vchrono__rail-item.is-active .vchrono__rail-dot {
+        background: var(--vc-accent);
+        border-color: var(--vc-accent);
+        box-shadow: 0 0 0 4px var(--vc-accent-soft);
+      }
+
+      .vchrono__rail-item.is-active .vchrono__rail-num {
+        color: var(--vc-accent);
+        font-weight: 700;
+      }
+
+      /* --- Columna de tarjetas --- */
+      .vchrono__cards {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+      }
+
+      /* --- Ficha (papel con cinta perforada) --- */
+      .vchrono__card {
+        position: relative;
+        background: var(--vc-bg-2);
+        border: 1px solid var(--vc-rule);
+        border-radius: var(--vc-radius);
+        box-shadow: 8px 8px 0 var(--vc-shadow);
+        padding: 2rem 1.75rem 2rem calc(var(--vc-tape) + 1.5rem);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+        scroll-margin-top: 110px;
+      }
+
+      .vchrono__card::before {
+        /* cinta perforada */
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--vc-tape);
+        background-color: var(--vc-punch);
+        background-image: radial-gradient(
+          circle at 50% 50%,
+          var(--vc-punch-ink) 3px,
+          transparent 3.5px
+        );
+        background-size: var(--vc-tape) 24px;
+        background-repeat: repeat-y;
+        border-right: 1px solid var(--vc-rule);
+        border-radius: var(--vc-radius) 0 0 var(--vc-radius);
+      }
+
+      .vchrono__card:hover {
+        transform: translateY(-3px);
+        box-shadow: 10px 11px 0 var(--vc-shadow);
+      }
+
+      /* --- Contenido interno (clases .chrono__* compartidas) --- */
+      .vchrono .chrono__num {
+        position: absolute;
+        top: 1rem;
+        right: 1.1rem;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--vc-accent);
+        letter-spacing: 0.2em;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--vc-accent);
+        border-radius: 4px;
+        background: var(--vc-bg);
+      }
+
+      .vchrono .chrono__date {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.76rem;
+        color: var(--vc-ink-soft);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin: 0 0 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .vchrono .chrono__date::before {
+        content: "";
+        width: 20px;
+        height: 2px;
+        background: var(--vc-accent);
+      }
+
+      .vchrono .chrono__heading {
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        line-height: 1.1;
+        margin: 0.1rem 0 0;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--vc-ink);
+      }
+
+      .vchrono .chrono__heading::after {
+        content: "";
+        display: block;
+        width: 48px;
+        height: 4px;
+        margin-top: 0.5rem;
+        background: var(--vc-accent);
+      }
+
+      .vchrono .chrono__tagline {
+        color: var(--vc-accent);
+        font-size: 0.9rem;
+        font-style: italic;
+        margin: 0.45rem 0 0;
+      }
+
+      .vchrono .chrono__body {
+        color: var(--vc-ink);
+        line-height: 1.68;
+        font-size: 0.95rem;
+        margin: 0.7rem 0 0;
+      }
+
+      .vchrono .chrono__list {
+        margin: 0.8rem 0 0;
+        padding-left: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      .vchrono .chrono__list li {
+        position: relative;
+        padding-left: 1.4rem;
+        color: var(--vc-ink);
+      }
+
+      .vchrono .chrono__list li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: var(--vc-accent);
+        font-size: 0.95em;
+      }
+
+      .vchrono .chrono__list strong {
+        color: var(--vc-accent);
+        font-weight: 600;
+      }
+
+      .vchrono .chrono__list code {
+        font-family: ui-monospace, Menlo, monospace;
+        background: var(--vc-punch);
+        border: 1px solid var(--vc-rule);
+        padding: 0.1em 0.45em;
+        border-radius: 3px;
+        font-size: 0.85em;
+        color: var(--vc-punch-ink);
+      }
+
+      .vchrono .chrono__list--grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+      }
+
+      .vchrono .chrono__list--grid li {
+        padding: 0.7rem 0.85rem 0.7rem 2rem;
+        background: var(--vc-bg);
+        border: 1px solid var(--vc-rule);
+        border-radius: 4px;
+        box-shadow: 3px 3px 0 var(--vc-shadow);
+        transition: all 0.25s;
+      }
+
+      .vchrono .chrono__list--grid li:hover {
+        border-color: var(--vc-accent);
+        transform: translateY(-2px);
+        box-shadow: 4px 5px 0 var(--vc-shadow);
+      }
+
+      .vchrono .chrono__list--grid li::before {
+        left: 0.7rem;
+        top: 0.7rem;
+      }
+
+      .vchrono .chrono__quote {
+        border-left: 4px solid var(--vc-accent);
+        padding: 0.85rem 1rem 0.85rem 1.1rem;
+        margin: 0.9rem 0;
+        color: var(--vc-ink);
+        font-style: italic;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        background: var(--vc-bg);
+        border-radius: 0 4px 4px 0;
+        box-shadow: 3px 3px 0 var(--vc-shadow);
+      }
+
+      .vchrono .chrono__quote cite {
+        display: block;
+        margin-top: 0.6rem;
+        font-size: 0.78rem;
+        color: var(--vc-ink-soft);
+        font-style: normal;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .vchrono .chrono__code {
+        background: var(--vc-punch-ink);
+        border: 1px solid var(--vc-ink);
+        border-radius: 6px;
+        padding: 1.1rem 1.25rem;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.82rem;
+        line-height: 1.65;
+        color: var(--vc-punch);
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        box-shadow: 4px 4px 0 var(--vc-shadow);
+        position: relative;
+      }
+
+      .vchrono .chrono__code::before {
+        content: "● ● ●";
+        position: absolute;
+        top: 0.45rem;
+        left: 0.85rem;
+        font-size: 0.55rem;
+        color: var(--vc-rule);
+        letter-spacing: 0.3em;
+        opacity: 0.7;
+      }
+
+      .vchrono .chrono__code code {
+        padding-top: 0.6rem;
+        display: block;
+      }
+
+      .vchrono .chrono__timeline {
+        list-style: none;
+        padding: 0 0 0 1.1rem;
+        margin: 0.75rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        border-left: 2px solid var(--vc-rule);
+      }
+
+      .vchrono .chrono__timeline li {
+        display: grid;
+        grid-template-columns: 4rem 1fr;
+        gap: 0.85rem;
+        align-items: baseline;
+        font-size: 0.88rem;
+        position: relative;
+        color: var(--vc-ink);
+      }
+
+      .vchrono .chrono__timeline li::before {
+        content: "";
+        position: absolute;
+        left: -1.5rem;
+        top: 0.55rem;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--vc-accent);
+        box-shadow: 0 0 0 3px var(--vc-bg-2);
+      }
+
+      .vchrono .chrono__timeline time {
+        font-family: ui-monospace, Menlo, monospace;
+        color: var(--vc-accent);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .vchrono .chrono__duo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 0.75rem;
+      }
+
+      .vchrono .chrono__card {
+        background: var(--vc-bg);
+        border: 1px solid var(--vc-rule);
+        border-radius: 6px;
+        padding: 1.1rem 1.15rem;
+        box-shadow: 4px 4px 0 var(--vc-shadow);
+        transition: all 0.3s;
+      }
+
+      .vchrono .chrono__card:hover {
+        border-color: var(--vc-accent);
+        transform: translateY(-3px);
+        box-shadow: 5px 7px 0 var(--vc-shadow);
+      }
+
+      .vchrono .chrono__card h4 {
+        margin: 0 0 0.6rem;
+        color: var(--vc-accent);
+        font-size: 1.05rem;
+        font-family: ui-monospace, Menlo, monospace;
+      }
+
+      .vchrono .chrono__card ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 0.84rem;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+
+      .vchrono .chrono__card li {
+        padding-left: 1rem;
+        position: relative;
+        color: var(--vc-ink);
+      }
+
+      .vchrono .chrono__card li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        color: var(--vc-accent);
+      }
+
+      .vchrono .chrono__footnote {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        font-size: 0.82rem;
+        color: var(--vc-ink-soft);
+        border-top: 1px dashed var(--vc-rule);
+        font-style: italic;
+        line-height: 1.55;
+      }
+
+      .hchrono {
+        --hc-bg: var(--paper, #ece6d6);
+        --hc-bg-2: var(--paper-2, #e2dac4);
+        --hc-ink: var(--ink, #211d14);
+        --hc-ink-soft: var(--ink-soft, #5b5644);
+        --hc-rule: var(--rule, #c9bfa0);
+        --hc-punch: var(--punch, #e6dec4);
+        --hc-punch-ink: var(--punch-ink, #3a2f1b);
+        --hc-accent: var(--teletype, #b5672a);
+        --hc-accent-soft: rgba(181, 103, 42, 0.14);
+        --hc-shadow: rgba(33, 29, 20, 0.12);
+        --hc-slide-w: clamp(320px, 78vw, 640px);
+        --hc-gap: 2.5rem;
+        --hc-tape: 26px;
+        --hc-radius: 6px;
+
+        position: relative;
+        background: var(--hc-bg);
+        color: var(--hc-ink);
+        /* overflow: hidden; */
+        overflow: visible;
+        isolation: isolate;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+
+      .hchrono::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(33, 29, 20, 0.05) 1px,
+          transparent 1.5px
+        );
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: 0;
+        mask-image: radial-gradient(
+          ellipse at center,
+          black 55%,
+          transparent 95%
+        );
+        -webkit-mask-image: radial-gradient(
+          ellipse at center,
+          black 55%,
+          transparent 95%
+        );
+      }
+
+      .hchrono > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* intro */
+      .hchrono__intro {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 5rem 1.5rem 2.5rem;
+        text-align: center;
+      }
+
+      .hchrono__eyebrow {
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.32em;
+        font-size: 0.72rem;
+        color: var(--hc-punch-ink);
+        padding: 0.4rem 1rem;
+        background: var(--hc-punch);
+        border: 1px solid var(--hc-rule);
+        box-shadow: 3px 3px 0 var(--hc-shadow);
+        font-family: ui-monospace, Menlo, monospace;
+        margin-bottom: 1.1rem;
+      }
+
+      .hchrono__title {
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.08;
+        margin: 0 0 1rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+      }
+
+      .hchrono__title::after {
+        content: "";
+        display: block;
+        width: 72px;
+        height: 5px;
+        margin: 0.8rem auto 0;
+        background: var(--hc-accent);
+      }
+
+      .hchrono__subtitle {
+        color: var(--hc-ink-soft);
+        font-size: 1.02rem;
+        margin: 0 auto;
+        max-width: 560px;
+      }
+
+      .hchrono__subtitle strong {
+        color: var(--hc-accent);
+      }
+
+      /* lista vertical de estaciones */
+      .hchrono__stack {
+        display: flex;
+        flex-direction: column;
+        gap: 2.25rem;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 1.5rem 4rem;
+      }
+
+      /* slide + ficha */
+      .hchrono__slide {
+        width: 100%;
+      }
+
+      .hchrono__card {
+        position: relative;
+        background: var(--hc-bg-2);
+        border: 1px solid var(--hc-rule);
+        border-radius: var(--hc-radius);
+        box-shadow: 8px 8px 0 var(--hc-shadow);
+        padding: 2rem 1.75rem 2rem calc(var(--hc-tape) + 1.5rem);
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+
+      .hchrono__card::before {
+        /* cinta perforada */
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--hc-tape);
+        background-color: var(--hc-punch);
+        background-image: radial-gradient(
+          circle at 50% 50%,
+          var(--hc-punch-ink) 3px,
+          transparent 3.5px
+        );
+        background-size: var(--hc-tape) 24px;
+        background-repeat: repeat-y;
+        border-right: 1px solid var(--hc-rule);
+        border-radius: var(--hc-radius) 0 0 var(--hc-radius);
+      }
+
+      /* contenido interno */
+      .hchrono__num {
+        position: absolute;
+        top: 1rem;
+        right: 1.1rem;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--hc-accent);
+        letter-spacing: 0.2em;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--hc-accent);
+        border-radius: 4px;
+        background: var(--hc-bg);
+      }
+
+      .hchrono__date {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.76rem;
+        color: var(--hc-ink-soft);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .hchrono__date::before {
+        content: "";
+        width: 20px;
+        height: 2px;
+        background: var(--hc-accent);
+      }
+
+      .hchrono__heading {
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        line-height: 1.1;
+        margin: 0.1rem 0 0;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .hchrono__heading::after {
+        content: "";
+        display: block;
+        width: 48px;
+        height: 4px;
+        margin-top: 0.5rem;
+        background: var(--hc-accent);
+      }
+
+      .hchrono__tagline {
+        color: var(--hc-accent);
+        font-size: 0.9rem;
+        font-style: italic;
+        margin: 0.2rem 0 0;
+      }
+
+      .hchrono__body {
+        line-height: 1.65;
+        font-size: 0.94rem;
+        margin: 0.3rem 0 0;
+      }
+
+      .hchrono__list {
+        margin: 0.4rem 0 0;
+        padding-left: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.89rem;
+        line-height: 1.5;
+      }
+
+      .hchrono__list li {
+        position: relative;
+        padding-left: 1.3rem;
+      }
+
+      .hchrono__list li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: var(--hc-accent);
+      }
+
+      .hchrono__list strong {
+        color: var(--hc-accent);
+        font-weight: 600;
+      }
+
+      .hchrono__list code {
+        font-family: ui-monospace, Menlo, monospace;
+        background: var(--hc-punch);
+        border: 1px solid var(--hc-rule);
+        padding: 0.1em 0.4em;
+        border-radius: 3px;
+        font-size: 0.85em;
+        color: var(--hc-punch-ink);
+      }
+
+      .hchrono__list--grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.55rem;
+      }
+
+      .hchrono__list--grid li {
+        padding: 0.6rem 0.75rem 0.6rem 1.9rem;
+        background: var(--hc-bg);
+        border: 1px solid var(--hc-rule);
+        border-radius: 4px;
+      }
+
+      .hchrono__list--grid li::before {
+        left: 0.6rem;
+        top: 0.6rem;
+      }
+
+      .hchrono__quote {
+        border-left: 4px solid var(--hc-accent);
+        padding: 0.7rem 0.9rem;
+        margin: 0.4rem 0;
+        font-style: italic;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        background: var(--hc-bg);
+        border-radius: 0 4px 4px 0;
+      }
+
+      .hchrono__quote cite {
+        display: block;
+        margin-top: 0.4rem;
+        font-size: 0.75rem;
+        color: var(--hc-ink-soft);
+        font-style: normal;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .hchrono__code {
+        background: var(--hc-punch-ink);
+        border: 1px solid var(--hc-ink);
+        border-radius: 6px;
+        padding: 1rem 1.15rem;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        color: var(--hc-punch);
+        overflow-x: auto;
+        margin: 0.3rem 0;
+      }
+
+      .hchrono__code code {
+        display: block;
+      }
+
+      .hchrono__timeline {
+        list-style: none;
+        padding: 0 0 0 1.1rem;
+        margin: 0.4rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        border-left: 2px solid var(--hc-rule);
+      }
+
+      .hchrono__timeline li {
+        display: grid;
+        grid-template-columns: 3.6rem 1fr;
+        gap: 0.7rem;
+        align-items: baseline;
+        font-size: 0.86rem;
+        position: relative;
+      }
+
+      .hchrono__timeline li::before {
+        content: "";
+        position: absolute;
+        left: -1.45rem;
+        top: 0.5rem;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--hc-accent);
+        box-shadow: 0 0 0 3px var(--hc-bg-2);
+      }
+
+      .hchrono__timeline time {
+        font-family: ui-monospace, Menlo, monospace;
+        color: var(--hc-accent);
+        font-weight: 700;
+      }
+
+      .hchrono__duo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.9rem;
+        margin-top: 0.3rem;
+      }
+
+      .hchrono__mini {
+        background: var(--hc-bg);
+        border: 1px solid var(--hc-rule);
+        border-radius: 6px;
+        padding: 0.9rem 1rem;
+      }
+
+      .hchrono__mini h4 {
+        margin: 0 0 0.4rem;
+        color: var(--hc-accent);
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.95rem;
+      }
+
+      .hchrono__mini ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 0.8rem;
+        line-height: 1.55;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .hchrono__mini li {
+        padding-left: 0.9rem;
+        position: relative;
+      }
+
+      .hchrono__mini li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        color: var(--hc-accent);
+      }
+
+      .hchrono__footnote {
+        margin-top: auto;
+        padding-top: 0.8rem;
+        font-size: 0.8rem;
+        color: var(--hc-ink-soft);
+        border-top: 1px dashed var(--hc-rule);
+        font-style: italic;
+      }
+
+      /* responsive */
+      @media (max-width: 640px) {
+        .hchrono__card {
+          padding: 1.75rem 1.25rem 1.75rem calc(var(--hc-tape) + 1.1rem);
+        }
+
+        .hchrono__list--grid,
+        .hchrono__duo {
+          grid-template-columns: 1fr;
+        }
+
+        .hchrono__timeline li {
+          grid-template-columns: 3.2rem 1fr;
+        }
+      }
+
+      /* ============================================
+   RESPONSIVE
+   ============================================ */
+      @media (max-width: 900px) {
+        .vchrono__layout {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        /* el riel se vuelve una barra horizontal sticky arriba */
+        .vchrono__rail {
+          position: sticky;
+          top: 64px;
+          z-index: 5;
+          background: var(--vc-bg);
+          padding: 0.6rem 0.75rem;
+          border: 1px solid var(--vc-rule);
+          border-radius: 8px;
+          box-shadow: 0 6px 16px var(--vc-shadow);
+        }
+
+        .vchrono__rail-track {
+          display: none;
+        }
+
+        .vchrono__rail-list {
+          flex-direction: row;
+          gap: 0.35rem;
+          overflow-x: auto;
+          padding-bottom: 0.2rem;
+        }
+
+        .vchrono__rail-item {
+          grid-template-columns: auto auto;
+          flex: 0 0 auto;
+          padding: 0.4rem 0.6rem;
+        }
+
+        .vchrono__rail-label {
+          display: none;
+        }
+
+        .vchrono__rail-item.is-active {
+          transform: none;
+        }
+
+        .vchrono .chrono__list--grid,
+        .vchrono .chrono__duo {
+          grid-template-columns: 1fr;
+        }
+
+        .vchrono .chrono__timeline li {
+          grid-template-columns: 3.5rem 1fr;
+        }
+      }
+
+      /* accesibilidad */
+      @media (prefers-reduced-motion: reduce) {
+        .vchrono__card,
+        .vchrono .chrono__card,
+        .vchrono .chrono__list--grid li {
+          transition: none !important;
+        }
+      }
+
+      .icon {
+        width: 2em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      class="timeline-scrubber"
+      id="timelineScrubber"
+      role="slider"
+      aria-label="Línea de tiempo del sitio: arrastrá para navegar por las épocas"
+      tabindex="0"
+    >
+      <div class="ts-track" id="tsTrack">
+        <div class="ts-fill" id="tsFill"></div>
+        <div class="ts-tick" data-target="hero">
+          <span class="ts-tick-label">1969</span>
+        </div>
+        <div class="ts-tick" data-target="unix">
+          <span class="ts-tick-label">UNIX</span>
+        </div>
+        <div class="ts-tick" data-target="dos">
+          <span class="ts-tick-label">MS-DOS</span>
+        </div>
+        <div class="ts-tick" data-target="windows">
+          <span class="ts-tick-label">WINDOWS</span>
+        </div>
+        <div class="ts-tick" data-target="linux">
+          <span class="ts-tick-label">LINUX</span>
+        </div>
+        <div class="ts-tick" data-target="modernos">
+          <span class="ts-tick-label">RAMAS</span>
+        </div>
+        <div class="ts-tick" data-target="synthesis">
+          <span class="ts-tick-label">HOY</span>
+        </div>
+        <div class="ts-tick" data-target="quiz">
+          <span class="ts-tick-label">TEST</span>
+        </div>
+        <div class="ts-handle" id="tsHandle"></div>
+      </div>
+    </div>
+
+    <div class="timeline-rail" id="timelineRail">
+      <div class="rail-stop" data-target="hero">
+        <span class="ry">1969</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="unix">
+        <span class="ry">UNIX</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="dos">
+        <span class="ry">MS-DOS</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="windows">
+        <span class="ry">WINDOWS</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="linux">
+        <span class="ry">LINUX</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="modernos">
+        <span class="ry">RAMAS</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="synthesis">
+        <span class="ry">HOY</span><span class="rd"></span>
+      </div>
+      <div class="rail-stop" data-target="quiz">
+        <span class="ry">TEST</span><span class="rd"></span>
+      </div>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <span class="kicker"
+        >Una exhibición sobre software de sistema — 1969 → hoy</span
+      >
+      <h1>Medio siglo de sistemas operativos</h1>
+      <p class="dek">
+        De la terminal de Bell Labs al teléfono en tu bolsillo: cuatro linajes
+        de software —Unix, DOS, Windows y Linux— y cómo cada uno resolvió el
+        mismo problema de un modo distinto.
+      </p>
+
+      <div class="crt">
+        <div class="crt-screen">
+          <pre id="bootText"><span class="blink">_</span></pre>
+        </div>
+      </div>
+
+      <div class="scrollcue">
+        <span class="ln"></span>desplazate para recorrer la exhibición
+      </div>
+    </section>
+
+    <!-- ============ INTRO ============ -->
+    <section class="tight intro">
+      <div class="col">
+        <p class="lead reveal">
+          Un sistema operativo hace un trabajo silencioso: decide qué proceso
+          usa el procesador, dónde vive cada archivo, y cómo un programa le
+          habla a una impresora sin saber nada de electrónica.
+        </p>
+        <p class="reveal">
+          Ese trabajo se puede resolver de maneras muy distintas, y la historia
+          de la computación personal y de servidores es, en gran parte, la
+          historia de cuatro respuestas a ese problema que terminaron
+          conviviendo: un linaje académico nacido en un laboratorio de
+          teléfonos, un sistema de línea de comandos hecho para correr en 640
+          kilobytes, una interfaz gráfica que le puso ventanas e íconos a todo,
+          y un kernel que un estudiante escribió "solo como hobby" y que hoy
+          corre en la mayoría de los servidores del mundo.
+        </p>
+      </div>
+
+      <div class="col-wide">
+        <div class="era-index stagger">
+          <a class="era-chip reveal" href="#unix"
+            ><span class="ey">1969</span><span class="en">Unix</span></a
+          >
+          <a class="era-chip reveal" href="#dos"
+            ><span class="ey">1981</span><span class="en">MS-DOS</span></a
+          >
+          <a class="era-chip reveal" href="#windows"
+            ><span class="ey">1985—hoy</span><span class="en">Windows</span></a
+          >
+          <a class="era-chip reveal" href="#linux"
+            ><span class="ey">1991—hoy</span><span class="en">Linux</span></a
+          >
+          <a class="era-chip reveal" href="#modernos"
+            ><span class="ey">1977—2008</span><span class="en">+ Ramas</span></a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ UNIX ============ -->
+    <section class="exhibit" id="unix">
+      <div class="punch-field" id="unixPunchField"></div>
+      <div class="col">
+        <div class="year exhibit-eyebrow">1969 · Bell Labs, Nueva Jersey</div>
+        <h2 class="reveal reveal-scale">
+          Un sistema de archivos, escrito por y para investigadores
+        </h2>
+        <p class="reveal">
+          Ken Thompson y Dennis Ritchie lo armaron sobre una PDP-7 que nadie más
+          quería usar, después de que Bell Labs se bajara del proyecto Multics.
+          La idea central sigue viva medio siglo después:
+          <strong>todo es un archivo</strong> —un disco, una impresora, una
+          terminal— y los programas se combinan entre sí en vez de crecer sin
+          límite.
+        </p>
+
+        <div class="philosophy reveal reveal-blur">
+          "Escribí programas que hagan una sola cosa y la hagan bien. Escribí
+          programas que trabajen juntos."
+        </div>
+
+        <p class="reveal">
+          En 1973 se reescribió casi por completo en C, un lenguaje que Ritchie
+          diseñó en paralelo. Esa decisión —abandonar el ensamblador de la
+          PDP-7— es la razón por la que Unix pudo migrar a otro hardware sin
+          reescribirse desde cero, algo inusual para la época.
+        </p>
+
+        <div class="teletype reveal">
+          <div class="tt-label">TELETYPE — salida impresa, no pantalla</div>
+          <pre
+            data-type="$ ls -l *.c | wc -l
+                    12
+                    $ grep -l main *.c
+                    main.c
+                    $ cc main.c -o run &amp;&amp; ./run
+                    Hello, world"
+          ><span class="blink">_</span>
+                    </pre>
+        </div>
+
+        <p class="reveal">
+          Multiusuario, multitarea y con una jerarquía de directorios ya
+          reconocible hoy: Unix definió el vocabulario —proceso, pipe, shell,
+          permiso de archivo— que todavía usan sus descendientes, incluido el
+          sistema que probablemente tenés corriendo ahora mismo en tu teléfono.
+        </p>
+      </div>
+
+      <div class="col-wide unix-extra">
+        <div class="subhead reveal">
+          Un mismo archivo, tres formas de nombrarlo
+        </div>
+        <p class="reveal">
+          La idea de "todo es un archivo" se nota incluso en algo tan simple
+          como escribir una ruta. Guardá el mismo documento en tres sistemas
+          distintos y la sintaxis ya cuenta parte de la historia de cada uno:
+        </p>
+
+        <div class="path-grid stagger">
+          <div class="path-card reveal reveal-left">
+            <div class="pc-os">Windows</div>
+            <code>C:\Usuarios\dannydev\Documentos\trabajo.docx</code>
+          </div>
+          <div class="path-card reveal">
+            <div class="pc-os">Linux</div>
+            <code>/home/dannydev/Documentos/trabajo.docx</code>
+          </div>
+          <div class="path-card reveal reveal-right">
+            <div class="pc-os">Unix</div>
+            <code>/home/dannydev/documentos/trabajo</code>
+          </div>
+        </div>
+        <p class="reveal">
+          Windows conserva la letra de unidad (<code>C:</code>) y la contrabarra
+          heredadas de MS-DOS; Unix y Linux comparten el árbol único que arranca
+          en <code>/</code> y la barra "normal", una decisión de diseño de 1969
+          que Linux heredó directamente. La diferencia sutil entre las dos
+          últimas —mayúsculas en <code>Documentos</code> o todo en minúscula,
+          con o sin extensión— tiene que ver con la convención de cada
+          distribución, no con el sistema de archivos en sí: Unix y Linux
+          distinguen mayúsculas de minúsculas (case-sensitive), Windows no.
+        </p>
+
+        <div class="subhead reveal">El viaje de un archivo</div>
+        <p class="reveal">
+          Cuando guardás "trabajo.docx", esa acción atraviesa varias capas antes
+          de convertirse en datos reales sobre un disco. El sistema de archivos
+          es la capa que traduce un nombre legible por una persona en la
+          información física que necesita el hardware:
+        </p>
+
+        <div class="flow-block reveal">
+          <pre>       
+                           <span class="fb-node">Usuario</span>
+                              │
+                              ▼
+                    Guardar "trabajo.docx"
+                              │
+                              ▼
+                         <span class="fb-node">Aplicación</span>
+                              │
+                              ▼
+                    <span class="fb-node">Sistema de archivos</span>
+                              │
+                              ├─ nombre
+                              ├─ permisos
+                              ├─ ubicación
+                              ├─ tamaño
+                              └─ bloques
+                              │
+                              ▼
+                          <span class="fb-node">SSD / HDD</span></pre>
+        </div>
+        <p class="reveal">
+          Ese quinteto —nombre, permisos, ubicación, tamaño, bloques— es
+          exactamente el tipo de metadato que Unix estandarizó con el
+          <em>inodo</em>, y que Windows resuelve de forma distinta (con su tabla
+          NTFS) pero para el mismo problema.
+        </p>
+
+        <div class="subhead reveal">
+          ¿Qué ocurre cuando escribimos un comando?
+        </div>
+        <p class="reveal">
+          La misma lógica de capas se repite al usar la terminal. Escribir
+          <code>ls -l</code> no es una operación directa sobre el disco: pasa
+          por el shell, por el sistema operativo y por el sistema de archivos
+          antes de volver como texto en pantalla.
+        </p>
+
+        <div class="flow-block reveal">
+          <pre>  
+                 <span class="fb-node">TECLADO</span>
+                    │
+                    ▼
+               Terminal
+                    │
+                    ▼
+               <span class="fb-node">Shell (Bash)</span>  ──▶  ls -l
+                    │
+                    ▼
+               Sistema Operativo
+                    │
+                    ▼
+               Sistema de archivos
+                    │
+                    ▼
+               Disco
+                    │
+                    ▼
+               resultado
+                    │
+                    ▼
+               Terminal
+                    │
+                    ▼
+                <span class="fb-node">PANTALLA</span></pre>
+        </div>
+        <p class="reveal">
+          Bash —el shell más común en Linux y macOS— es, en ese sentido, un
+          descendiente directo de la primera shell de Unix (1971): un programa
+          más, sin privilegios especiales, que le pide al sistema operativo que
+          haga el trabajo pesado.
+        </p>
+
+        <div class="subhead reveal">Comparación de comandos</div>
+        <p class="reveal">
+          La sintaxis cambia, pero casi todas las tareas básicas tienen su par
+          en ambos mundos. Escribí en el buscador para filtrar la tabla:
+        </p>
+
+        <!-- <div class="cmd-filter reveal">
+                    <span class="cf-label">Filtrar:</span>
+                    <input type="text" id="cmdFilterInput" placeholder="ej. copiar, ls, red..." />
+               </div> -->
+        <table class="cmd-compare reveal" id="cmdCompareTable">
+          <thead>
+            <tr>
+              <th>Acción</th>
+              <th>MS-DOS / Windows</th>
+              <th>Linux / Unix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Listar archivos</td>
+              <td class="mono">DIR</td>
+              <td class="mono">ls</td>
+            </tr>
+            <tr>
+              <td>Copiar</td>
+              <td class="mono">COPY</td>
+              <td class="mono">cp</td>
+            </tr>
+            <tr>
+              <td>Mover</td>
+              <td class="mono">MOVE</td>
+              <td class="mono">mv</td>
+            </tr>
+            <tr>
+              <td>Eliminar</td>
+              <td class="mono">DEL</td>
+              <td class="mono">rm</td>
+            </tr>
+            <tr>
+              <td>Cambiar directorio</td>
+              <td class="mono">CD</td>
+              <td class="mono">cd</td>
+            </tr>
+            <tr>
+              <td>Crear directorio</td>
+              <td class="mono">MD</td>
+              <td class="mono">mkdir</td>
+            </tr>
+            <tr>
+              <td>Limpiar pantalla</td>
+              <td class="mono">CLS</td>
+              <td class="mono">clear</td>
+            </tr>
+            <tr>
+              <td>Mostrar procesos</td>
+              <td class="mono">tasklist</td>
+              <td class="mono">ps</td>
+            </tr>
+            <tr>
+              <td>Red</td>
+              <td class="mono">ipconfig</td>
+              <td class="mono">ip addr</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="cmd-empty" id="cmdEmptyMsg">
+          Ningún comando coincide con esa búsqueda.
+        </div>
+
+        <div class="subhead reveal">Probá la terminal vos mismo</div>
+        <p class="reveal">
+          Es una simulación educativa: no ejecuta nada real, pero tiene un
+          filesystem navegable de verdad. Escribí <code>help</code> para ver los
+          comandos, o directamente <code>cd investigacion</code> y
+          <code>ls</code> para moverte. Ojo: acá las mayúsculas importan tanto
+          como en un shell real, así que <code>LS</code> no es lo mismo que
+          <code>ls</code>.
+        </p>
+        <div class="teletype reveal has-boot" id="unixSimBox">
+          <div class="boot-overlay" id="unixBoot"></div>
+          <div class="tt-label">
+            <span>SHELL SIMULADA — case-sensitive</span>
+            <button class="boot-replay" id="unixRebootBtn" type="button">
+              ↺ rebootear
+            </button>
+          </div>
+          <div class="sim-output" id="unixSimOutput"></div>
+          <form class="sim-line" id="unixSimForm" autocomplete="off">
+            <span class="sim-prompt">$</span>
+            <input
+              type="text"
+              id="unixSimInput"
+              class="sim-input"
+              placeholder="probá: help"
+              spellcheck="false"
+              autocomplete="off"
+              aria-label="Comando de terminal Unix"
+            />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MS-DOS ============ -->
+    <section class="exhibit" id="dos">
+      <div class="floppy-field" id="dosFloppyField"></div>
+      <div class="col">
+        <div class="year exhibit-eyebrow">1981 · Microsoft / IBM</div>
+        <h2 class="reveal reveal-scale">
+          Una sola tarea a la vez, en 640 kilobytes
+        </h2>
+        <p class="reveal">
+          Cuando IBM necesitó un sistema operativo para su primera PC, Microsoft
+          le vendió una licencia de QDOS —comprado a Seattle Computer Products—
+          y lo rebautizó PC-DOS / MS-DOS. No tenía interfaz gráfica, ni
+          multitarea real, ni protección de memoria entre programas: todo pasaba
+          por un intérprete de comandos que leía un disco a la vez.
+        </p>
+
+        <div class="dos-screen reveal">
+          <div class="ds-label">C:\&gt; — INTÉRPRETE DE COMANDOS</div>
+          <pre
+            data-type="C:\&gt;DIR
+Volume in drive C has no label
+
+AUTOEXEC BAT     C:\&gt;
+CONFIG   SYS     C:\&gt;
+COMMAND  COM     C:\&gt;
+    3 File(s)
+
+C:\&gt;FORMAT A: /S_"
+          ><span class="blink">_</span></pre>
+        </div>
+
+        <div class="dos-barrier reveal reveal-scale">
+          <span class="num">640K</span>
+          <span class="lbl"
+            >el límite de memoria convencional que arrastró el software para PC
+            durante más de una década, por decisiones de direccionamiento
+            tomadas en 1981.</span
+          >
+        </div>
+
+        <p class="reveal">
+          Su legado más duradero no es técnico sino de costumbre: el nombre de
+          archivo de 8+3 caracteres, los comandos <code>DIR</code>,
+          <code>COPY</code> y <code>DEL</code>, y el símbolo
+          <code>C:\&gt;</code> sobrevivieron —como capa de compatibilidad—
+          dentro del propio Windows durante décadas.
+        </p>
+
+        <p class="reveal">
+          Probá los mismos cinco comandos que usaba cualquiera en 1985. A
+          diferencia del shell de Unix, DOS no distingue mayúsculas de
+          minúsculas: <code>dir</code> y <code>DIR</code> hacen lo mismo.
+        </p>
+        <div class="dos-screen reveal has-boot" id="dosSimBox">
+          <div class="boot-overlay" id="dosBoot"></div>
+          <div class="ds-label">
+            <span>C:\&gt; — PROBÁ VOS (no distingue mayúsculas)</span>
+            <button class="boot-replay" id="dosRebootBtn" type="button">
+              ↺ rebootear
+            </button>
+          </div>
+          <div class="sim-output" id="dosSimOutput"></div>
+          <form class="sim-line" id="dosSimForm" autocomplete="off">
+            <span class="sim-prompt">C:\&gt;</span>
+            <input
+              type="text"
+              id="dosSimInput"
+              class="sim-input"
+              placeholder="probá: HELP"
+              spellcheck="false"
+              autocomplete="off"
+              aria-label="Comando de MS-DOS"
+            />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WINDOWS ============ -->
+    <section class="exhibit" id="windows">
+      <div class="col-wide">
+        <div class="year exhibit-eyebrow">1985—hoy · Microsoft</div>
+        <h2 class="reveal reveal-scale">
+          La misma máquina, pero ahora con ventanas
+        </h2>
+        <p class="reveal" style="max-width: 640px">
+          Windows no reemplazó a DOS de entrada: durante años fue un programa
+          gráfico que corría <em>sobre</em> DOS. Windows 95 fue el quiebre real
+          —Start, taskbar, plug and play— y Windows NT trajo, por fin, la
+          protección de memoria y la multitarea real que DOS nunca tuvo.
+        </p>
+        <p class="reveal">
+          Antes de llegar al escritorio, mirá cómo arrancaba literalmente una
+          instalación de Windows 95 —y después arrastrá las ventanas de abajo;
+          así se manejaba una PC durante los años 90.
+        </p>
+
+        <div class="win-versions stagger">
+          <span class="win-v reveal">1.0 — 1985</span>
+          <span class="win-v reveal">3.1 — 1992</span>
+          <span class="win-v reveal">95</span>
+          <span class="win-v reveal">XP — 2001</span>
+          <span class="win-v reveal">7 — 2009</span>
+          <span class="win-v reveal">10 / 11</span>
+        </div>
+
+        <div class="desktop reveal" id="desktopArea">
+          <div class="desktop-hint">ESCRITORIO — arrastrá las ventanas</div>
+
+          <div class="win-installer" id="winInstaller">
+            <div class="wi-box">
+              <div class="wi-title">Instalación de Windows 95</div>
+              <div class="wi-body">
+                <div class="wi-logo">▦</div>
+                <div class="wi-step" id="wiStep">
+                  Preparando la instalación…
+                </div>
+                <div class="wi-bar">
+                  <div class="wi-fill" id="wiFill"></div>
+                </div>
+                <div class="wi-hint">No apague ni reinicie el equipo.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="winbox" style="top: 50px; left: 40px" data-drag>
+            <div class="titlebar">
+              <span>Administrador de programas</span
+              ><span class="tb-btns"
+                ><span>▾</span><span>▴</span><span>✕</span></span
+              >
+            </div>
+            <div class="winbody">
+              <p style="margin: 0 0 8px 0">Grupos de programas:</p>
+              <p style="margin: 0; color: #555">
+                🖩 Accesorios &nbsp; 🖨 Impresoras<br />📁 Aplicaciones &nbsp; ⚙
+                Panel de control
+              </p>
+            </div>
+          </div>
+
+          <div class="winbox" style="top: 130px; left: 260px" data-drag>
+            <div class="titlebar">
+              <span>MS-DOS Prompt</span
+              ><span class="tb-btns"
+                ><span>▾</span><span>▴</span><span>✕</span></span
+              >
+            </div>
+            <div class="winbody mono">C:\WINDOWS&gt;_</div>
+          </div>
+
+          <div
+            class="winbox"
+            style="top: 210px; left: 70px; width: 260px"
+            data-drag
+          >
+            <div class="titlebar">
+              <span>Acerca de este PC</span
+              ><span class="tb-btns"
+                ><span>▾</span><span>▴</span><span>✕</span></span
+              >
+            </div>
+            <div class="winbody">
+              <p style="margin: 0">
+                Microsoft Windows<br />Memoria: 8&nbsp;MB RAM<br />Procesador:
+                80486
+              </p>
+            </div>
+          </div>
+
+          <div class="taskbar">
+            <span class="start">⊞ Inicio</span>
+            <button class="win-reinstall" id="winReinstallBtn" type="button">
+              ↺ Reinstalar
+            </button>
+            <span class="clock" id="taskClock">10:41 AM</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LINUX ============ -->
+    <section class="exhibit" id="linux">
+      <canvas class="logfeed" id="linuxRain" aria-hidden="true"></canvas>
+      <div class="col">
+        <div class="year exhibit-eyebrow">
+          1991—hoy · Linus Torvalds y la comunidad GNU
+        </div>
+        <h2 class="reveal reveal-scale">
+          Un kernel de estudiante, hoy en la mayoría de los servidores del mundo
+        </h2>
+        <p class="reveal">
+          "Estoy haciendo un sistema operativo (gratis) solo como hobby, no va a
+          ser grande ni profesional como GNU", escribió Torvalds en un foro de
+          Usenet en 1991. Ese kernel, combinado con las herramientas que el
+          proyecto GNU venía construyendo desde 1983, formó un sistema completo:
+          GNU/Linux.
+        </p>
+
+        <div class="term reveal">
+          <div class="tm-label">bash — terminal</div>
+          <pre
+            data-type="$ sudo apt update &amp;&amp; sudo apt upgrade
+$ systemctl status nginx
+● active (running)
+$ ps aux | grep python | wc -l
+      3"
+          ><span class="blink">_</span></pre>
+        </div>
+
+        <p class="reveal">
+          Al ser software libre, cualquiera podía tomar el kernel y armar su
+          propia distribución. Esa apertura produjo cientos de variantes con
+          distinta filosofía —de servidor, de escritorio, de investigación en
+          seguridad— que hoy conviven:
+        </p>
+
+        <div class="distro-grid stagger">
+          <div class="distro reveal" style="--d: var(--debian)">
+            <span class="dname">Debian</span
+            ><span class="duse">estabilidad, base de otras</span>
+          </div>
+          <div class="distro reveal" style="--d: var(--ubuntu)">
+            <span class="dname">Ubuntu</span
+            ><span class="duse">escritorio y nube</span>
+          </div>
+          <div class="distro reveal" style="--d: var(--redhat)">
+            <span class="dname">Red Hat / Fedora</span
+            ><span class="duse">servidores empresariales</span>
+          </div>
+          <div class="distro reveal" style="--d: var(--arch)">
+            <span class="dname">Arch</span
+            ><span class="duse">mínimo, configurable</span>
+          </div>
+          <div class="distro reveal" style="--d: var(--bsd)">
+            <span class="dname">Android</span
+            ><span class="duse">kernel Linux + capa propia</span>
+          </div>
+        </div>
+
+        <p class="reveal">
+          Hoy corre en prácticamente todas las supercomputadoras del top500, en
+          la mayoría de los servidores web, y —vía el kernel de Android— en más
+          teléfonos que cualquier otro sistema operativo del mundo.
+        </p>
+
+        <p class="reveal">
+          Cerramos con el mismo truco pero del lado Linux: probá
+          <code>cd Documents</code>, <code>cat tarea.txt</code> o
+          <code>cd ..</code> para subir un nivel (también case-sensitive, como
+          todo shell Unix).
+        </p>
+        <div class="term reveal has-boot" id="linuxSimBox">
+          <div class="boot-overlay" id="linuxBoot"></div>
+          <div class="tm-label">
+            <span>bash — probá vos (case-sensitive)</span>
+            <button class="boot-replay" id="linuxRebootBtn" type="button">
+              ↺ rebootear
+            </button>
+          </div>
+          <div class="sim-output" id="linuxSimOutput"></div>
+          <form class="sim-line" id="linuxSimForm" autocomplete="off">
+            <span class="sim-prompt">$</span>
+            <input
+              type="text"
+              id="linuxSimInput"
+              class="sim-input"
+              placeholder="probá: help"
+              spellcheck="false"
+              autocomplete="off"
+              aria-label="Comando de terminal Linux"
+            />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BSD / macOS / iOS / ANDROID (scroll horizontal) ============ -->
+    <section class="exhibit horiz-exhibit" id="modernos">
+      <div class="col">
+        <div class="year exhibit-eyebrow">
+          1977—2008 · La familia se ramifica
+        </div>
+        <h2 class="reveal reveal-scale">Cuatro ramas más del mismo árbol</h2>
+        <p class="reveal">
+          Unix y Linux no fueron el final de la historia. Berkeley abrió su
+          propia rama en los años 70; Apple heredó otra a través de NeXT; y esa
+          herencia terminó, veinte años después, en el bolsillo de todo el
+          mundo. Esta sala se recorre distinto: seguí scrolleando.
+        </p>
+      </div>
+
+      <div class="horiz-section" id="horizSection">
+        <div class="horiz-sticky">
+          <div class="horiz-track" id="horizTrack">
+            <article class="h-panel h-bsd">
+              <div class="h-panel-bg" aria-hidden="true">
+                <svg
+                  viewBox="0 -2 256 256"
+                  class="icon"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  preserveAspectRatio="xMidYMid"
+                  fill="#000000"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <g fill="#B5010F">
+                      <path
+                        d="M252.722963,5.10923976 C266.230721,18.6106793 228.784285,77.9582562 222.453709,84.2919919 C216.123132,90.6130917 200.043973,84.7974272 186.542533,71.2928287 C173.034776,57.7913892 167.215952,41.7090709 173.546529,35.3784942 C179.873947,29.0447585 239.218365,-8.39851769 252.722963,5.10923976"
+                      ></path>
+                      <path
+                        d="M63.3047797,19.3941039 C42.6830209,7.69327755 13.3393448,-5.32168052 4.00458729,4.01307703 C-5.4533701,13.4678754 8.0385925,43.4717763 19.8626187,64.1314428 C30.3851491,45.8378452 45.3523509,30.4378645 63.3047797,19.3941039"
+                      ></path>
+                      <path
+                        d="M232.123317,79.6356695 C234.021858,86.0768102 233.680689,91.3965163 230.600693,94.4701945 C223.407718,101.666329 203.976891,94.0058259 186.4604,77.3359391 C185.237878,76.2397763 184.024834,75.102547 182.833902,73.9084562 C176.500166,67.5715616 171.572172,60.8271597 168.41952,54.6166239 C162.284799,43.610771 160.74954,33.8906191 165.386908,29.2532506 C167.914085,26.7292332 171.957567,26.0405777 176.88872,26.9282483 C180.104551,24.8938714 183.901634,22.6288896 188.065157,20.3070464 C171.136234,11.4777241 151.888628,6.48970982 131.472202,6.48970982 C63.7533535,6.48970982 8.85360686,61.3799796 8.85360686,129.105146 C8.85360686,196.817677 63.7533535,251.714264 131.472202,251.714264 C199.191051,251.714264 254.087638,196.817677 254.087638,129.105146 C254.087638,107.235594 248.347789,86.7275581 238.321217,68.9488727 C236.154163,72.9039036 234.04713,76.5272426 232.123317,79.6356695"
+                      ></path>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+              <div class="h-panel-content">
+                <div class="h-eyebrow">
+                  1977 · Universidad de California, Berkeley
+                </div>
+                <h3>BSD</h3>
+                <p>
+                  Mientras AT&amp;T mantenía Unix bajo licencia comercial,
+                  Berkeley construía su propia rama: código abierto antes de que
+                  existiera esa palabra. De ahí salieron FreeBSD, OpenBSD y
+                  NetBSD — la parte del árbol Unix que fue directo a servidores,
+                  routers y buena parte de la infraestructura de red de
+                  internet.
+                </p>
+                <div class="h-tags">
+                  <span>Código abierto</span><span>Redes</span
+                  ><span>Servidores</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="h-panel h-macos">
+              <div class="h-panel-bg" aria-hidden="true">
+                <svg
+                  fill="#000000"
+                  class="icon"
+                  viewBox="0 0 32 32"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M31,0H1A1,1,0,0,0,0,1V31a1,1,0,0,0,1,1H31a1,1,0,0,0,1-1V1A1,1,0,0,0,31,0ZM2,2H14.36C11.89,7.34,11,15.52,11,15.9a1,1,0,0,0,.25.77A1,1,0,0,0,12,17h4.89a29.9,29.9,0,0,0,.25,7c-.37,0-.75.05-1.14.05A14.07,14.07,0,0,1,5.78,19.38a1,1,0,0,0-1.4-.16,1,1,0,0,0-.16,1.41A15.87,15.87,0,0,0,16,26c.53,0,1.05,0,1.55-.08A18.35,18.35,0,0,0,19.07,30H2ZM30,30H21.39a15.57,15.57,0,0,1-1.86-4.42,15.91,15.91,0,0,0,8.25-4.95,1,1,0,1,0-1.56-1.25,14.13,14.13,0,0,1-7.09,4.24A27.91,27.91,0,0,1,19,16.15,1,1,0,0,0,18,15H13.13c.34-2.59,1.36-9.12,3.46-13H30Z"
+                    ></path>
+                    <path
+                      d="M8,13a1,1,0,0,0,1-1V9A1,1,0,0,0,7,9v3A1,1,0,0,0,8,13Z"
+                    ></path>
+                    <path
+                      d="M24,13a1,1,0,0,0,1-1V9a1,1,0,0,0-2,0v3A1,1,0,0,0,24,13Z"
+                    ></path>
+                  </g>
+                </svg>
+              </div>
+              <div class="h-panel-content">
+                <div class="h-eyebrow">
+                  2001 · Apple, heredando de NeXT y Unix
+                </div>
+                <h3>macOS</h3>
+                <p>
+                  Cuando Apple compró NeXT en 1997, heredó un sistema construido
+                  sobre Unix con una interfaz gráfica adelantada a su época. Esa
+                  combinación se volvió Mac&nbsp;OS&nbsp;X: por dentro, un Unix
+                  certificado con terminal incluida; por fuera, la interfaz que
+                  redefinió cómo debía verse una computadora personal.
+                </p>
+                <div class="h-tags">
+                  <span>Basado en Unix</span><span>Integración HW/SW</span
+                  ><span>Terminal</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="h-panel h-ios">
+              <div class="h-panel-bg" aria-hidden="true">📱</div>
+              <div class="h-panel-content">
+                <div class="h-eyebrow">2007 · iPhone</div>
+                <h3>iOS</h3>
+                <p>
+                  El iPhone no inventó el teléfono táctil, pero sí la idea de
+                  que un teléfono pudiera ser, ante todo, una computadora
+                  completa. iOS reconstruyó gran parte de la base técnica de
+                  macOS —y por lo tanto de Unix— pensando en un dedo, no en un
+                  mouse ni un teclado.
+                </p>
+                <div class="h-tags">
+                  <span>Multitáctil</span><span>Ecosistema cerrado</span
+                  ><span>App Store</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="h-panel h-android">
+              <div class="h-panel-bg" aria-hidden="true">
+                <svg
+                  viewBox="0 0 1024 1024"
+                  class="icon"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#000000"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M213.696 348.032c-28.16 0-51.2 23.04-51.2 51.2V604.8c0 28.096 23.04 51.2 51.2 51.2s51.2-23.04 51.2-51.2V399.168c0-28.16-23.04-51.136-51.2-51.136z"
+                      fill=""
+                    ></path>
+                    <path
+                      d="M213.696 633.6a28.8 28.8 0 0 1-28.8-28.8V399.168a28.8 28.8 0 0 1 57.6 0V604.8a28.8 28.8 0 0 1-28.8 28.8z"
+                      fill="#1FDB00"
+                    ></path>
+                    <path
+                      d="M831.68 348.032c-28.16 0-51.2 23.04-51.2 51.2V604.8c0 28.096 22.976 51.2 51.2 51.2s51.2-23.04 51.2-51.2V399.168a51.2 51.2 0 0 0-51.2-51.136z"
+                      fill=""
+                    ></path>
+                    <path
+                      d="M831.68 633.6a28.8 28.8 0 0 1-28.8-28.8V399.168a28.8 28.8 0 0 1 57.6 0V604.8a28.8 28.8 0 0 1-28.8 28.8z"
+                      fill="#1FDB00"
+                    ></path>
+                    <path
+                      d="M294.656 709.184c0 24.64 20.16 44.8 44.8 44.8h43.008v116.8c0 28.096 23.04 51.2 51.2 51.2s51.2-23.04 51.2-51.2v-116.8h81.6v116.8c0 28.096 22.976 51.2 51.2 51.2s51.2-23.04 51.2-51.2v-116.8h38.976c24.64 0 44.8-20.16 44.8-44.8V348.032H294.656v361.152z"
+                      fill=""
+                    ></path>
+                    <path
+                      d="M617.664 899.648a28.8 28.8 0 0 1-28.8-28.8v-139.2H462.464v139.2a28.8 28.8 0 0 1-57.6 0v-139.2H339.52a22.4 22.4 0 0 1-22.4-22.464V370.432h413.184v338.752a22.4 22.4 0 0 1-22.4 22.464h-61.376v139.2c0 15.808-12.992 28.8-28.864 28.8z"
+                      fill="#1FDB00"
+                    ></path>
+                    <path
+                      d="M297.92 320h451.52a225.28 225.28 0 0 0-113.28-163.456l51.712-51.712a11.328 11.328 0 0 0 0-15.808h-0.064a11.2 11.2 0 0 0-15.808 0l-52.032 52.096c-1.728 1.664-2.24 3.968-2.624 6.144A219.456 219.456 0 0 0 528.704 128h-10.048c-27.52 0-53.824 5.184-78.208 14.4-0.256-0.384-0.128-0.96-0.448-1.28l-52.096-52.096a11.2 11.2 0 0 0-15.808 15.808l47.488 47.552A225.088 225.088 0 0 0 297.92 320z m325.376-120.768a25.984 25.984 0 1 1 0 51.904 25.984 25.984 0 0 1 0-51.904z m-197.952 0a25.984 25.984 0 1 1 0 51.904 25.984 25.984 0 0 1 0-51.904z"
+                      fill=""
+                    ></path>
+                    <path
+                      d="M325.568 297.6a202.88 202.88 0 0 1 55.296-91.456 48.448 48.448 0 1 0 38.592-28.928 197.696 197.696 0 0 1 99.2-26.816h9.984c35.648 0 69.568 9.664 98.944 26.624a48.448 48.448 0 1 0 41.024 31.04c24.768 24.256 43.392 54.912 53.184 89.472H325.568z"
+                      fill="#1FDB00"
+                    ></path>
+                  </g>
+                </svg>
+              </div>
+              <div class="h-panel-content">
+                <div class="h-eyebrow">2008 · Google, sobre kernel Linux</div>
+                <h3>Android</h3>
+                <p>
+                  Por debajo de cada Android corre, literalmente, un kernel
+                  Linux — la misma familia que ya viste en servidores y
+                  supercomputadoras, ahora en un teléfono. Google lo entregó a
+                  cientos de fabricantes distintos, apostando por variedad
+                  frente al control cerrado de su competencia directa.
+                </p>
+                <div class="h-tags">
+                  <span>Basado en Linux</span><span>Código abierto</span
+                  ><span>Fragmentación</span>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="h-progress">
+            <div class="h-progress-fill" id="hProgressFill"></div>
+          </div>
+        </div>
+        <div class="h-hint" id="hHint">seguí scrolleando →</div>
+      </div>
+    </section>
+
+    <!-- ============================================
+     SALA HORIZONTAL — desplazamiento a la izquierda
+     ============================================ -->
+    <section
+      class="hchrono"
+      id="cronologia-h"
+      aria-label="Evolución cronológica de los sistemas operativos"
+    >
+      <header class="hchrono__intro">
+        <p class="hchrono__eyebrow">Línea de tiempo</p>
+        <h2 class="hchrono__title">Medio siglo en 8 estaciones</h2>
+        <p class="hchrono__subtitle">
+          Ocho momentos clave, de los orígenes de la computación al presente.
+        </p>
+      </header>
+
+      <div class="hchrono__stack">
+        <!-- 01 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">01</span>
+            <p class="hchrono__date">1950s — 1960s</p>
+            <h3 class="hchrono__heading">Orígenes</h3>
+            <p class="hchrono__tagline">
+              Antes de los sistemas operativos modernos
+            </p>
+            <p class="hchrono__body">
+              Los primeros computadores se programaban con paneles de
+              interruptores, tarjetas perforadas y lenguaje máquina. Sin
+              interfaces gráficas, multitarea ni sistemas de archivos.
+            </p>
+            <ul class="hchrono__list">
+              <li>
+                <strong>Batch processing:</strong> trabajos en cola para
+                aprovechar la CPU.
+              </li>
+              <li>
+                <strong>Multiprogramación:</strong> varios programas en memoria
+                a la vez.
+              </li>
+              <li>
+                <strong>Tiempo compartido:</strong> terminales interactivas y
+                múltiples usuarios.
+              </li>
+            </ul>
+            <p class="hchrono__footnote">
+              Esta etapa sentó las bases para que, en 1969, naciera UNIX.
+            </p>
+          </div>
+        </article>
+
+        <!-- 02 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">02</span>
+            <p class="hchrono__date">1969</p>
+            <h3 class="hchrono__heading">UNIX</h3>
+            <p class="hchrono__tagline">
+              Bell Labs · Ken Thompson &amp; Dennis Ritchie
+            </p>
+            <p class="hchrono__body">
+              Nace sobre una PDP-7. En 1973 se reescribe en C, una decisión que
+              lo hace portable a cualquier hardware, algo inusual para la época.
+            </p>
+            <blockquote class="hchrono__quote">
+              "Hacé programas que hagan una sola cosa y la hagan bien. Hacé
+              programas que trabajen juntos."
+            </blockquote>
+            <ul class="hchrono__list">
+              <li>Todo es un archivo (discos, impresoras, terminales).</li>
+              <li>Herramientas pequeñas combinables con pipes.</li>
+              <li>Multiusuario, multitarea, sistema jerárquico.</li>
+              <li>
+                Shell, procesos, permisos: el vocabulario que seguimos usando.
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 03 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">03</span>
+            <p class="hchrono__date">1970s — 1980s</p>
+            <h3 class="hchrono__heading">BSD y POSIX</h3>
+            <p class="hchrono__tagline">La estandarización del linaje UNIX</p>
+            <p class="hchrono__body">
+              La diversidad de implementaciones UNIX obligó a crear estándares.
+              BSD aportó componentes propios y variantes como FreeBSD, OpenBSD y
+              NetBSD.
+            </p>
+            <ul class="hchrono__list">
+              <li>
+                <strong>POSIX (IEEE 1003.1):</strong> interfaces estándar para
+                portabilidad.
+              </li>
+              <li>
+                <strong>Single UNIX Specification:</strong> certificación
+                oficial.
+              </li>
+              <li>
+                <strong>Legado:</strong> macOS e iOS descienden de BSD, no del
+                UNIX original.
+              </li>
+            </ul>
+            <p class="hchrono__footnote">
+              La edición activa del estándar POSIX es IEEE 1003.1-2024.
+            </p>
+          </div>
+        </article>
+
+        <!-- 04 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">04</span>
+            <p class="hchrono__date">1981</p>
+            <h3 class="hchrono__heading">MS-DOS</h3>
+            <p class="hchrono__tagline">La PC personal llega al mundo</p>
+            <p class="hchrono__body">
+              IBM lanza su PC con MS-DOS 1.0. Sin interfaz gráfica, sin
+              multitarea real, sin protección de memoria: solo un intérprete de
+              comandos y un disco a la vez.
+            </p>
+            <pre class="hchrono__code"><code>C:\&gt;DIR
+C:\&gt;COPY A:\*.* C:\BACKUP
+C:\&gt;FORMAT A:</code></pre>
+            <ul class="hchrono__list">
+              <li>
+                <strong>640K:</strong> el límite de memoria que arrastró al
+                software por una década.
+              </li>
+              <li>
+                <strong>8+3:</strong> nombres de archivo de 8 caracteres + 3 de
+                extensión.
+              </li>
+              <li>
+                <strong>Legado:</strong> <code>C:\&gt;</code>, <code>DIR</code>,
+                <code>COPY</code> sobrevivieron en Windows.
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 05 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">05</span>
+            <p class="hchrono__date">1985 — hoy</p>
+            <h3 class="hchrono__heading">Windows</h3>
+            <p class="hchrono__tagline">La era de las ventanas</p>
+            <p class="hchrono__body">
+              Durante años fue un programa gráfico sobre DOS. Windows 95 fue el
+              quiebre real —Start, taskbar, plug and play— y NT trajo protección
+              de memoria y multitarea real.
+            </p>
+            <ol class="hchrono__timeline">
+              <li>
+                <time>1985</time>
+                <span>Windows 1.0 — entorno gráfico sobre DOS</span>
+              </li>
+              <li>
+                <time>1995</time>
+                <span>Windows 95 — Start, taskbar, plug &amp; play</span>
+              </li>
+              <li>
+                <time>2001</time>
+                <span>Windows XP — estabilidad y gran adopción</span>
+              </li>
+              <li>
+                <time>2021</time>
+                <span>Windows 11 — interfaz moderna, WSL con Linux</span>
+              </li>
+            </ol>
+            <p class="hchrono__footnote">
+              Windows moderno corre Linux por dentro a través de WSL.
+            </p>
+          </div>
+        </article>
+
+        <!-- 06 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">06</span>
+            <p class="hchrono__date">1991 — hoy</p>
+            <h3 class="hchrono__heading">GNU/Linux</h3>
+            <p class="hchrono__tagline">Un hobby que cambió el mundo</p>
+            <blockquote class="hchrono__quote">
+              "Estoy haciendo un sistema operativo (gratis) solo como hobby."
+              <cite>— Linus Torvalds, 1991</cite>
+            </blockquote>
+            <p class="hchrono__body">
+              Linux es solo el kernel. Combinado con las herramientas GNU forma
+              un sistema completo: GNU/Linux. Hoy corre en la mayoría de los
+              servidores y supercomputadoras.
+            </p>
+            <ul class="hchrono__list hchrono__list--grid">
+              <li><strong>Debian</strong> — estabilidad</li>
+              <li><strong>Ubuntu</strong> — escritorio y nube</li>
+              <li><strong>Fedora</strong> — enterprise</li>
+              <li><strong>Arch</strong> — minimalismo</li>
+              <li><strong>Android</strong> — kernel Linux</li>
+              <li><strong>ChromeOS</strong> — kernel Linux</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 07 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">07</span>
+            <p class="hchrono__date">2007 — 2008</p>
+            <h3 class="hchrono__heading">La era móvil</h3>
+            <p class="hchrono__tagline">
+              iOS, Android y el teléfono en tu bolsillo
+            </p>
+            <p class="hchrono__body">
+              El iPhone (2007) redefine la informática móvil. Android (2008)
+              apuesta por un kernel Linux abierto a múltiples fabricantes.
+            </p>
+            <div class="hchrono__duo">
+              <div class="hchrono__mini">
+                <h4>iOS</h4>
+                <ul>
+                  <li>Base: Darwin (BSD/UNIX)</li>
+                  <li>Hardware: solo Apple</li>
+                  <li>Modelo: cerrado</li>
+                </ul>
+              </div>
+              <div class="hchrono__mini">
+                <h4>Android</h4>
+                <ul>
+                  <li>Base: kernel Linux</li>
+                  <li>Hardware: muchos fabricantes</li>
+                  <li>Modelo: abierto</li>
+                </ul>
+              </div>
+            </div>
+            <p class="hchrono__footnote">
+              macOS (2001) había preparado el terreno: un UNIX certificado con
+              interfaz gráfica.
+            </p>
+          </div>
+        </article>
+
+        <!-- 08 -->
+        <article class="hchrono__slide reveal">
+          <div class="hchrono__card">
+            <span class="hchrono__num">08</span>
+            <p class="hchrono__date">2020s →</p>
+            <h3 class="hchrono__heading">El futuro</h3>
+            <p class="hchrono__tagline">Cloud, contenedores, IA, IoT</p>
+            <p class="hchrono__body">
+              Las fronteras entre computadora, servidor, teléfono y dispositivo
+              inteligente se disuelven.
+            </p>
+            <ul class="hchrono__list">
+              <li>
+                <strong>Cloud &amp; contenedores:</strong> Docker, Kubernetes.
+              </li>
+              <li>
+                <strong>Virtualización:</strong> hipervisores, múltiples SO.
+              </li>
+              <li>
+                <strong>Arquitecturas ARM:</strong> de teléfonos a datacenters.
+              </li>
+              <li><strong>IA embebida:</strong> asistentes y aceleradores.</li>
+              <li>
+                <strong>IoT &amp; Edge:</strong> bajo consumo, poca memoria.
+              </li>
+            </ul>
+            <pre class="hchrono__code"><code>Hardware
+     └─ Hypervisor / Container Runtime
+          ├─ Linux   ── App
+          ├─ Windows ── App
+          └─ BSD     ── App</code>
+                              </pre>
+            <p class="hchrono__footnote">
+              Comprender estos linajes es entender cómo funciona el mundo
+              digital.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ SÍNTESIS ============ -->
+    <section class="tight" id="synthesis">
+      <div class="col-wide">
+        <div class="year exhibit-eyebrow">Sala final</div>
+        <h2
+          class="reveal reveal-scale"
+          style="
+            font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+            max-width: 640px;
+            margin-bottom: 20px;
+          "
+        >
+          Cuatro respuestas al mismo problema
+        </h2>
+        <p class="reveal reveal-left" style="max-width: 640px">
+          Ningún linaje "ganó": cada uno encontró un nicho. Y las líneas se
+          cruzan más de lo que parece —macOS e iOS descienden de un Unix
+          distinto (BSD), y Windows moderno corre Linux por dentro a través de
+          WSL.
+        </p>
+
+        <div class="compare-wrap reveal">
+          <table class="compare">
+            <thead>
+              <tr>
+                <th>Aspecto</th>
+                <th>Unix (1969)</th>
+                <th>MS-DOS (1981)</th>
+                <th>Windows (1985—hoy)</th>
+                <th>Linux (1991—hoy)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Interfaz original</td>
+                <td>Línea de comandos</td>
+                <td>Línea de comandos</td>
+                <td>Gráfica (WIMP)</td>
+                <td>Línea de comandos</td>
+              </tr>
+              <tr>
+                <td>Multiusuario</td>
+                <td>Sí, desde el inicio</td>
+                <td>No</td>
+                <td>Solo desde NT (1993)</td>
+                <td>Sí, desde el inicio</td>
+              </tr>
+              <tr>
+                <td>Licencia</td>
+                <td>Propietaria / variada</td>
+                <td>Propietaria</td>
+                <td>Propietaria</td>
+                <td>Libre (GPL)</td>
+              </tr>
+              <tr>
+                <td>Filosofía de diseño</td>
+                <td>Herramientas pequeñas combinables</td>
+                <td>Simplicidad, hardware mínimo</td>
+                <td>Accesibilidad visual</td>
+                <td>Modularidad, transparencia del código</td>
+              </tr>
+              <tr>
+                <td>Uso dominante hoy</td>
+                <td>Servidores vía descendientes</td>
+                <td>Histórico / embebidos</td>
+                <td>Escritorio y oficinas</td>
+                <td>Servidores, nube, móviles</td>
+              </tr>
+              <tr>
+                <td>Descendiente directo</td>
+                <td>BSD, macOS, Solaris</td>
+                <td>Windows 9x (compatibilidad)</td>
+                <td>Windows 10 / 11</td>
+                <td>Android, ChromeOS, distros</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="reveal">
+          Entender estos cuatro linajes no es solo historia: explica por qué en
+          una Mac se abre una terminal Unix, por qué los ejecutables de Windows
+          no corren en Linux sin una capa de compatibilidad, y por qué "todo es
+          un archivo" sigue siendo, cincuenta años después, una forma razonable
+          de diseñar un sistema.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ ACTIVIDADES ============ -->
+    <section class="tight" id="quiz">
+      <div class="col">
+        <div class="year exhibit-eyebrow">Antes de salir</div>
+        <h2
+          class="reveal"
+          style="font-size: clamp(1.6rem, 3.2vw, 2.2rem); margin-bottom: 20px"
+        >
+          Cinco preguntas sobre la exhibición
+        </h2>
+        <p class="reveal">
+          Un repaso rápido de lo recorrido: Unix, MS-DOS, Windows y Linux.
+        </p>
+
+        <div class="qz-progress" id="qzProgress"></div>
+
+        <form id="qzForm">
+          <div class="qz-card" data-answer="1">
+            <span class="qz-num">Pregunta 1 de 5</span>
+            <h4>
+              ¿Qué idea central de Unix, resumida como "todo es un archivo",
+              sigue viva medio siglo después?
+            </h4>
+            <div class="qz-options">
+              <button type="button" class="qz-opt" data-index="0">
+                <span class="qz-letter">A</span
+                ><span
+                  >Que solo los documentos de texto pueden guardarse en
+                  disco</span
+                >
+              </button>
+              <button type="button" class="qz-opt" data-index="1">
+                <span class="qz-letter">B</span
+                ><span
+                  >Que discos, impresoras y terminales se tratan con la misma
+                  interfaz que un archivo</span
+                >
+              </button>
+              <button type="button" class="qz-opt" data-index="2">
+                <span class="qz-letter">C</span
+                ><span
+                  >Que cada programa debe guardar su configuración en un único
+                  archivo central</span
+                >
+              </button>
+              <button type="button" class="qz-opt" data-index="3">
+                <span class="qz-letter">D</span
+                ><span
+                  >Que los archivos no pueden compartirse entre usuarios</span
+                >
+              </button>
+            </div>
+            <div class="qz-feedback">
+              <strong data-ok></strong>
+              <span data-ex
+                >Unix trató dispositivos como discos, impresoras y terminales
+                bajo la misma abstracción de "archivo", lo que simplificó
+                enormemente cómo los programas interactúan con el
+                hardware.</span
+              >
+            </div>
+          </div>
+
+          <div class="qz-card" data-answer="0">
+            <span class="qz-num">Pregunta 2 de 5</span>
+            <h4>
+              ¿Qué límite de memoria arrastró el software para PC durante más de
+              una década por decisiones tomadas en el diseño de MS-DOS?
+            </h4>
+            <div class="qz-options">
+              <button type="button" class="qz-opt" data-index="0">
+                <span class="qz-letter">A</span
+                ><span>640 kilobytes de memoria convencional</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="1">
+                <span class="qz-letter">B</span
+                ><span>1 gigabyte de disco duro</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="2">
+                <span class="qz-letter">C</span
+                ><span>256 megabytes de memoria RAM</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="3">
+                <span class="qz-letter">D</span
+                ><span>8 caracteres por nombre de archivo, sin extensión</span>
+              </button>
+            </div>
+            <div class="qz-feedback">
+              <strong data-ok></strong>
+              <span data-ex
+                >La barrera de los 640K de memoria convencional, heredada del
+                direccionamiento original de 1981, limitó al software para PC
+                durante años, mucho después de que el hardware pudiera ofrecer
+                más.</span
+              >
+            </div>
+          </div>
+
+          <div class="qz-card" data-answer="2">
+            <span class="qz-num">Pregunta 3 de 5</span>
+            <h4>
+              ¿Qué versión de Windows se considera el quiebre real hacia la
+              interfaz gráfica moderna, con menú Start y barra de tareas?
+            </h4>
+            <div class="qz-options">
+              <button type="button" class="qz-opt" data-index="0">
+                <span class="qz-letter">A</span><span>Windows 1.0</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="1">
+                <span class="qz-letter">B</span><span>Windows 3.1</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="2">
+                <span class="qz-letter">C</span><span>Windows 95</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="3">
+                <span class="qz-letter">D</span><span>MS-DOS 6.22</span>
+              </button>
+            </div>
+            <div class="qz-feedback">
+              <strong data-ok></strong>
+              <span data-ex
+                >Windows 1.0 y 3.1 todavía dependían de DOS y tenían ventanas en
+                mosaico o superpuestas básicas. Windows 95 introdujo el Start,
+                la barra de tareas y plug and play, marcando el quiebre hacia lo
+                que hoy reconocemos.</span
+              >
+            </div>
+          </div>
+
+          <div class="qz-card" data-answer="1">
+            <span class="qz-num">Pregunta 4 de 5</span>
+            <h4>
+              ¿Qué aportó Windows NT que DOS y las primeras versiones de Windows
+              nunca tuvieron?
+            </h4>
+            <div class="qz-options">
+              <button type="button" class="qz-opt" data-index="0">
+                <span class="qz-letter">A</span
+                ><span>Un intérprete de comandos con el símbolo C:\&gt;</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="1">
+                <span class="qz-letter">B</span
+                ><span
+                  >Protección de memoria entre programas y multitarea real</span
+                >
+              </button>
+              <button type="button" class="qz-opt" data-index="2">
+                <span class="qz-letter">C</span
+                ><span>El nombre de archivo de 8+3 caracteres</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="3">
+                <span class="qz-letter">D</span
+                ><span>La necesidad de arrancar desde un disquete</span>
+              </button>
+            </div>
+            <div class="qz-feedback">
+              <strong data-ok></strong>
+              <span data-ex
+                >DOS ejecutaba un programa a la vez sin aislar la memoria entre
+                procesos. Windows NT, al fin, incorporó protección de memoria y
+                multitarea real, algo que Unix y Linux ya tenían desde su diseño
+                original.</span
+              >
+            </div>
+          </div>
+
+          <div class="qz-card" data-answer="3">
+            <span class="qz-num">Pregunta 5 de 5</span>
+            <h4>
+              ¿Qué combinación formó el sistema que Linus Torvalds anunció en
+              1991 como "solo un hobby"?
+            </h4>
+            <div class="qz-options">
+              <button type="button" class="qz-opt" data-index="0">
+                <span class="qz-letter">A</span
+                ><span>El kernel de BSD con la interfaz de Windows 95</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="1">
+                <span class="qz-letter">B</span
+                ><span>MS-DOS con un shell de Unix agregado</span>
+              </button>
+              <button type="button" class="qz-opt" data-index="2">
+                <span class="qz-letter">C</span
+                ><span
+                  >Un fork directo del código fuente de Unix original de Bell
+                  Labs</span
+                >
+              </button>
+              <button type="button" class="qz-opt" data-index="3">
+                <span class="qz-letter">D</span
+                ><span
+                  >El kernel Linux combinado con las herramientas del proyecto
+                  GNU</span
+                >
+              </button>
+            </div>
+            <div class="qz-feedback">
+              <strong data-ok></strong>
+              <span data-ex
+                >Torvalds escribió el kernel; el proyecto GNU, activo desde
+                1983, ya tenía compiladores, shell y utilidades libres. Juntos
+                formaron un sistema operativo completo: GNU/Linux.</span
+              >
+            </div>
+          </div>
+        </form>
+
+        <div class="qz-summary" id="qzSummary">
+          <div class="qz-score" id="qzScore">0/5</div>
+          <p id="qzSummaryText">
+            Respondé las 5 preguntas para ver tu resultado.
+          </p>
+          <button type="button" class="qz-retry" id="qzRetry">
+            Reintentar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="col">
+        <div>Trabajo Práctico — Sistemas Operativos - UTIC 2026</div>
+        <div>
+          Tema: Estudio de Sistemas — Unix, MS-DOS, Windows, Linux, BSD, macOS,
+          iOS, Android
+        </div>
+        <div>Marcio Martínez</div>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      /* ---------------------------------------------------------
+                 Reveal on scroll
+              --------------------------------------------------------- */
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -60px 0px" },
+      );
+      document
+        .querySelectorAll(".reveal, .qz-card, .qz-summary")
+        .forEach((el) => revealObserver.observe(el));
+
+      /* ---------------------------------------------------------
+                 Glitch al entrar a cada exhibit — refuerza el salto de época
+              --------------------------------------------------------- */
+      if (!reduceMotion) {
+        const glitchObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const el = entry.target;
+                el.classList.add("glitching");
+                el.addEventListener(
+                  "animationend",
+                  () => el.classList.remove("glitching"),
+                  { once: true },
+                );
+                glitchObserver.unobserve(el);
+              }
+            });
+          },
+          { threshold: 0.2 },
+        );
+        document
+          .querySelectorAll(".exhibit:not(.horiz-exhibit)")
+          .forEach((el) => glitchObserver.observe(el));
+      }
+
+      /* ---------------------------------------------------------
+                 Efecto de tipeo (hero + bloques data-type)
+              --------------------------------------------------------- */
+      function typeInto(el, text, speed, onDone) {
+        if (reduceMotion) {
+          el.innerHTML =
+            text.replace(/\n/g, "<br>") + '<span class="blink">_</span>';
+          if (onDone) onDone();
+          return;
+        }
+        let i = 0;
+        const cursor = '<span class="blink">_</span>';
+        function step() {
+          i++;
+          const shown = text.slice(0, i).replace(/\n/g, "<br>");
+          el.innerHTML = shown + cursor;
+          if (i < text.length) {
+            window.setTimeout(step, speed);
+          } else if (onDone) {
+            onDone();
+          }
+        }
+        step();
+      }
+
+      // Boot sequence del hero
+      const bootEl = document.getElementById("bootText");
+      const bootLines =
+        "CARGANDO EXHIBICIÓN...\n\nUNIX (1969) \u2192 MS-DOS (1981) \u2192 WINDOWS (1985) \u2192 LINUX (1991) \u2192 HOY";
+      window.setTimeout(
+        () => typeInto(bootEl, bootLines, reduceMotion ? 0 : 26),
+        400,
+      );
+
+      // Bloques de terminal dentro de cada exhibit, tipeados al entrar en pantalla
+      const typeBlocks = document.querySelectorAll("pre[data-type]");
+      const typeObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const el = entry.target;
+              const raw = el.getAttribute("data-type");
+              typeInto(el, raw, reduceMotion ? 0 : 16);
+              typeObserver.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.4 },
+      );
+      typeBlocks.forEach((el) => typeObserver.observe(el));
+
+      /* ---------------------------------------------------------
+                 Campo de tarjetas perforadas (parallax) — exhibit Unix
+              --------------------------------------------------------- */
+      const punchField = document.getElementById("unixPunchField");
+      const punchCards = [];
+      function makePunchCard() {
+        const holes = Array.from(
+          { length: 6 },
+          (_, i) =>
+            `<rect x="${10 + i * 14}" y="10" width="6" height="9" rx="1" fill="rgba(58,47,27,0.5)"/>`,
+        ).join("");
+        return `<svg width="110" height="60" viewBox="0 0 110 60">
+      <rect x="1" y="1" width="108" height="58" rx="3" fill="#EFE7CE" stroke="rgba(58,47,27,0.35)"/>
+      ${holes}
+    </svg>`;
+      }
+      if (punchField) {
+        const positions = [
+          { top: "8%", left: "6%", speed: 0.12, rot: -8 },
+          { top: "55%", left: "2%", speed: 0.22, rot: 6 },
+          { top: "20%", left: "86%", speed: 0.16, rot: 10 },
+          { top: "70%", left: "88%", speed: 0.1, rot: -5 },
+          { top: "85%", left: "40%", speed: 0.2, rot: 4 },
+        ];
+        positions.forEach((p) => {
+          const d = document.createElement("div");
+          d.className = "punch-card";
+          d.style.top = p.top;
+          d.style.left = p.left;
+          d.style.transform = `rotate(${p.rot}deg)`;
+          d.innerHTML = makePunchCard();
+          d.dataset.speed = p.speed;
+          d.dataset.rot = p.rot;
+          punchField.appendChild(d);
+          punchCards.push(d);
+        });
+      }
+
+      /* ---------------------------------------------------------
+                 Campo de disquetes (parallax) — exhibit MS-DOS
+              --------------------------------------------------------- */
+      const floppyField = document.getElementById("dosFloppyField");
+      const floppies = [];
+      function makeFloppy() {
+        return `<svg width="70" height="70" viewBox="0 0 70 70">
+      <rect x="2" y="2" width="66" height="66" rx="4" fill="#1E1E1E"/>
+      <rect x="10" y="2" width="34" height="20" fill="#C7C7C7"/>
+      <rect x="18" y="6" width="14" height="12" fill="#333"/>
+      <rect x="10" y="34" width="50" height="26" fill="#EFEFEF"/>
+    </svg>`;
+      }
+      if (floppyField) {
+        const positions = [
+          { top: "10%", left: "8%", speed: 0.14, rot: -10 },
+          { top: "62%", left: "4%", speed: 0.24, rot: 8 },
+          { top: "18%", left: "84%", speed: 0.18, rot: 12 },
+          { top: "75%", left: "86%", speed: 0.11, rot: -6 },
+        ];
+        positions.forEach((p) => {
+          const d = document.createElement("div");
+          d.className = "floppy";
+          d.style.top = p.top;
+          d.style.left = p.left;
+          d.style.transform = `rotate(${p.rot}deg)`;
+          d.innerHTML = makeFloppy();
+          d.dataset.speed = p.speed;
+          d.dataset.rot = p.rot;
+          floppyField.appendChild(d);
+          floppies.push(d);
+        });
+      }
+
+      /* ---------------------------------------------------------
+                 Lluvia tipo Matrix — versión animada del logfeed, exhibit Linux
+              --------------------------------------------------------- */
+      (function () {
+        const canvas = document.getElementById("linuxRain");
+        if (!canvas || !canvas.getContext) return;
+        const ctx = canvas.getContext("2d");
+        const chars =
+          "01アイウエオカキクケコサシスセソタチツテト01LINUXKERNEL01GNU";
+        const fontSize = 15;
+        let columns = 0;
+        let drops = [];
+        let running = false;
+        let rafId = null;
+        let lastTime = 0;
+
+        function resize() {
+          const rect = canvas.getBoundingClientRect();
+          canvas.width = Math.max(1, Math.round(rect.width));
+          canvas.height = Math.max(1, Math.round(rect.height));
+          columns = Math.ceil(canvas.width / fontSize);
+          drops = new Array(columns)
+            .fill(0)
+            .map(() => Math.floor(Math.random() * -40));
+        }
+
+        function draw() {
+          ctx.fillStyle = "rgba(12, 15, 11, 0.14)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.font = fontSize + "px monospace";
+          for (let i = 0; i < drops.length; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+            ctx.fillStyle =
+              Math.random() < 0.06 ? "#DFF6D6" : "rgba(122, 214, 122, 0.75)";
+            ctx.fillText(char, x, y);
+            if (y > canvas.height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            drops[i]++;
+          }
+        }
+
+        function loop(t) {
+          if (!running) return;
+          if (t - lastTime > 65) {
+            // ritmo pausado a propósito, para que sea sutil
+            draw();
+            lastTime = t;
+          }
+          rafId = window.requestAnimationFrame(loop);
+        }
+
+        function start() {
+          if (running) return;
+          running = true;
+          resize();
+          ctx.fillStyle = "#0C0F0B";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          rafId = window.requestAnimationFrame(loop);
+        }
+        function stop() {
+          running = false;
+          if (rafId) window.cancelAnimationFrame(rafId);
+        }
+
+        if (reduceMotion) {
+          // Sin animación: dibuja una sola textura estática, sin parpadeo
+          resize();
+          ctx.fillStyle = "#0C0F0B";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          draw();
+          draw();
+          draw();
+          return;
+        }
+
+        const rainObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              entry.isIntersecting ? start() : stop();
+            });
+          },
+          { threshold: 0.05 },
+        );
+        rainObserver.observe(canvas.closest(".exhibit") || canvas);
+
+        window.addEventListener("resize", () => {
+          if (running) resize();
+        });
+      })();
+
+      /* ---------------------------------------------------------
+                 Parallax + timeline scrubber, en scroll
+              --------------------------------------------------------- */
+      const tsTrack = document.getElementById("tsTrack");
+      const tsFill = document.getElementById("tsFill");
+      const tsHandle = document.getElementById("tsHandle");
+      const scrubber = document.getElementById("timelineScrubber");
+
+      function docScrollableHeight() {
+        return Math.max(
+          document.documentElement.scrollHeight - window.innerHeight,
+          1,
+        );
+      }
+
+      function updateScrollEffects() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        const dh = docScrollableHeight();
+        const pct = Math.min(100, Math.max(0, (scrollY / dh) * 100));
+        if (tsFill) tsFill.style.width = pct + "%";
+        if (tsHandle) tsHandle.style.left = pct + "%";
+
+        if (!reduceMotion) {
+          punchCards.forEach((el) => {
+            const speed = parseFloat(el.dataset.speed);
+            const rot = parseFloat(el.dataset.rot);
+            el.style.transform = `translateY(${scrollY * speed * -0.25}px) rotate(${rot}deg)`;
+          });
+          floppies.forEach((el) => {
+            const speed = parseFloat(el.dataset.speed);
+            const rot = parseFloat(el.dataset.rot);
+            el.style.transform = `translateY(${scrollY * speed * -0.3}px) rotate(${rot}deg)`;
+          });
+        }
+      }
+
+      let ticking = false;
+      window.addEventListener("scroll", () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            updateScrollEffects();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+      updateScrollEffects();
+
+      // Regla temporal (vertical, derecha) + scrubber (horizontal, arriba): resaltan la sección activa y permiten saltar
+      const timelineStops = document.querySelectorAll(".rail-stop, .ts-tick");
+      const tsTicks = document.querySelectorAll(".ts-tick");
+      const trackedSections = [
+        "hero",
+        "unix",
+        "dos",
+        "windows",
+        "linux",
+        "modernos",
+        "synthesis",
+        "quiz",
+      ]
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
+
+      timelineStops.forEach((stop) => {
+        stop.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const target = document.getElementById(
+            stop.getAttribute("data-target"),
+          );
+          if (target)
+            target.scrollIntoView({
+              behavior: reduceMotion ? "auto" : "smooth",
+              block: "start",
+            });
+        });
+      });
+
+      const railObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              timelineStops.forEach((stop) =>
+                stop.classList.toggle(
+                  "active",
+                  stop.getAttribute("data-target") === id,
+                ),
+              );
+            }
+          });
+        },
+        { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+      );
+      trackedSections.forEach((s) => railObserver.observe(s));
+
+      // Posiciona cada tick del scrubber según dónde cae su sección en el alto total
+      function layoutTicks() {
+        const dh = docScrollableHeight();
+        tsTicks.forEach((tick) => {
+          const target = document.getElementById(
+            tick.getAttribute("data-target"),
+          );
+          if (!target) return;
+          const pct = Math.min(100, Math.max(0, (target.offsetTop / dh) * 100));
+          tick.style.left = pct + "%";
+        });
+      }
+      layoutTicks();
+      window.addEventListener("resize", () => {
+        layoutTicks();
+        updateScrollEffects();
+      });
+      window.addEventListener("load", layoutTicks);
+      window.setTimeout(layoutTicks, 1200); // por si tipografías/imágenes corren el layout
+
+      /* ---------------------------------------------------------
+       Sala BSD / macOS / iOS / Android — scroll horizontal (GSAP)
+       Sin JS, sin GSAP, con pantallas angostas o con
+       prefers-reduced-motion: se queda como lista vertical normal.
+    --------------------------------------------------------- */
+      (function () {
+        const horizSection = document.getElementById("horizSection");
+        const horizTrack = document.getElementById("horizTrack");
+        const hFill = document.getElementById("hProgressFill");
+        const hHint = document.getElementById("hHint");
+        if (!horizSection || !horizTrack) return;
+
+        const canPin =
+          !reduceMotion &&
+          window.innerWidth >= 820 &&
+          typeof window.gsap !== "undefined" &&
+          typeof window.ScrollTrigger !== "undefined";
+        if (!canPin) return;
+
+        gsap.registerPlugin(ScrollTrigger);
+        // No re-mide cuando en mobile solo cambia el alto (barra de
+        // direcciones apareciendo/ocultándose) — evita el salto de scroll
+        // a mitad de pin.
+        ScrollTrigger.config({ ignoreMobileResize: true });
+        horizSection.classList.add("horiz-enabled");
+
+        // CORRECCION: usar el ancho del contenedor pinneado, no de la ventana
+        function getScrollAmount() {
+          return Math.max(horizTrack.scrollWidth - horizSection.offsetWidth, 0);
+        }
+
+        gsap.to(horizTrack, {
+          x: () => -getScrollAmount(),
+          ease: "none",
+          scrollTrigger: {
+            trigger: horizSection,
+            start: "top top",
+            end: () => "+=" + getScrollAmount(),
+            pin: true,
+            scrub: 0.6,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (hFill) hFill.style.width = self.progress * 100 + "%";
+              if (hHint) hHint.classList.toggle("hidden", self.progress > 0.04);
+            },
+          },
+        });
+
+        window.setTimeout(() => {
+          ScrollTrigger.refresh();
+          if (typeof layoutTicks === "function") layoutTicks();
+        }, 350);
+      })();
+
+      // Arrastre del scrubber: mover el handle scrollea la página en vivo
+      if (scrubber && tsTrack) {
+        let scrubbing = false;
+
+        function scrollToClientX(clientX) {
+          const rect = tsTrack.getBoundingClientRect();
+          const pct = Math.min(
+            1,
+            Math.max(0, (clientX - rect.left) / rect.width),
+          );
+          window.scrollTo({
+            top: pct * docScrollableHeight(),
+            behavior: "auto",
+          });
+        }
+
+        scrubber.addEventListener("pointerdown", (e) => {
+          if (e.target.closest(".ts-tick")) return; // los ticks tienen su propio click preciso
+          scrubbing = true;
+          scrubber.setPointerCapture(e.pointerId);
+          scrollToClientX(e.clientX);
+        });
+        scrubber.addEventListener("pointermove", (e) => {
+          if (!scrubbing) return;
+          scrollToClientX(e.clientX);
+        });
+        ["pointerup", "pointercancel"].forEach((evt) => {
+          scrubber.addEventListener(evt, () => {
+            scrubbing = false;
+          });
+        });
+
+        // Flechas del teclado: saltar de época en época
+        scrubber.addEventListener("keydown", (e) => {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          e.preventDefault();
+          const ticksArr = Array.from(tsTicks);
+          const currentPct = (window.scrollY / docScrollableHeight()) * 100;
+          let idx = ticksArr.findIndex(
+            (t) => parseFloat(t.style.left || "0") >= currentPct - 0.5,
+          );
+          if (idx === -1) idx = ticksArr.length - 1;
+          const nextIdx = Math.max(
+            0,
+            Math.min(
+              ticksArr.length - 1,
+              idx + (e.key === "ArrowRight" ? 1 : -1),
+            ),
+          );
+          const target = document.getElementById(
+            ticksArr[nextIdx].getAttribute("data-target"),
+          );
+          if (target)
+            target.scrollIntoView({
+              behavior: reduceMotion ? "auto" : "smooth",
+              block: "start",
+            });
+        });
+      }
+
+      /* ---------------------------------------------------------
+                 Ventanas arrastrables — exhibit Windows
+              --------------------------------------------------------- */
+      const desktop = document.getElementById("desktopArea");
+      if (desktop) {
+        desktop.querySelectorAll(".winbox").forEach((win) => {
+          const titlebar = win.querySelector(".titlebar");
+          let dragging = false,
+            offX = 0,
+            offY = 0;
+
+          function bringToFront() {
+            desktop
+              .querySelectorAll(".winbox")
+              .forEach((w) => (w.style.zIndex = 1));
+            win.style.zIndex = 5;
+          }
+
+          function startDrag(clientX, clientY) {
+            dragging = true;
+            bringToFront();
+            const rect = win.getBoundingClientRect();
+            const deskRect = desktop.getBoundingClientRect();
+            offX = clientX - rect.left;
+            offY = clientY - rect.top;
+            win.style.left = rect.left - deskRect.left + "px";
+            win.style.top = rect.top - deskRect.top + "px";
+          }
+
+          function moveDrag(clientX, clientY) {
+            if (!dragging) return;
+            const deskRect = desktop.getBoundingClientRect();
+            let nx = clientX - deskRect.left - offX;
+            let ny = clientY - deskRect.top - offY;
+            nx = Math.max(
+              0,
+              Math.min(nx, desktop.clientWidth - win.offsetWidth),
+            );
+            ny = Math.max(
+              0,
+              Math.min(ny, desktop.clientHeight - win.offsetHeight - 34),
+            );
+            win.style.left = nx + "px";
+            win.style.top = ny + "px";
+          }
+
+          function endDrag() {
+            dragging = false;
+          }
+
+          titlebar.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            startDrag(e.clientX, e.clientY);
+          });
+          window.addEventListener("mousemove", (e) =>
+            moveDrag(e.clientX, e.clientY),
+          );
+          window.addEventListener("mouseup", endDrag);
+
+          titlebar.addEventListener(
+            "touchstart",
+            (e) => {
+              const t = e.touches[0];
+              startDrag(t.clientX, t.clientY);
+            },
+            { passive: true },
+          );
+          window.addEventListener(
+            "touchmove",
+            (e) => {
+              if (!dragging) return;
+              const t = e.touches[0];
+              moveDrag(t.clientX, t.clientY);
+            },
+            { passive: true },
+          );
+          window.addEventListener("touchend", endDrag);
+
+          win.addEventListener("mousedown", bringToFront);
+        });
+      }
+
+      // Reloj de la barra de tareas
+      const clockEl = document.getElementById("taskClock");
+      function updateClock() {
+        if (!clockEl) return;
+        const now = new Date();
+        let h = now.getHours();
+        const m = now.getMinutes().toString().padStart(2, "0");
+        const ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12;
+        if (h === 0) h = 12;
+        clockEl.textContent = h + ":" + m + " " + ampm;
+      }
+      updateClock();
+      window.setInterval(updateClock, 15000);
+
+      /* ---------------------------------------------------------
+                 Instalador falso de Windows 95 — corre antes del escritorio
+              --------------------------------------------------------- */
+      (function () {
+        const desktop = document.getElementById("desktopArea");
+        const installer = document.getElementById("winInstaller");
+        const stepEl = document.getElementById("wiStep");
+        const fillEl = document.getElementById("wiFill");
+        const reinstallBtn = document.getElementById("winReinstallBtn");
+        if (!desktop || !installer || !stepEl || !fillEl) return;
+
+        const steps = [
+          { pct: 12, text: "Copiando archivos del sistema…" },
+          {
+            pct: 30,
+            text: "Detectando hardware: mouse, tarjeta de video, módem 28.8k…",
+          },
+          { pct: 52, text: "Configurando Plug and Play…" },
+          { pct: 74, text: "Instalando controladores de red…" },
+          { pct: 92, text: "Guardando configuración…" },
+          { pct: 100, text: "Reiniciando el sistema…" },
+        ];
+
+        let running = false;
+        let timeoutId = null;
+
+        function runInstaller() {
+          if (running) return;
+          running = true;
+          window.clearTimeout(timeoutId);
+          installer.classList.remove("done");
+          fillEl.style.width = "0%";
+          stepEl.textContent = "Preparando la instalación…";
+
+          if (reduceMotion) {
+            fillEl.style.width = "100%";
+            timeoutId = window.setTimeout(() => {
+              installer.classList.add("done");
+              running = false;
+            }, 300);
+            return;
+          }
+
+          let i = 0;
+          function next() {
+            if (i >= steps.length) {
+              timeoutId = window.setTimeout(() => {
+                installer.classList.add("done");
+                running = false;
+              }, 550);
+              return;
+            }
+            const s = steps[i];
+            stepEl.textContent = s.text;
+            fillEl.style.width = s.pct + "%";
+            i++;
+            timeoutId = window.setTimeout(next, 750);
+          }
+          timeoutId = window.setTimeout(next, 500);
+        }
+
+        const installObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                runInstaller();
+                installObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.4 },
+        );
+        installObserver.observe(desktop);
+
+        if (reinstallBtn) {
+          reinstallBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            runInstaller();
+          });
+        }
+      })();
+
+      /* ---------------------------------------------------------
+                 Actividades: cuestionario de 5 preguntas
+              --------------------------------------------------------- */
+      (function () {
+        const cards = Array.from(document.querySelectorAll("#qzForm .qz-card"));
+        const progressWrap = document.getElementById("qzProgress");
+        const summary = document.getElementById("qzSummary");
+        const scoreEl = document.getElementById("qzScore");
+        const summaryText = document.getElementById("qzSummaryText");
+        const retryBtn = document.getElementById("qzRetry");
+        if (!cards.length) return;
+
+        const state = cards.map(() => null);
+
+        cards.forEach((_, i) => {
+          const d = document.createElement("div");
+          d.className = "qd" + (i === 0 ? " current" : "");
+          progressWrap.appendChild(d);
+        });
+        const dots = Array.from(progressWrap.children);
+
+        function updateProgress() {
+          const answered = state.filter((v) => v !== null).length;
+          dots.forEach((d, i) => {
+            d.classList.toggle("done", state[i] !== null);
+            d.classList.toggle("current", state[i] === null && i === answered);
+          });
+        }
+
+        function updateSummary() {
+          const answered = state.filter((v) => v !== null).length;
+          if (answered < cards.length) {
+            summary.classList.remove("show");
+            return;
+          }
+          const correct = cards.filter(
+            (card, i) =>
+              state[i] === parseInt(card.getAttribute("data-answer"), 10),
+          ).length;
+          scoreEl.textContent = correct + "/" + cards.length;
+          if (correct === cards.length) {
+            summaryText.textContent =
+              "Recorriste bien la exhibición: Unix, DOS, Windows y Linux quedaron claros.";
+          } else if (correct >= 3) {
+            summaryText.textContent =
+              "Buen resultado. Repasá las salas marcadas en rojo para cerrar los detalles.";
+          } else {
+            summaryText.textContent =
+              "Convendría volver a recorrer las salas de Unix, DOS, Windows y Linux antes de seguir.";
+          }
+          summary.classList.add("show", "visible");
+        }
+
+        cards.forEach((card, qIndex) => {
+          const correctIndex = parseInt(card.getAttribute("data-answer"), 10);
+          const options = Array.from(card.querySelectorAll(".qz-opt"));
+          const feedback = card.querySelector(".qz-feedback");
+          const okLabel = feedback.querySelector("[data-ok]");
+
+          options.forEach((opt) => {
+            opt.addEventListener("click", () => {
+              if (state[qIndex] !== null) return;
+              const chosen = parseInt(opt.getAttribute("data-index"), 10);
+              state[qIndex] = chosen;
+
+              options.forEach((o) => {
+                o.disabled = true;
+              });
+              opt.classList.add(
+                chosen === correctIndex ? "correct" : "incorrect",
+              );
+              if (chosen !== correctIndex)
+                options[correctIndex].classList.add("correct");
+
+              feedback.classList.remove("ok", "bad");
+              feedback.classList.add(
+                chosen === correctIndex ? "ok" : "bad",
+                "show",
+              );
+              okLabel.textContent =
+                chosen === correctIndex ? "Correcto." : "No exactamente.";
+
+              updateProgress();
+              updateSummary();
+            });
+          });
+        });
+
+        retryBtn.addEventListener("click", () => {
+          cards.forEach((card, i) => {
+            state[i] = null;
+            card.querySelectorAll(".qz-opt").forEach((o) => {
+              o.disabled = false;
+              o.classList.remove("correct", "incorrect");
+            });
+            card
+              .querySelector(".qz-feedback")
+              .classList.remove("show", "ok", "bad");
+          });
+          summary.classList.remove("show");
+          updateProgress();
+          cards[0].scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "center",
+          });
+        });
+
+        updateProgress();
+      })();
+
+      /* ---------------------------------------------------------
+                 Simuladores de terminal — Unix, DOS y Linux (5 comandos c/u)
+                 No ejecutan nada real: solo devuelven texto fijo por comando.
+              --------------------------------------------------------- */
+      /* ---------------------------------------------------------
+                 Motor de filesystem navegable (para simuladores con cfg.fs)
+              --------------------------------------------------------- */
+      function makeFsEngine(root, initialCwd) {
+        let cwd = initialCwd.slice();
+
+        function getNode(pathArr) {
+          let node = root;
+          for (const part of pathArr) {
+            if (!node.children || !node.children[part]) return null;
+            node = node.children[part];
+          }
+          return node;
+        }
+
+        function resolvePath(argRaw) {
+          let base = argRaw.startsWith("/") ? [] : cwd.slice();
+          const parts = argRaw.split("/").filter((p) => p.length && p !== ".");
+          for (const part of parts) {
+            if (part === "..") {
+              if (base.length) base.pop();
+            } else if (part === "~") {
+              base = initialCwd.slice();
+            } else {
+              base.push(part);
+            }
+          }
+          return base;
+        }
+
+        return {
+          pwdStr: () => "/" + cwd.join("/"),
+          lsStr: () => {
+            const node = getNode(cwd);
+            if (!node || node.type !== "dir") return "";
+            const names = Object.keys(node.children || {});
+            return names.length ? names.join("  ") : "(vacío)";
+          },
+          cdCmd: (argRaw) => {
+            const arg = (argRaw || "").trim();
+            if (arg === "" || arg === "~") {
+              cwd = initialCwd.slice();
+              return null;
+            }
+            const target = resolvePath(arg);
+            const node = getNode(target);
+            if (!node) return "cd: no existe el archivo o directorio: " + arg;
+            if (node.type !== "dir") return "cd: no es un directorio: " + arg;
+            cwd = target;
+            return null;
+          },
+          catCmd: (argRaw) => {
+            const arg = (argRaw || "").trim();
+            if (!arg) return "cat: falta el nombre de archivo";
+            const target = resolvePath(arg);
+            const node = getNode(target);
+            if (!node) return "cat: no existe el archivo: " + arg;
+            if (node.type === "dir") return "cat: " + arg + " es un directorio";
+            return node.content || "";
+          },
+        };
+      }
+
+      function initTerminalSim(cfg) {
+        const form = document.getElementById(cfg.formId);
+        const input = document.getElementById(cfg.inputId);
+        const output = document.getElementById(cfg.outputId);
+        if (!form || !input || !output) return;
+
+        function printLine(text, cls) {
+          const line = document.createElement("div");
+          if (cls) line.className = cls;
+          line.textContent = text;
+          output.appendChild(line);
+          output.scrollTop = output.scrollHeight;
+        }
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const raw = input.value;
+          const cmd = raw.trim();
+          input.value = "";
+          if (cmd === "") return;
+
+          printLine(cfg.prompt + " " + raw);
+
+          // Verbos con estado real de filesystem (ls, pwd, cd, cat), si el simulador lo soporta
+          if (cfg.fs) {
+            const spaceIdx = cmd.indexOf(" ");
+            const verb = spaceIdx === -1 ? cmd : cmd.slice(0, spaceIdx);
+            const rest = spaceIdx === -1 ? "" : cmd.slice(spaceIdx + 1);
+            const verbCheck = cfg.caseSensitive ? verb : verb.toLowerCase();
+
+            if (verbCheck === "ls") {
+              printLine(cfg.fs.lsStr());
+              return;
+            }
+            if (verbCheck === "pwd") {
+              printLine(cfg.fs.pwdStr());
+              return;
+            }
+            if (verbCheck === "cd") {
+              const err = cfg.fs.cdCmd(rest);
+              if (err) printLine(err, "sim-err");
+              return;
+            }
+            if (verbCheck === "cat") {
+              printLine(cfg.fs.catCmd(rest));
+              return;
+            }
+          }
+
+          const key = cfg.caseSensitive
+            ? Object.prototype.hasOwnProperty.call(cfg.commands, cmd)
+              ? cmd
+              : null
+            : Object.keys(cfg.commands).find(
+                (k) => k.toLowerCase() === cmd.toLowerCase(),
+              ) || null;
+
+          if (key) {
+            const result = cfg.commands[key];
+            if (result === "__CLEAR__") {
+              output.innerHTML = "";
+            } else {
+              printLine(result);
+            }
+          } else {
+            printLine(
+              typeof cfg.notFound === "function"
+                ? cfg.notFound(cmd)
+                : cfg.notFound,
+              "sim-err",
+            );
+          }
+        });
+      }
+
+      /* ---------------------------------------------------------
+                 Secuencias de arranque (boot) — corren antes de cada terminal,
+                 igual que el instalador de Windows 95.
+              --------------------------------------------------------- */
+      function initBootSequence(cfg) {
+        const overlay = document.getElementById(cfg.overlayId);
+        const anchor = document.getElementById(cfg.anchorId);
+        const btn = cfg.buttonId ? document.getElementById(cfg.buttonId) : null;
+        if (!overlay || !anchor) return;
+
+        function run() {
+          overlay.classList.remove("done");
+          overlay.innerHTML = "";
+
+          if (reduceMotion) {
+            overlay.classList.add("done");
+            return;
+          }
+
+          let i = 0;
+          function next() {
+            if (i >= cfg.lines.length) {
+              window.setTimeout(
+                () => overlay.classList.add("done"),
+                cfg.endPause || 500,
+              );
+              return;
+            }
+            const line = document.createElement("div");
+            line.className = "boot-line";
+            line.textContent = cfg.lines[i];
+            if (i === cfg.lines.length - 1 && cfg.cursor) {
+              const cur = document.createElement("span");
+              cur.className = "boot-cursor";
+              line.appendChild(cur);
+            }
+            overlay.appendChild(line);
+            overlay.scrollTop = overlay.scrollHeight;
+            i++;
+            window.setTimeout(next, cfg.lineDelay || 250);
+          }
+          next();
+        }
+
+        const obs = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                run();
+                obs.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.3 },
+        );
+        obs.observe(anchor);
+
+        if (btn) {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            run();
+          });
+        }
+      }
+
+      initBootSequence({
+        overlayId: "unixBoot",
+        anchorId: "unixSimBox",
+        buttonId: "unixRebootBtn",
+        lineDelay: 400,
+        endPause: 500,
+        cursor: true,
+        lines: [
+          "booting from disk0...",
+          "UNIX V6 — mem = 248K",
+          "init: single user mode",
+          "checking filesystems... ok",
+          "login: root",
+        ],
+      });
+
+      initBootSequence({
+        overlayId: "dosBoot",
+        anchorId: "dosSimBox",
+        buttonId: "dosRebootBtn",
+        lineDelay: 500,
+        endPause: 500,
+        cursor: true,
+        lines: [
+          "Starting MS-DOS...",
+          "HIMEM is testing extended memory...done.",
+          "640K OK",
+          "C:\\>",
+        ],
+      });
+
+      initBootSequence({
+        overlayId: "linuxBoot",
+        anchorId: "linuxSimBox",
+        buttonId: "linuxRebootBtn",
+        lineDelay: 140,
+        endPause: 550,
+        cursor: true,
+        lines: [
+          "[    0.000000] Linux version 6.9.0-generic",
+          "[    0.041233] Command line: BOOT_IMAGE=/vmlinuz root=/dev/sda1",
+          "[    0.512877] Initializing cgroup subsys cpu",
+          "[    0.803410] ACPI: Core revision 20230628",
+          "[    1.203044] Freeing unused kernel image memory",
+          "[    1.664321] EXT4-fs (sda1): mounted filesystem",
+          "[    2.100553] random: crng init done",
+          "[    2.881010] systemd[1]: Started Network Manager",
+          "[    3.204188] systemd[1]: Reached target Multi-User System",
+          "exhibit login: ",
+        ],
+      });
+
+      const unixFS = {
+        type: "dir",
+        children: {
+          bin: { type: "dir", children: {} },
+          etc: {
+            type: "dir",
+            children: {
+              motd: {
+                type: "file",
+                content:
+                  "Bienvenido al PDP-11. Sé breve: la memoria cuesta cara.",
+              },
+            },
+          },
+          home: {
+            type: "dir",
+            children: {
+              lab: {
+                type: "dir",
+                children: {
+                  "notas.txt": {
+                    type: "file",
+                    content:
+                      "Recordar: usar espacios, no pestañas (ese debate todavía ni existe).",
+                  },
+                  investigacion: { type: "dir", children: {} },
+                },
+              },
+            },
+          },
+          usr: { type: "dir", children: {} },
+          var: { type: "dir", children: {} },
+        },
+      };
+
+      initTerminalSim({
+        formId: "unixSimForm",
+        inputId: "unixSimInput",
+        outputId: "unixSimOutput",
+        prompt: "$",
+        caseSensitive: true,
+        fs: makeFsEngine(unixFS, ["home", "lab"]),
+        commands: {
+          whoami: "researcher",
+          date: "Thu Jan  1 00:00:00 UTC 1970",
+          help: "Comandos disponibles: ls, pwd, cd <carpeta>, cat <archivo>, whoami, date, help",
+          man: "No hay páginas de manual todavía: es 1969, Ken y Dennis las escriben la semana que viene.",
+          "sudo rm -rf /":
+            "Permiso denegado. Por suerte para vos (y para el sitio), esto no es real.",
+          exit: "No hay nada de qué salir, esto ya es un shell simulado.",
+          "rm -rf /":
+            "Permiso denegado. Por suerte para vos (y para el sitio), esto no es real.",
+        },
+        notFound: (cmd) => cmd + ": not found",
+      });
+
+      initTerminalSim({
+        formId: "dosSimForm",
+        inputId: "dosSimInput",
+        outputId: "dosSimOutput",
+        prompt: "C:\\>",
+        caseSensitive: false,
+        commands: {
+          dir: " Volume in drive C has no label\n\nAUTOEXEC BAT     CONFIG   SYS\nCOMMAND  COM     GAME     EXE\n    4 File(s)",
+          ver: "MS-DOS Version 6.22",
+          time: "Current time is 12:00:00.00p",
+          cls: "__CLEAR__",
+          help: "Comandos disponibles: DIR, VER, TIME, CLS, HELP",
+          "format c:":
+            "ADVERTENCIA: se perderán TODOS los datos en la unidad C.\n¿Proceder con el formateo (S/N)? ...es broma. Esto es una simulación.",
+          "del *.*":
+            "Are you sure (Y/N)? ...tranquilo, es una simulación, no borra nada de verdad.",
+          "copy con prn":
+            "Esperando entrada... (así se mandaba texto directo a la impresora en 1985)",
+        },
+        notFound: "Bad command or file name",
+      });
+
+      const linuxFS = {
+        type: "dir",
+        children: {
+          home: {
+            type: "dir",
+            children: {
+              torvalds: {
+                type: "dir",
+                children: {
+                  Desktop: { type: "dir", children: {} },
+                  Documents: {
+                    type: "dir",
+                    children: {
+                      "tarea.txt": {
+                        type: "file",
+                        content:
+                          "Pendiente: terminar el trabajo de sistemas operativos.",
+                      },
+                    },
+                  },
+                  Downloads: {
+                    type: "dir",
+                    children: {
+                      "distro.iso": {
+                        type: "file",
+                        content:
+                          "(binario simulado — no se puede leer con cat)",
+                      },
+                    },
+                  },
+                  Pictures: { type: "dir", children: {} },
+                },
+              },
+            },
+          },
+          bin: { type: "dir", children: {} },
+          etc: { type: "dir", children: {} },
+        },
+      };
+
+      initTerminalSim({
+        formId: "linuxSimForm",
+        inputId: "linuxSimInput",
+        outputId: "linuxSimOutput",
+        prompt: "$",
+        caseSensitive: true,
+        fs: makeFsEngine(linuxFS, ["home", "torvalds"]),
+        commands: {
+          whoami: "torvalds",
+          "uname -a":
+            "Linux exhibit 6.9.0-generic #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux",
+          neofetch:
+            "OS: Linux (simulado)\nKernel: 6.9.0-generic\nShell: bash 5.2\nUptime: 33 años y contando",
+          help: "Comandos disponibles: ls, pwd, cd <carpeta>, cat <archivo>, whoami, uname -a, neofetch, help",
+          "sudo rm -rf /":
+            "Permiso denegado. Por suerte para vos (y para el sitio), esto no es real.",
+          cowsay:
+            " _______________\n< Linux is here >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||",
+          sl: 'Quisiste decir "ls"... pero en vez de eso, un tren pasa silbando por la pantalla. 🚂',
+        },
+        notFound: (cmd) => "bash: " + cmd + ": command not found",
+      });
+
+      // Refresca TODOS los ScrollTrigger una vez que el layout está estable
+      window.addEventListener("load", function () {
+        if (window.ScrollTrigger) ScrollTrigger.refresh();
+      });
+    </script>
+  </body>
+</html>
