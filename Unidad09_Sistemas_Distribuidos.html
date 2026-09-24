@@ -1,463 +1,886 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unidad 9 - Sistemas Operativos Distribuidos</title>
+    <title>Unidad 9 - Sistemas Operativos Distribuidos </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        cardBg: '#121c2e',
+                        cardHover: '#1a2640',
+                        accentBlue: '#38bdf8',
+                        accentPurple: '#a855f7',
+                        accentGreen: '#10b981',
+                        neonCyan: '#06b6d4',
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(56, 189, 248, 0.25)',
+                        'neon-purple': '0 0 20px rgba(168, 85, 247, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #090d16;
             color: #f8fafc;
-            display: flex;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
-
-        /* Menú Lateral (Sidebar) */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            background-color: #1e293b;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 20px;
-            overflow-y: auto;
-            border-right: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
+        .code-font {
+            font-family: 'Fira Code', monospace;
         }
-
-        .back-btn {
-            display: inline-block;
-            color: #38bdf8;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-bottom: 25px;
-            padding: 8px 12px;
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            text-align: center;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .back-btn:hover {
-            background-color: #38bdf8;
-            color: #0f172a;
+        ::-webkit-scrollbar-track {
+            background: #090d16;
         }
-
-        .sidebar h2 {
-            font-size: 1rem;
-            color: #94a3b8;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
         }
-
-        .sidebar ul {
-            list-style: none;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
         }
-
-        .sidebar li {
-            margin-bottom: 8px;
+        .glass-panel {
+            background: rgba(18, 28, 46, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
         }
-
-        .sidebar a.nav-link {
-            color: #cbd5e1;
-            text-decoration: none;
-            font-size: 0.95rem;
-            display: block;
-            padding: 10px 12px;
-            border-radius: 6px;
-            transition: background 0.2s, color 0.2s;
+        .glass-panel-purple {
+            background: rgba(18, 28, 46, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(168, 85, 247, 0.15);
         }
-
-        .sidebar a.nav-link:hover {
-            background-color: #334155;
-            color: #ffffff;
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
         }
-
-        /* Contenido Principal */
-        .main-content {
-            margin-left: 260px;
-            padding: 40px 60px;
-            width: calc(100% - 260px);
-            max-width: 1300px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            color: #94a3b8;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-        }
-
-        .card {
-            background-color: #1e293b;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 1px solid #334155;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        h2.section-title {
-            color: #38bdf8;
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 10px;
-        }
-
-        h3 {
-            color: #f1f5f9;
-            margin: 20px 0 8px 0;
-            font-size: 1.15rem;
-        }
-
-        p, ul {
-            color: #cbd5e1;
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        /* Grid Multicolumna */
-        .grid-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .sub-card {
-            background-color: #0f172a;
-            padding: 20px;
-            border-radius: 6px;
-            border: 1px solid #334155;
-        }
-
-        .sub-card h3 {
-            margin-top: 0;
-            color: #38bdf8;
-        }
-
-        /* Sección Repaso Rápido */
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-            max-width: 500px;
-        }
-
-        .quiz-btn {
-            background-color: #0f172a;
-            color: #cbd5e1;
-            padding: 12px 18px;
-            border-radius: 6px;
-            border: 1px solid #334155;
-            font-size: 1rem;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-        }
-
-        .quiz-btn:hover {
-            background-color: #334155;
-            color: #ffffff;
-            border-color: #38bdf8;
-        }
-
-        .quiz-btn.correct {
-            background-color: #065f46 !important;
-            color: #10b981 !important;
-            border-color: #10b981 !important;
-            font-weight: bold;
-        }
-
-        .quiz-btn.incorrect {
-            background-color: #7f1d1d !important;
-            color: #f87171 !important;
-            border-color: #f87171 !important;
-        }
-
-        footer {
-            margin-top: 50px;
-            padding-bottom: 20px;
-            text-align: center;
-            color: #64748b;
-            font-size: 0.9rem;
+        .animate-pulse-glow {
+            animation: pulseGlow 6s infinite ease-in-out;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
 
-    <!-- Menú Lateral -->
-    <nav class="sidebar">
-        <h2>Índice</h2>
-        <ul>
-            <li><a href="#introduccion" class="nav-link">🌐 Introducción</a></li>
-            <li><a href="#objetivos" class="nav-link">🎯 1. Objetivos</a></li>
-            <li><a href="#hardware" class="nav-link">🖥️ 2. Arquitecturas Hardware</a></li>
-            <li><a href="#software" class="nav-link">💻 3. Capas y Software</a></li>
-            <li><a href="#diseno" class="nav-link">🛠️ 4. Aspectos de Diseño</a></li>
-            <li><a href="#repaso" class="nav-link">🧪 Repaso Rápido</a></li>
-            <li><a href="index.html" class="back-btn">← Volver al Menú</a></li>
-        </ul>
-    </nav>
+    <!-- Background Ambient Lighting -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-sky-600/20 rounded-full blur-3xl animate-pulse-glow"></div>
+        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl animate-pulse-glow" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl animate-pulse-glow" style="animation-delay: 4s;"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b08_1px,transparent_1px),linear-gradient(to_bottom,#1e293b08_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+    </div>
 
-    <!-- Contenido Principal -->
-    <main class="main-content">
-        <h1>UNIDAD 9</h1>
-        <p class="subtitle">Sistemas Operativos Distribuidos</p>
-
-        <section id="introduccion" class="card">
-            <h2 class="section-title">🌐 Introducción</h2>
-            <p>Un <strong>Sistema Operativo Distribuido (SOD)</strong> es una colección de computadoras independientes conectadas a través de una red de comunicación, que aparecen ante los usuarios como un único sistema coherente y centralizado.</p>
-        </section>
-
-        <section id="objetivos" class="card">
-            <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
-            <p>Los sistemas distribuidos unen varias computadoras para lograr los siguientes fines:</p>
-            <div class="grid-cards">
-                <div class="sub-card">
-                    <h3>Transparencia</h3>
-                    <p>Hacer que muchas computadoras parezcan <strong>una sola</strong>. El usuario no necesita saber dónde están guardados los datos físicamente.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Cuando guardas una foto en Google Fotos o Dropbox, la ves al instante sin preocuparte en qué país o disco duro del mundo se almacenó.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Compartición de Recursos</h3>
-                    <p>Permitir que varios usuarios usen los mismos equipos, programas o archivos a distancia sin interferir entre sí.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Una impresora en una oficina que todos usan desde sus distintas computadoras, o el sistema de un banco donde varios cajeros atienden cuentas al mismo tiempo.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Apertura e Interoperabilidad</h3>
-                    <p>Usar reglas estándar para que computadoras de distintas marcas o con sistemas diferentes se entiendan sin problemas.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Es como un "traductor universal". Permite que la app de tu celular (Android o iPhone) consulte información en una computadora antigua del banco.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Escalabilidad</h3>
-                    <p>La facilidad para agregar más computadoras al sistema si el trabajo aumenta, sin que el servicio se vuelva lento o se caiga.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Cuando Netflix estrena una serie muy popular, conecta automáticamente más servidores para que nadie sufra interrupciones.</p>
-                </div>
+    <!-- Top Floating Toolbar / Header -->
+    <header class="sticky top-0 z-50 px-4 lg:px-8 py-3 glass-panel border-b border-slate-800/80 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-purple-600 flex items-center justify-center shadow-neon">
+                <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
             </div>
-        </section>
-
-        <section id="hardware" class="card">
-            <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
-            <p>Formas en que se conectan físicamente los componentes y las computadoras:</p>
-            <div class="grid-cards">
-                <div class="sub-card">
-                    <h3>Fuertemente Acoplados</h3>
-                    <p>Procesadores (Multiprocesadores) que comparten la misma memoria física y reloj, con alta velocidad de transferencia.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Supercomputadoras para simulación científica o servidores multiprocesador para Inteligencia Artificial.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Débilmente Acoplados</h3>
-                    <p>Equipos independientes (Multicomputadoras) con su propia memoria local y procesador, conectados mediante redes de comunicación.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Clusters de Kubernetes o proyectos de computación distribuida como BOINC / Folding@home.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Topologías de Red</h3>
-                    <p>La estructura de interconexión (Estrella, Anillo, Bus o Malla) determina la latencia y la tolerancia a fallos del hardware.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Redes interconectadas en Malla para buscar rutas alternas y evitar caídas si un cable se rompe.</p>
-                </div>
+            <div>
+                <span class="text-xs uppercase tracking-widest text-sky-400 font-bold">Unidad 9 </span>
+                <h1 class="text-base sm:text-lg font-bold text-white tracking-tight">Sistemas Operativos Distribuidos</h1>
             </div>
-        </section>
+        </div>
 
-        <section id="software" class="card">
-            <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
-            <p>El software determina cómo interactúan las aplicaciones con los nodos de la red:</p>
-            <div class="grid-cards">
-                <div class="sub-card">
-                    <h3>Sistema Operativo de Red (NOS)</h3>
-                    <p>Cada nodo mantiene su propio SO independiente. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Windows Server con Active Directory o Linux mediante conexiones explícitas por SSH/FTP.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Sistema Operativo Distribuido (DOS)</h3>
-                    <p>Un sistema único que controla globalmente todas las computadoras de la red. El usuario ni se entera en qué máquina se ejecuta su tarea.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Sistemas de investigación como Amoeba o Plan 9 que unifican CPUs y memoria física.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Middleware (El Traductor)</h3>
-                    <p>Capa de software intermedia situada entre las aplicaciones y el SO que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Apache Kafka, RabbitMQ o gRPC actuando como traductores entre servicios diferentes.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="diseno" class="card">
-            <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
-            <p>Diseñar un sistema distribuido exige abordar desafíos clave de coordinación y fiabilidad:</p>
-            <div class="grid-cards">
-                <div class="sub-card">
-                    <h3>Transparencia y Ocultamiento</h3>
-                    <p>Lograr que los cambios, mudanzas de datos, localización, migración y replicación ocurran de fondo sin molestar al usuario.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Migración en vivo de contenedores Docker de un servidor a otro sin interrupción en la pantalla.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Sistemas Modulares (Flexibilidad)</h3>
-                    <p>Diseñar el sistema en piezas pequeñas (modelo micronúcleo) para delegar servicios a espacio de usuario y facilitar reparaciones.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Sistemas como QNX o MINIX, donde la falla de un controlador de dispositivos no apaga el equipo completo.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Tolerancia a Fallos y Fiabilidad</h3>
-                    <p>Garantizar que el sistema siga funcionando normalmente y mantenga disponibilidad aunque se rompa un cable o se apague una computadora.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Réplicas bancarias internacionales que mantienen la operación activa aunque caiga un centro de datos.</p>
-                </div>
-                <div class="sub-card">
-                    <h3>Sincronización de Tiempos</h3>
-                    <p>Balanceo de carga y aseguramiento de que los equipos tengan exactamente la misma hora mediante relojes lógicos/físicos.</p>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Uso del protocolo NTP y Relojes de Lamport para registrar transacciones al milisegundo exacto.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="repaso" class="card">
-            <h2 class="section-title">🧪 Repaso Rápido (10 Preguntas)</h2>
-
-            <!-- Pregunta 1 -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>1. ¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">A) El Microprocesador</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 0)">B) El Middleware</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">C) La Topología en Anillo</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+        <!-- Controls Center -->
+        <div class="flex items-center space-x-2 sm:space-x-4">
+            <!-- Timer Component -->
+            <div id="class-timer" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-xs font-mono text-sky-300">
+                <i data-lucide="timer" class="w-4 h-4 text-sky-400 animate-spin-slow"></i>
+                <span id="timer-display">00:00:00</span>
+                <button onclick="toggleTimer()" id="timer-toggle-btn" class="hover:text-white transition" title="Pausar/Reanudar">⏸</button>
             </div>
 
-            <!-- Pregunta 2 -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>2. ¿Cuál es el objetivo que busca ocultar la distribución física de los recursos para que el sistema se perciba como una sola computadora?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">A) Escalabilidad</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">B) Apertura</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 1)">C) Transparencia</button>
+            <!-- Mode Switcher -->
+            <div class="bg-slate-900/90 p-1 rounded-xl border border-slate-700 flex space-x-1">
+                <button onclick="switchView('dashboard')" id="btn-mode-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition bg-sky-500 text-slate-950 shadow-sm">
+                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchView('presentation')" id="btn-mode-presentation" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition text-slate-300 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+                    <span>Modo Exposición</span>
+                </button>
+            </div>
+
+            <!-- Fullscreen Toggle -->
+            <button onclick="toggleFullScreen()" class="p-2 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition" title="Pantalla Completa">
+                <i data-lucide="maximize" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Layout Container -->
+    <div class="flex-1 flex relative z-10 max-w-7xl mx-auto w-full">
+        
+        <!-- Sidebar Navigation (Visible in Dashboard Mode) -->
+        <aside id="sidebar-nav" class="hidden lg:flex flex-col w-72 p-6 shrink-0 border-r border-slate-800/80 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto">
+            <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-4">Índice de la Clase</h3>
+            <nav class="space-y-1.5 flex-1">
+                <a href="#introduccion" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-sky-400 bg-sky-500/10 border border-sky-500/20">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span>Introducción SOD</span>
+                </a>
+                <a href="#objetivos" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="target" class="w-4 h-4"></i>
+                    <span>1. Objetivos Clave</span>
+                </a>
+                <a href="#hardware" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>2. Arquitectura Hardware</span>
+                </a>
+                <a href="#simulador-hw" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-purple-300 hover:text-purple-200 hover:bg-purple-500/10">
+                    <i data-lucide="cpu" class="w-4 h-4 text-purple-400"></i>
+                    <span>⚡ Lab: Acoplamiento</span>
+                </a>
+                <a href="#software" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    <span>3. Capas y Software</span>
+                </a>
+                <a href="#simulador-middleware" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-sky-300 hover:text-sky-200 hover:bg-sky-500/10">
+                    <i data-lucide="shuffle" class="w-4 h-4 text-sky-400"></i>
+                    <span>⚡ Lab: Middleware Mozo</span>
+                </a>
+                <a href="#diseno" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                    <span>4. Aspectos de Diseño</span>
+                </a>
+                <a href="#simulador-red" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-300 hover:text-emerald-200 hover:bg-emerald-500/10">
+                    <i data-lucide="network" class="w-4 h-4 text-emerald-400"></i>
+                    <span>⚡ Lab: Tolerancia a Fallos</span>
+                </a>
+                <a href="#repaso" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    <span>5. Repaso Rápido (Quiz)</span>
+                </a>
+            </nav>
+
+            <div class="pt-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+                Universidad Tecnológica Intercontinental<br>© 2026 Sistemas Operativos
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-container" class="flex-1 p-6 lg:p-10 max-w-5xl mx-auto">
+            
+            <!-- Dashboard View Wrapper -->
+            <div id="view-dashboard" class="space-y-12">
+                
+                <!-- Hero Section / Intro -->
+                <section id="introduccion" class="glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-2xl">
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-sky-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-semibold mb-6">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Presentación Interactiva</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
+                        Sistemas Operativos Distribuidos
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed max-w-3xl">
+                        Un <strong>Sistema Operativo Distribuido (SOD)</strong> es una colección de computadoras independientes conectadas a través de una red de comunicación, que aparecen ante los usuarios como un <strong>único sistema coherente y centralizado</strong>.
+                    </p>
+                </section>
+
+                <!-- Objetivos de los Sistemas Distribuidos -->
+                <section id="objetivos" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                            <i data-lucide="target" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">1. Objetivos de los Sistemas Distribuidos</h3>
+                            <p class="text-sm text-slate-400">Propósitos fundamentales al unificar múltiples nodos de procesamiento</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Card 1 -->
+                        <div class="glass-panel rounded-2xl p-6 hover:border-sky-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">01</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-sky-400 transition">Transparencia</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Hacer que muchas computadoras parezcan <strong>una sola</strong>. El usuario no necesita saber dónde están guardados los datos físicamente.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-sky-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-sky-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> Google Fotos o Dropbox. Guardas un archivo y lo ves al instante sin preocuparte en qué país o disco duro del mundo se almacenó.</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="glass-panel rounded-2xl p-6 hover:border-sky-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">02</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-purple-400 transition">Compartición de Recursos</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Permitir que varios usuarios usen los mismos equipos, programas o archivos a distancia sin interferir entre sí.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-purple-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-purple-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> Una impresora en una oficina que todos usan desde sus distintas computadoras, o el sistema de un banco con múltiples cajeros.</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="glass-panel rounded-2xl p-6 hover:border-sky-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">03</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-emerald-400 transition">Apertura e Interoperabilidad</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Usar reglas estándar para que computadoras de distintas marcas o con sistemas diferentes se entiendan sin problemas.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-emerald-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> Un "traductor universal". Permite que la app de tu celular (Android o iOS) consulte datos en una computadora central antigua.</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="glass-panel rounded-2xl p-6 hover:border-sky-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">04</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-amber-400 transition">Escalabilidad</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                La facilidad para agregar más computadoras al sistema si el trabajo aumenta, sin que el servicio se vuelva lento o se caiga.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-amber-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> Netflix estrenando una serie masiva conectando automáticamente miles de servidores en la nube.</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Arquitectura Hardware -->
+                <section id="hardware" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                            <i data-lucide="cpu" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">2. Arquitecturas de Hardware</h3>
+                            <p class="text-sm text-slate-400">Formas en que se conectan físicamente los componentes y equipos</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel-purple rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-purple-300 mb-2">Fuertemente Acoplados</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Varios procesadores dentro de una misma caja que comparten la misma memoria física y reloj del sistema (Multiprocesadores).
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-purple-200">
+                                <strong>💡 Ejemplo:</strong> Supercomputadoras para simulaciones científicas o entrenamiento avanzado de IA.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel-purple rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-purple-300 mb-2">Débilmente Acoplados</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Computadoras independientes (Multicomputadoras) con su propia memoria local, conectadas mediante red de comunicación.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-purple-200">
+                                <strong>💡 Ejemplo:</strong> Un sistema de Puntos de Venta (POS) en una cadena de supermercados.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel-purple rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-purple-300 mb-2">Topologías de Red</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                La estructura geométrica de interconexión (Estrella, Anillo, Bus o Malla) que determina latencia y tolerancia a fallos.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-purple-200">
+                                <strong>💡 Ejemplo:</strong> Redes de fibra óptica malladas donde la información busca rutas alternas.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Interactive Simulator 1: Acoplamiento de Hardware -->
+                <section id="simulador-hw" class="glass-panel rounded-3xl p-6 sm:p-8 border-purple-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-purple-400 font-bold">Laboratorio Interactivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Arquitectura Hardware</h3>
+                        </div>
+                        <div class="flex space-x-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                            <button onclick="setHwMode('strong')" id="btn-hw-strong" class="px-4 py-2 rounded-lg text-xs font-semibold bg-purple-600 text-white transition">Fuertemente Acoplado</button>
+                            <button onclick="setHwMode('weak')" id="btn-hw-weak" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Débilmente Acoplado</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 min-h-[220px] flex flex-col items-center justify-center relative overflow-hidden">
+                        <div id="hw-animation-box" class="w-full flex items-center justify-center space-x-6">
+                            <!-- Dynamic Content injected via JS -->
+                        </div>
+                        <div id="hw-desc" class="mt-6 text-center text-sm text-slate-300 max-w-xl">
+                            Cargando simulación de memoria compartida vs memoria distribuida...
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Capas y Software -->
+                <section id="software" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                            <i data-lucide="layers" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">3. Capas y Modelos de Software</h3>
+                            <p class="text-sm text-slate-400">Cómo se organizan los programas para administrar los nodos de la red</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-sky-300 mb-2">SO de Red (NOS)</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Cada computadora mantiene su propio SO independiente. El usuario es consciente de las máquinas individuales y usa comandos de red explícitos.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-sky-200">
+                                <strong>💡 Ejemplo:</strong> Windows Server con Active Directory o conexiones por SSH/FTP.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-sky-300 mb-2">SO Distribuido (DOS)</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Un único sistema operativo gestiona globalmente todos los recursos. Los usuarios no perciben dónde se ejecutan sus procesos.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-sky-200">
+                                <strong>💡 Ejemplo:</strong> Sistemas de investigación como Amoeba o Plan 9 que unifican CPUs y memoria física.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-sky-300 mb-2">Middleware</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Capa intermedia que actúa como puente de comunicación heterogénea y gestión de llamadas a procedimientos remotos (RPC).
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-sky-200">
+                                <strong>💡 Ejemplo:</strong> Apache Kafka, RabbitMQ o gRPC (el "mesero" del restaurante).
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Interactive Simulator 2: Middleware (El Mozo / Puente) -->
+                <section id="simulador-middleware" class="glass-panel rounded-3xl p-6 sm:p-8 border-sky-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-sky-400 font-bold">Laboratorio Interactivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Middleware ("El Mesero")</h3>
+                        </div>
+                        <button onclick="triggerMiddlewareSimulation()" id="btn-middleware-run" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-sky-500 hover:bg-sky-400 text-slate-950 transition shadow-neon flex items-center space-x-2">
+                            <i data-lucide="play" class="w-4 h-4"></i>
+                            <span>Enviar Solicitud RPC</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 min-h-[220px] flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="w-full flex items-center justify-around relative px-4">
+                            <!-- App Cliente -->
+                            <div id="mw-client" class="flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-700 w-36 transition-all duration-300">
+                                <i data-lucide="smartphone" class="w-8 h-8 text-sky-400 mb-2"></i>
+                                <span class="text-xs font-bold text-white text-center">App Móvil</span>
+                                <span class="text-[10px] text-slate-400">Cliente iOS/Android</span>
+                            </div>
+
+                            <!-- Paquete animado -->
+                            <div id="mw-packet" class="absolute left-1/4 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-700 bg-sky-500 text-slate-950 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-neon">
+                                JSON / RPC
+                            </div>
+
+                            <!-- Middleware (Mozo) -->
+                            <div id="mw-broker" class="flex flex-col items-center p-4 rounded-xl bg-purple-950/80 border border-purple-500/50 w-36 shadow-neon-purple transition-all duration-300">
+                                <i data-lucide="shuffle" class="w-8 h-8 text-purple-400 mb-2 animate-bounce"></i>
+                                <span class="text-xs font-bold text-white text-center">Middleware</span>
+                                <span class="text-[10px] text-purple-300">Traductor / Mesero</span>
+                            </div>
+
+                            <!-- Servidor Destino -->
+                            <div id="mw-server" class="flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-700 w-36 transition-all duration-300">
+                                <i data-lucide="server" class="w-8 h-8 text-emerald-400 mb-2"></i>
+                                <span class="text-xs font-bold text-white text-center">Mainframe Banco</span>
+                                <span class="text-[10px] text-slate-400">Legacy Server</span>
+                            </div>
+                        </div>
+                        <div id="mw-status-text" class="mt-6 text-center text-sm font-medium text-sky-400">
+                            Haz clic en "Enviar Solicitud RPC" para ver al Middleware mediar entre sistemas heterogéneos.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Aspectos de Diseño -->
+                <section id="diseno" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                            <i data-lucide="sliders" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">4. Aspectos Críticos del Diseño</h3>
+                            <p class="text-sm text-slate-400">Desafíos indispensables al construir un sistema distribuido robusto</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-amber-300 mb-2">Transparencia</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Ocultar la complejidad abarcando localización, acceso, migración y replicación.
+                            </p>
+                            <span class="text-[11px] text-amber-400/80 font-mono">Migración en vivo de contenedores Docker de un servidor a otro sin interrupción en la pantalla</span>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-amber-300 mb-2">Sistemas Modulares</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Uso del modelo micronúcleo para delegar servicios a espacio de usuario (bloques LEGO).
+                            </p>
+                            <span class="text-[11px] text-amber-400/80 font-mono">Sistemas como QNX o MINIX, donde la falla de un controlador de dispositivos no apaga el equipo completo.</span>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-amber-300 mb-2">Tolerancia a Fallos</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Garantizar que el sistema siga operando aunque se rompa un cable o se apague un nodo.
+                            </p>
+                            <span class="text-[11px] text-amber-400/80 font-mono">Réplicas bancarias internacionales que mantienen la operación activa aunque caiga un centro de datos.</span>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-amber-300 mb-2">Sincronización</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Balanceo de carga y aseguramiento de que los equipos tengan exactamente la misma hora mediante relojes lógicos/físicos..
+                            </p>
+                            <span class="text-[11px] text-amber-400/80 font-mono">Uso del protocolo NTP y Relojes de Lamport para registrar transacciones al milisegundo exacto.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Interactive Simulator 3: Tolerancia a Fallos y Topología de Red -->
+                <section id="simulador-red" class="glass-panel rounded-3xl p-6 sm:p-8 border-emerald-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold">Laboratorio Interactivo en Vivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Topología y Tolerancia a Fallos</h3>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="simulateNodeCrash()" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600/80 hover:bg-rose-500 text-white transition flex items-center space-x-1.5">
+                                <i data-lucide="zap-off" class="w-3.5 h-3.5"></i>
+                                <span>Simular Caída de Nodo B</span>
+                            </button>
+                            <button onclick="resetNetwork()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+                                Reiniciar Red
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 min-h-[260px] flex flex-col items-center justify-center relative overflow-hidden">
+                        <!-- Red Malla Visual Interactive -->
+                        <div class="grid grid-cols-3 gap-8 w-full max-w-lg relative py-4">
+                            <!-- Nodo A -->
+                            <div id="node-a" class="flex flex-col items-center p-4 rounded-2xl bg-slate-900 border border-emerald-500/50 shadow-neon transition-all">
+                                <i data-lucide="server" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                                <span class="text-xs font-bold text-white">Nodo A</span>
+                                <span id="status-a" class="text-[10px] text-emerald-400">ONLINE</span>
+                            </div>
+                            <!-- Nodo B (Caótico) -->
+                            <div id="node-b" class="flex flex-col items-center p-4 rounded-2xl bg-slate-900 border border-sky-500/50 shadow-neon transition-all">
+                                <i data-lucide="server" class="w-6 h-6 text-sky-400 mb-1"></i>
+                                <span class="text-xs font-bold text-white">Nodo B (Crítico)</span>
+                                <span id="status-b" class="text-[10px] text-sky-400">ONLINE</span>
+                            </div>
+                            <!-- Nodo C -->
+                            <div id="node-c" class="flex flex-col items-center p-4 rounded-2xl bg-slate-900 border border-emerald-500/50 shadow-neon transition-all">
+                                <i data-lucide="server" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                                <span class="text-xs font-bold text-white">Nodo C</span>
+                                <span id="status-c" class="text-[10px] text-emerald-400">ONLINE</span>
+                            </div>
+                        </div>
+
+                        <div id="net-log" class="mt-4 p-3 w-full max-w-xl rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-emerald-300 text-center">
+                            Estado de la Red Malla: Todos los nodos operando con redundancia activa y sincronización NTP.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Repaso Rápido / Quiz Interactivo -->
+                <section id="repaso" class="glass-panel rounded-3xl p-6 sm:p-8 space-y-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">5. Repaso Rápido (Quiz Interactivo)</h3>
+                            <p class="text-sm text-slate-400">Pon a prueba el conocimiento de la clase en tiempo real</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Pregunta 1 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="0">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>1. ¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 0)">A) El Microprocesador</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 0)">B) El Middleware</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 0)">C) La Topología en Anillo</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 2 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="1">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>2. ¿Cuál es el objetivo que busca ocultar la distribución física de los recursos para que el sistema se perciba como una sola computadora?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 1)">A) Escalabilidad</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 1)">B) Apertura</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 1)">C) Transparencia</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 3 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="2">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>3. En las arquitecturas de hardware, ¿qué caracteriza a los sistemas fuertemente acoplados?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 2)">A) Comparten la misma memoria física y reloj</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 2)">B) Cada equipo tiene su propia memoria local independiente</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 2)">C) Están conectados exclusivamente por red WAN</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 4 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="3">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>4. ¿En qué modelo de software el usuario NO percibe dónde se ejecutan sus procesos debido a una gestión global de recursos?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 3)">A) Sistema Operativo de Red (NOS)</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 3)">B) Sistema Operativo Distribuido (DOS)</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 3)">C) Navegador Web</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 5 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="4">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>5. ¿Qué modelo arquitectónico de SO se menciona como un aspecto crítico de diseño para brindar flexibilidad?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 4)">A) Monolítico</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 4)">B) Micronúcleo (Microkernel)</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 4)">C) Jerárquico por capas</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 6 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="5">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>6. ¿Qué objetivo de los sistemas distribuidos permite agregar más computadoras fácilmente si la carga de trabajo aumenta?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 5)">A) Apertura</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 5)">B) Escalabilidad</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 5)">C) Compartición de recursos</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 7 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="6">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>7. ¿Cómo se denominan los equipos en los sistemas débilmente acoplados que poseen su propia memoria local y procesador?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 6)">A) Multicomputadoras</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 6)">B) Multiprocesadores simétricos</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 6)">C) Subsistemas centralizados</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 8 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="7">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>8. En un Sistema Operativo de Red (NOS), ¿cuál es la característica principal respecto al usuario?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 7)">A) El sistema oculta por completo las máquinas físicas</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 7)">B) Los usuarios son conscientes de las máquinas individuales y usan comandos explícitos</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 7)">C) No requiere de ninguna red de comunicación</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 9 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="8">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>9. ¿Qué aspecto crítico del diseño se encarga de garantizar que el sistema siga funcionando aunque falle un nodo o se rompa un cable?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 8)">A) Rendimiento</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 8)">B) Tolerancia a fallos y fiabilidad</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 8)">C) Sincronización de relojes lógicos</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 10 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="9">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>10. ¿Qué protocolo o herramientas se mencionan para lograr la sincronización de tiempos en los sistemas distribuidos?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 9)">A) El protocolo NTP y Relojes de Lamport</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 9)">B) Protocolos FTP y SSH exclusivamente</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 9)">C) Sistemas de ficheros virtuales (VFS)</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de Evaluación -->
+                    <div id="resumen-quiz" class="hidden p-6 rounded-2xl bg-slate-950 border border-sky-500/40 text-center space-y-2">
+                        <h4 class="text-base font-bold text-sky-400">📊 Resumen de Evaluación de la Clase</h4>
+                        <p id="puntaje-texto" class="text-lg font-bold text-white"></p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Presentation Mode View (Hidden by default, activated via top toolbar) -->
+            <div id="view-presentation" class="hidden space-y-8 min-h-[70vh] flex flex-col justify-between">
+                <div class="flex items-center justify-between bg-slate-900/80 px-6 py-3 rounded-2xl border border-slate-800">
+                    <span id="slide-indicator" class="text-xs uppercase font-bold text-sky-400 tracking-wider">Diapositiva 1 de 6</span>
+                    <div class="flex space-x-2">
+                        <button onclick="changeSlide(-1)" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center space-x-1">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            <span>Anterior</span>
+                        </button>
+                        <button onclick="changeSlide(1)" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition flex items-center space-x-1">
+                            <span>Siguiente</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
 
-            <!-- Pregunta 3 -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>3. En las arquitecturas de hardware, ¿qué caracteriza a los sistemas fuertemente acoplados?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 2)">A) Comparten la misma memoria física y reloj</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">B) Cada equipo tiene su propia memoria local independiente</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">C) Están conectados exclusivamente por red WAN</button>
+                <!-- Slide Container Card -->
+                <div id="slide-content-box" class="glass-panel rounded-3xl p-8 sm:p-12 flex-1 flex flex-col justify-center shadow-2xl transition-all duration-300">
+                    <!-- Dynamic Slide Injection -->
                 </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
 
-            <!-- Pregunta 4 -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>4. ¿En qué modelo de software el usuario NO percibe dónde se ejecutan sus procesos debido a una gestión global de recursos?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">A) Sistema Operativo de Red (NOS)</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 3)">B) Sistema Operativo Distribuido (DOS)</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">C) Navegador Web</button>
+                <!-- Slide Quick Navigation Dots -->
+                <div class="flex justify-center space-x-2 pb-4" id="slide-dots">
+                    <!-- Generated via JS -->
                 </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
             </div>
 
-            <!-- Pregunta 5 -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>5. ¿Qué modelo arquitectónico de SO se menciona como un aspecto crítico de diseño para brindar flexibilidad?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">A) Monolítico</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 4)">B) Micronúcleo (Microkernel)</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">C) Jerárquico por capas</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
+            <footer class="mt-16 pb-8 text-center text-slate-500 text-xs">
+                Universidad Tecnológica Intercontinental • Sistemas Operativos Distribuidos © 2026
+            </footer>
+        </main>
+    </div>
 
-            <!-- Pregunta 6 (Nueva) -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>6. ¿Qué objetivo de los sistemas distribuidos permite agregar más computadoras fácilmente si la carga de trabajo aumenta?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 5)">A) Apertura</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 5)">B) Escalabilidad</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 5)">C) Compartición de recursos</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
-
-            <!-- Pregunta 7 (Nueva) -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>7. ¿Cómo se denominan los equipos en los sistemas débilmente acoplados que poseen su propia memoria local y procesador?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 6)">A) Multicomputadoras</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 6)">B) Multiprocesadores simétricos</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 6)">C) Subsistemas centralizados</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
-
-            <!-- Pregunta 8 (Nueva) -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>8. En un Sistema Operativo de Red (NOS), ¿cuál es la característica principal respecto al usuario?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 7)">A) El sistema oculta por completo las máquinas físicas</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 7)">B) Los usuarios son conscientes de las máquinas individuales y usan comandos explícitos</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 7)">C) No requiere de ninguna red de comunicación</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
-
-            <!-- Pregunta 9 (Nueva) -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>9. ¿Qué aspecto crítico del diseño se encarga de garantizar que el sistema siga funcionando aunque falle un nodo o se rompa un cable?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 8)">A) Rendimiento</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 8)">B) Tolerancia a fallos y fiabilidad</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 8)">C) Sincronización de relojes lógicos</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
-
-            <!-- Pregunta 10 (Nueva) -->
-            <div class="quiz-item" style="margin-bottom: 25px;">
-                <p><strong>10. ¿Qué protocolo o herramientas se mencionan para lograr la sincronización de tiempos en los sistemas distribuidos?</strong></p>
-                <div class="quiz-options">
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 9)">A) El protocolo NTP y Relojes de Lamport</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 9)">B) Protocolos FTP y SSH exclusivamente</button>
-                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 9)">C) Sistemas de ficheros virtuales (VFS)</button>
-                </div>
-                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-            </div>
-
-            <!-- Resumen Final -->
-            <div id="resumen-quiz" style="margin-top: 20px; padding: 15px; border-radius: 6px; background-color: #0f172a; border: 1px solid #334155; text-align: center; display: none;">
-                <h3 style="margin: 0; color: #38bdf8;">📊 Resumen de Evaluación</h3>
-                <p id="puntaje-texto" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;"></p>
-            </div>
-        </section>
-
-        <footer>
-            Universidad Tecnológica Intercontinental - Sistemas Operativos © 2026
-        </footer>
-    </main>
-
+    <!-- JavaScript Application Logic -->
     <script>
-        // Arreglo actualizado para registrar el estado de cada una de las 10 preguntas
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Timer Logic
+        let secondsElapsed = 0;
+        let timerRunning = true;
+        const timerDisplay = document.getElementById('timer-display');
+        
+        function updateTimer() {
+            if (!timerRunning) return;
+            secondsElapsed++;
+            const hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+            const secs = String(secondsElapsed % 60).padStart(2, '0');
+            timerDisplay.textContent = `${hrs}:${mins}:${secs}`;
+        }
+        setInterval(updateTimer, 1000);
+
+        function toggleTimer() {
+            timerRunning = !timerRunning;
+            document.getElementById('timer-toggle-btn').textContent = timerRunning ? '⏸' : '▶';
+        }
+
+        // Fullscreen Toggle
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error("Error attempting to enable fullscreen:", err);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // View Switcher (Dashboard vs Presentation Mode)
+        let currentMode = 'dashboard';
+        function switchView(mode) {
+            currentMode = mode;
+            const dashView = document.getElementById('view-dashboard');
+            const presView = document.getElementById('view-presentation');
+            const btnDash = document.getElementById('btn-mode-dashboard');
+            const btnPres = document.getElementById('btn-mode-presentation');
+            const sidebar = document.getElementById('sidebar-nav');
+
+            if (mode === 'presentation') {
+                dashView.classList.add('hidden');
+                presView.classList.remove('hidden');
+                btnPres.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition bg-purple-600 text-white shadow-sm";
+                btnDash.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition text-slate-300 hover:text-white hover:bg-slate-800";
+                if(sidebar) sidebar.classList.add('lg:hidden');
+                renderSlide();
+            } else {
+                presView.classList.add('hidden');
+                dashView.classList.remove('hidden');
+                btnDash.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition bg-sky-500 text-slate-950 shadow-sm";
+                btnPres.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition text-slate-300 hover:text-white hover:bg-slate-800";
+                if(sidebar) sidebar.classList.remove('lg:hidden');
+            }
+            lucide.createIcons();
+        }
+
+        // Sidebar Navigation Active State
+        function setActiveNav(element) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.className = "nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60";
+            });
+            element.className = "nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-sky-400 bg-sky-500/10 border border-sky-500/20";
+        }
+
+        // --- SIMULATOR 1: HARDWARE COUPLING ---
+        function setHwMode(mode) {
+            const btnStrong = document.getElementById('btn-hw-strong');
+            const btnWeak = document.getElementById('btn-hw-weak');
+            const box = document.getElementById('hw-animation-box');
+            const desc = document.getElementById('hw-desc');
+
+            if (mode === 'strong') {
+                btnStrong.className = "px-4 py-2 rounded-lg text-xs font-semibold bg-purple-600 text-white transition";
+                btnWeak.className = "px-4 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition";
+                
+                box.innerHTML = `
+                    <div class="flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-purple-500/50 w-32 animate-pulse">
+                        <i data-lucide="cpu" class="w-8 h-8 text-purple-400 mb-1"></i>
+                        <span class="text-xs font-bold text-white">CPU 1</span>
+                    </div>
+                    <div class="h-1 bg-purple-500 w-24 flex items-center justify-center">
+                        <span class="text-[9px] bg-slate-950 px-2 text-purple-300 font-mono">Bus Físico Común</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-purple-500/50 w-32 animate-pulse">
+                        <i data-lucide="cpu" class="w-8 h-8 text-purple-400 mb-1"></i>
+                        <span class="text-xs font-bold text-white">CPU 2</span>
+                    </div>
+                    <div class="absolute bottom-2 text-xs text-purple-300 font-mono">RAM Compartida Global (Alta Velocidad)</div>
+                `;
+                desc.textContent = "Sistemas Fuertemente Acoplados: Los procesadores comparten memoria física y un reloj común con velocidad de transferencia ultra alta.";
+            } else {
+                btnWeak.className = "px-4 py-2 rounded-lg text-xs font-semibold bg-purple-600 text-white transition";
+                btnStrong.className = "px-4 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition";
+                
+                box.innerHTML = `
+                    <div class="flex flex-col items-center p-3 rounded-xl bg-slate-900 border border-slate-700 w-32">
+                        <i data-lucide="cpu" class="w-6 h-6 text-sky-400 mb-1"></i>
+                        <span class="text-xs font-bold text-white">Nodo 1</span>
+                        <span class="text-[9px] text-slate-400">RAM Local A</span>
+                    </div>
+                    <div class="h-0.5 border-t-2 border-dashed border-sky-400 w-24 flex items-center justify-center">
+                        <span class="text-[9px] bg-slate-950 px-1 text-sky-400 font-mono">Red WAN/LAN</span>
+                    </div>
+                    <div class="flex flex-col items-center p-3 rounded-xl bg-slate-900 border border-slate-700 w-32">
+                        <i data-lucide="cpu" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                        <span class="text-xs font-bold text-white">Nodo 2</span>
+                        <span class="text-[9px] text-slate-400">RAM Local B</span>
+                    </div>
+                `;
+                desc.textContent = "Sistemas Débilmente Acoplados: Multicomputadoras autónomas con su propia memoria local que se comunican mediante paso de mensajes en red.";
+            }
+            lucide.createIcons();
+        }
+
+        // --- SIMULATOR 2: MIDDLEWARE ---
+        function triggerMiddlewareSimulation() {
+            const btn = document.getElementById('btn-middleware-run');
+            const packet = document.getElementById('mw-packet');
+            const status = document.getElementById('mw-status-text');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            // Phase 1: Client to Middleware
+            packet.style.left = '28%';
+            packet.style.opacity = '1';
+            packet.textContent = 'Solicitud HTTP/JSON';
+            status.textContent = '1. La App Móvil envía una petición en formato estándar al Middleware...';
+
+            setTimeout(() => {
+                // Phase 2: Middleware Processing
+                packet.style.left = '50%';
+                packet.textContent = 'Traducción RPC';
+                status.textContent = '2. El Middleware traduce la petición al protocolo nativo del Mainframe...';
+
+                setTimeout(() => {
+                    // Phase 3: Middleware to Legacy Server
+                    packet.style.left = '72%';
+                    status.textContent = '3. La orden procesada se ejecuta en el servidor central sin incompatibilidad.';
+
+                    setTimeout(() => {
+                        packet.style.opacity = '0';
+                        packet.style.left = '28%';
+                        status.textContent = '✔ Transacción completada con éxito. El Middleware logró interoperabilidad perfecta.';
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-50');
+                    }, 1200);
+                }, 1200);
+            }, 1200);
+        }
+
+        // --- SIMULATOR 3: NETWORK TOLERANCE ---
+        function simulateNodeCrash() {
+            const nodeB = document.getElementById('node-b');
+            const statusB = document.getElementById('status-b');
+            const log = document.getElementById('net-log');
+
+            nodeB.className = "flex flex-col items-center p-4 rounded-2xl bg-rose-950/60 border border-rose-500/80 shadow-lg scale-95 transition-all";
+            statusB.textContent = "OFFLINE (CRASH)";
+            statusB.className = "text-[10px] text-rose-400 font-bold";
+
+            log.className = "mt-4 p-3 w-full max-w-xl rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs font-mono text-rose-300 text-center animate-pulse";
+            log.textContent = "⚠️ ALERTA DE RED: Fallo detectado en Nodo B. Ruteando tráfico a través del Nodo A -> Nodo C. Disponibilidad mantenida al 100%.";
+        }
+
+        function resetNetwork() {
+            const nodeB = document.getElementById('node-b');
+            const statusB = document.getElementById('status-b');
+            const log = document.getElementById('net-log');
+
+            nodeB.className = "flex flex-col items-center p-4 rounded-2xl bg-slate-900 border border-sky-500/50 shadow-neon transition-all";
+            statusB.textContent = "ONLINE";
+            statusB.className = "text-[10px] text-sky-400";
+
+            log.className = "mt-4 p-3 w-full max-w-xl rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-emerald-300 text-center";
+            log.textContent = "Estado de la Red Malla: Todos los nodos operando con redundancia activa y sincronización NTP.";
+        }
+
+        // --- QUIZ LOGIC (10 PREGUNTAS) ---
         const resultadosQuiz = [null, null, null, null, null, null, null, null, null, null];
 
         function evaluarPregunta(boton, esCorrecto, indicePregunta) {
@@ -465,23 +888,25 @@
             const botones = contenedorPregunta.querySelectorAll('.quiz-btn');
             const feedback = contenedorPregunta.querySelector('.pregunta-feedback');
 
-            botones.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+            botones.forEach(btn => {
+                btn.className = "quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition";
+            });
 
             if (esCorrecto) {
-                boton.classList.add('correct');
+                boton.className = "quiz-btn px-4 py-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs text-left font-bold transition";
                 feedback.textContent = "¡Correcto! 🎉";
-                feedback.className = "pregunta-feedback feedback-correct";
+                feedback.className = "pregunta-feedback text-xs mt-3 font-semibold text-emerald-400";
             } else {
-                boton.classList.add('incorrect');
-                feedback.textContent = "Incorrecto. ❌";
-                feedback.className = "pregunta-feedback feedback-incorrect";
+                boton.className = "quiz-btn px-4 py-3 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-300 text-xs text-left transition";
+                feedback.textContent = "Incorrecto. ❌ Inténtalo de nuevo.";
+                feedback.className = "pregunta-feedback text-xs mt-3 font-semibold text-rose-400";
             }
 
             resultadosQuiz[indicePregunta] = esCorrecto;
-            actualizarResumen();
+            actualizarResumenQuiz();
         }
 
-        function actualizarResumen() {
+        function actualizarResumenQuiz() {
             const respondidas = resultadosQuiz.filter(res => res !== null).length;
             const correctas = resultadosQuiz.filter(res => res === true).length;
             
@@ -489,17 +914,109 @@
             const textoPuntaje = document.getElementById('puntaje-texto');
 
             if (respondidas > 0) {
-                contenedorResumen.style.display = "block";
+                contenedorResumen.classList.remove('hidden');
                 
                 if (respondidas === 10) {
                     textoPuntaje.textContent = `¡Completaste la evaluación! Obtuviste ${correctas} de 10 puntos posibles.`;
-                    textoPuntaje.style.color = correctas >= 6 ? "#34d399" : "#f87171";
+                    textoPuntaje.className = correctas >= 6 ? "text-lg font-bold text-emerald-400" : "text-lg font-bold text-rose-400";
                 } else {
                     textoPuntaje.textContent = `Puntuación actual: ${correctas} de 10 puntos (${respondidas}/10 respondidas).`;
-                    textoPuntaje.style.color = "#cbd5e1";
+                    textoPuntaje.className = "text-lg font-bold text-slate-300";
                 }
             }
         }
+
+        // --- PRESENTATION MODE SLIDES ---
+        let currentSlide = 0;
+        const slidesData = [
+            {
+                title: "Unidad 9: Sistemas Operativos Distribuidos",
+                subtitle: "Concepto Fundamental",
+                content: `<p class="text-xl text-slate-200 leading-relaxed">Una colección de computadoras independientes que se comunican mediante una red y se presentan ante los usuarios como un <strong>único sistema coherente</strong>.</p>`
+            },
+            {
+                title: "1. Objetivos Principales",
+                subtitle: "Pilares del Diseño Distribuido",
+                content: `
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start space-x-3"><span class="text-sky-400 font-bold">•</span><span><strong>Transparencia:</strong> Ocultar la ubicación física de archivos y servicios.</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-purple-400 font-bold">•</span><span><strong>Compartición de Recursos:</strong> Acceso concurrente y seguro a hardware/software.</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-emerald-400 font-bold">•</span><span><strong>Escalabilidad:</strong> Crecimiento modular sin degradación de desempeño.</span></li>
+                    </ul>
+                `
+            },
+            {
+                title: "2. Arquitectura Hardware",
+                subtitle: "Acoplamiento de Procesadores",
+                content: `
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-6 rounded-2xl bg-slate-900/80 border border-purple-500/30">
+                            <h4 class="text-purple-300 font-bold mb-2">Fuertemente Acoplados</h4>
+                            <p class="text-sm text-slate-300">Comparten memoria global y reloj. Alta velocidad de bus.</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-slate-900/80 border border-sky-500/30">
+                            <h4 class="text-sky-300 font-bold mb-2">Débilmente Acoplados</h4>
+                            <p class="text-sm text-slate-300">Memoria local por nodo. Comunicación explícita por red.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "3. Capas de Software",
+                subtitle: "NOS vs DOS vs Middleware",
+                content: `
+                    <p class="text-slate-300 text-base leading-relaxed mb-4">El <strong>Middleware</strong> actúa como el pegamento de abstracción entre aplicaciones y el sistema operativo base, resolviendo la heterogeneidad.</p>
+                `
+            },
+            {
+                title: "4. Aspectos Críticos de Diseño",
+                subtitle: "Desafíos de Ingenería",
+                content: `
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">✓ Tolerancia a Fallos</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">✓ Sincronización NTP / Lamport</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">✓ Micronúcleos Modulares</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">✓ Transparencia de Replicación</div>
+                    </div>
+                `
+            },
+            {
+                title: "Resumen y Evaluación",
+                subtitle: "Fin de la Lección",
+                content: `<p class="text-center text-lg text-emerald-400 font-bold">¡listos para proceder con el Quiz interactivo en el Dashboard!</p>`
+            }
+        ];
+
+        function renderSlide() {
+            const box = document.getElementById('slide-content-box');
+            const indicator = document.getElementById('slide-indicator');
+            const slide = slidesData[currentSlide];
+
+            box.innerHTML = `
+                <span class="text-xs font-bold uppercase text-purple-400 tracking-widest mb-2">${slide.subtitle}</span>
+                <h2 class="text-3xl font-extrabold text-white mb-6">${slide.title}</h2>
+                <div>${slide.content}</div>
+            `;
+
+            indicator.textContent = `Diapositiva ${currentSlide + 1} de ${slidesData.length}`;
+            renderDots();
+            lucide.createIcons();
+        }
+
+        function changeSlide(direction) {
+            currentSlide = (currentSlide + direction + slidesData.length) % slidesData.length;
+            renderSlide();
+        }
+
+        function renderDots() {
+            const dotsBox = document.getElementById('slide-dots');
+            dotsBox.innerHTML = slidesData.map((_, idx) => `
+                <button onclick="currentSlide=${idx}; renderSlide();" class="w-3 h-3 rounded-full transition ${idx === currentSlide ? 'bg-sky-400 scale-125' : 'bg-slate-700 hover:bg-slate-500'}"></button>
+            `).join('');
+        }
+
+        // Initialize First View
+        setHwMode('strong');
     </script>
 </body>
 </html>
