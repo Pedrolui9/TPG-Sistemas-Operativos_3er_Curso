@@ -185,7 +185,6 @@
             border-color: #38bdf8;
         }
 
-        /* Estilos de respuesta correcta/incorrecta */
         .quiz-btn.correct {
             background-color: #065f46 !important;
             color: #10b981 !important;
@@ -197,20 +196,6 @@
             background-color: #7f1d1d !important;
             color: #f87171 !important;
             border-color: #f87171 !important;
-        }
-
-        #quiz-feedback {
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 1.05rem;
-        }
-
-        .feedback-correct {
-            color: #34d399;
-        }
-
-        .feedback-incorrect {
-            color: #f87171;
         }
 
         footer {
@@ -226,8 +211,6 @@
 
     <!-- Menú Lateral -->
     <nav class="sidebar">
-        
-        
         <h2>Índice</h2>
         <ul>
             <li><a href="#introduccion" class="nav-link">🌐 Introducción</a></li>
@@ -251,190 +234,50 @@
         </section>
 
         <section id="objetivos" class="card">
-  <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
-  <p>Los sistemas distribuidos unen varias computadoras para lograr los siguientes fines:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Transparencia</h3>
-      <p>Hacer que muchas computadoras parezcan <strong>una sola</strong>. El usuario no necesita saber dónde están guardados los datos físicamente.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Cuando guardas una foto en Google Fotos o Dropbox, la ves al instante sin preocuparte en qué país o disco duro del mundo se almacenó.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Compartición de Recursos</h3>
-      <p>Permitir que varios usuarios usen los mismos equipos, programas o archivos a distancia sin interferir entre sí.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Una impresora en una oficina que todos usan desde sus distintas computadoras, o el sistema de un banco donde varios cajeros atienden cuentas al mismo tiempo.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Apertura e Interoperabilidad</h3>
-      <p>Usar reglas estándar para que computadoras de distintas marcas o con sistemas diferentes se entiendan sin problemas.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Es como un "traductor universal". Permite que la app de tu celular (Android o iPhone) consulte información en una computadora antigua del banco.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Escalabilidad</h3>
-      <p>La facilidad para agregar más computadoras al sistema si el trabajo aumenta, sin que el servicio se vuelva lento o se caiga.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Como en la vida real:</strong> Cuando Netflix estrena una serie muy popular, conecta automáticamente más servidores para que nadie sufra interrupciones.</p>
-    </div>
-  </div>
-</section>
-
-<section id="hardware" class="card">
-  <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
-  <p>Formas en que se conectan físicamente los componentes y las computadoras:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Fuertemente Acoplados</h3>
-      <p>Varias pantallas o procesadores dentro de una misma caja que comparten la misma memoria RAM y trabajan muy pegados a gran velocidad.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Una supercomputadora para predecir el clima o entrenar Inteligencia Artificial, donde los chips se pasan datos de inmediato.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Débilmente Acoplados</h3>
-      <p>Computadoras independientes (cada una con su propio procesador y memoria) conectadas entre sí mediante cables de red o Wi-Fi.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Varias computadoras de un laboratorio de informática unidas por red para resolver un trabajo gigante juntas.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Topologías de Red</h3>
-      <p>El dibujo o la forma en que tiramos los cables de red para unir las computadoras (en forma de estrella, círculo o red de pesca/malla).</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Si conectamos todo en "malla" (varios caminos posibles), si un cable se rompe, la información busca otra ruta y no se corta la red.</p>
-    </div>
-  </div>
-</section>
-
-<section id="software" class="card">
-  <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
-  <p>Cómo organizamos los programas para administrar las computadoras de la red:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Sistema Operativo de Red</h3>
-      <p>Cada computadora tiene su propio sistema independiente y el usuario sabe exactamente a qué equipo le está pidiendo un archivo o comando.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Cuando desde tu computadora accedes a una carpeta compartida en la PC del aula de al lado sabiendo el nombre de esa PC.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Sistema Operativo Distribuido</h3>
-      <p>Un sistema único que controla todas las computadoras de la red. El usuario ni se entera en qué máquina se está procesando su tarea.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Como si conectaras 5 computadoras y tu pantalla te mostrara que ahora tienes una "super computadora" con 5 veces más potencia.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Middleware (El Traductor)</h3>
-      <p>Un programa intermedio que sirve como puente entre aplicaciones diferentes para que puedan enviarse mensajes sin importar su idioma o marca.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Funciona como un mozo en un restaurante: toma el pedido de la mesa (tu app) y se lo lleva a la cocina (servidor) interpretando lo que ambos necesitan.</p>
-    </div>
-  </div>
-</section>
-
-<section id="diseno" class="card">
-  <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
-  <p>Los desafíos indispensables que debemos resolver al crear estos sistemas:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Ocultar la Complejidad</h3>
-      <p>Lograr que los cambios, mudanzas de datos o copias de seguridad ocurran de fondo sin molestar al usuario ni interrumpir su pantalla.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Mientras usas una app, la empresa mueve tus datos a un servidor más rápido sin que se te trabe el video o el juego.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Sistemas Modulares (Micronúcleo)</h3>
-      <p>Diseñar el sistema en piezas pequeñas e independientes para que sea muy fácil de reparar o actualizar.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Como una casa construida con bloques LEGO. Si falla una pieza (como el sonido), la cambias sin tener que tirar abajo la casa entera.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Tolerancia a Fallos</h3>
-      <p>Garantizar que el sistema siga funcionando normalmente aunque se rompa un cable o se apague una computadora.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Los sistemas del banco guardan copias vivas en varios países. Si un centro de datos sufre un corte de luz, otro responde al instante.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Sincronización de Tiempos</h3>
-      <p>Asegurarse de que todas las computadoras tengan exactamente la misma hora al milisegundo para no confundir el orden de los eventos.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Necesario para saber exactamente qué persona compró primero el último ticket de un concierto cuando miles presionan clic a la vez.</p>
-    </div>
-  </div>
-</section>
-
-<section id="hardware" class="card">
-  <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
-  <p>Los sistemas distribuidos se sostienen sobre distintas clasificaciones según cómo se conectan y comparten la memoria los procesadores:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Fuertemente Acoplados</h3>
-      <p>Procesadores que comparten la misma memoria física y reloj (Multiprocesadores). Tienen alta velocidad de transferencia.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Supercomputadoras de simulación científica o servidores multiprocesador para IA.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Débilmente Acoplados</h3>
-      <p>Equipos (Multicomputadoras) con su propia memoria local y procesador, conectados a través de una red de comunicación.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Clusters de Kubernetes o proyectos de computación distribuida como BOINC / Folding@home.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Topologías de Red</h3>
-      <p>La estructura de interconexión (Estrella, Anillo, Bus o Malla) determina la latencia y la tolerancia a fallos del hardware.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Redes de fibra óptica interconectadas en Malla para evitar caídas si se rompe un cable.</p>
-    </div>
-  </div>
-</section>
-
-<section id="software" class="card">
-  <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
-  <p>El software determina cómo interactúan las aplicaciones con los nodos de la red:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>SO de Red (NOS)</h3>
-      <p>Cada nodo mantiene su propio SO. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Windows Server con Active Directory o Linux mediante conexiones explícitas por SSH/FTP.</p>
-    </div>
-    <div class="sub-card">
-      <h3>SO Distribuido (DOS)</h3>
-      <p>Un único SO gestiona globalmente todos los recursos. Los usuarios no perciben dónde se ejecutan sus procesos.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Sistemas de investigación como Amoeba o Plan 9 que unifican CPUs y memoria física.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Middleware</h3>
-      <p>Capa de software situada entre las aplicaciones y el SO subyacente que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Apache Kafka, RabbitMQ o gRPC actuando como traductores entre servicios.</p>
-    </div>
-  </div>
-</section>
-
-<section id="diseno" class="card">
-  <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
-  <p>Diseñar un sistema distribuido exige abordar desafíos clave de coordinación y fiabilidad:</p>
-  <div class="grid-cards">
-    <div class="sub-card">
-      <h3>Transparencia</h3>
-      <p>Abarca localización, acceso, migración, replicación y concurrencia.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Migración en vivo de contenedores Docker de un servidor a otro sin interrupción.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Flexibilidad</h3>
-      <p>Uso del modelo micronúcleo para delegar servicios a espacio de usuario.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Sistemas como QNX (usado en vehículos) o MINIX, donde la falla de un driver no apaga el sistema.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Fiabilidad</h3>
-      <p>Tolerancia a fallos para mantener disponibilidad y consistencia.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Réplicas bancarias internacionales que mantienen la operación aunque caiga un data center.</p>
-    </div>
-    <div class="sub-card">
-      <h3>Rendimiento</h3>
-      <p>Balanceo de carga y sincronización con relojes lógicos/físicos.</p>
-      <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>Ejemplo real:</strong> Uso del protocolo NTP y Relojes de Lamport para registrar transacciones bancarias al milisegundo.</p>
-    </div>
-  </div>
-</section>
+            <h2 class="section-title">🎯 1. Objetivos de los Sistemas Distribuidos</h2>
+            <p>Los sistemas distribuidos unen varias computadoras para lograr los siguientes fines:</p>
+            <div class="grid-cards">
+                <div class="sub-card">
+                    <h3>Transparencia</h3>
+                    <p>Hacer que muchas computadoras parezcan <strong>una sola</strong>. El usuario no necesita saber dónde están guardados los datos físicamente.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Cuando guardas una foto en Google Fotos o Dropbox, la ves al instante sin preocuparte en qué país o disco duro del mundo se almacenó.</p>
+                </div>
+                <div class="sub-card">
+                    <h3>Compartición de Recursos</h3>
+                    <p>Permitir que varios usuarios usen los mismos equipos, programas o archivos a distancia sin interferir entre sí.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Una impresora en una oficina que todos usan desde sus distintas computadoras, o el sistema de un banco donde varios cajeros atienden cuentas al mismo tiempo.</p>
+                </div>
+                <div class="sub-card">
+                    <h3>Apertura e Interoperabilidad</h3>
+                    <p>Usar reglas estándar para que computadoras de distintas marcas o con sistemas diferentes se entiendan sin problemas.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Es como un "traductor universal". Permite que la app de tu celular (Android o iPhone) consulte información en una computadora antigua del banco.</p>
+                </div>
+                <div class="sub-card">
+                    <h3>Escalabilidad</h3>
+                    <p>La facilidad para agregar más computadoras al sistema si el trabajo aumenta, sin que el servicio se vuelva lento o se caiga.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Cuando Netflix estrena una serie muy popular, conecta automáticamente más servidores para que nadie sufra interrupciones.</p>
+                </div>
+            </div>
+        </section>
 
         <section id="hardware" class="card">
             <h2 class="section-title">🖥️ 2. Arquitecturas de Hardware</h2>
-            <p>Los sistemas distribuidos se sostienen sobre distintas clasificaciones según cómo se conectan y comparten la memoria los procesadores:</p>
-            
+            <p>Formas en que se conectan físicamente los componentes y las computadoras:</p>
             <div class="grid-cards">
                 <div class="sub-card">
                     <h3>Fuertemente Acoplados</h3>
-                    <p>Procesadores que comparten la misma memoria física y reloj (Multiprocesadores). Tienen alta velocidad de transferencia.</p>
+                    <p>Procesadores (Multiprocesadores) que comparten la misma memoria física y reloj, con alta velocidad de transferencia.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Supercomputadoras para simulación científica o servidores multiprocesador para Inteligencia Artificial.</p>
                 </div>
                 <div class="sub-card">
                     <h3>Débilmente Acoplados</h3>
-                    <p>Equipos (Multicomputadoras) con su propia memoria local y procesador, conectados a través de una red de comunicación.</p>
+                    <p>Equipos independientes (Multicomputadoras) con su propia memoria local y procesador, conectados mediante redes de comunicación.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Clusters de Kubernetes o proyectos de computación distribuida como BOINC / Folding@home.</p>
                 </div>
                 <div class="sub-card">
                     <h3>Topologías de Red</h3>
                     <p>La estructura de interconexión (Estrella, Anillo, Bus o Malla) determina la latencia y la tolerancia a fallos del hardware.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Redes interconectadas en Malla para buscar rutas alternas y evitar caídas si un cable se rompe.</p>
                 </div>
             </div>
         </section>
@@ -442,19 +285,21 @@
         <section id="software" class="card">
             <h2 class="section-title">💻 3. Capas y Modelos de Software</h2>
             <p>El software determina cómo interactúan las aplicaciones con los nodos de la red:</p>
-            
             <div class="grid-cards">
                 <div class="sub-card">
-                    <h3>SO de Red (NOS)</h3>
-                    <p>Cada nodo mantiene su propio SO. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
+                    <h3>Sistema Operativo de Red (NOS)</h3>
+                    <p>Cada nodo mantiene su propio SO independiente. Los usuarios son conscientes de las máquinas individuales (ej. comandos de red explícitos).</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Windows Server con Active Directory o Linux mediante conexiones explícitas por SSH/FTP.</p>
                 </div>
                 <div class="sub-card">
-                    <h3>SO Distribuido (DOS)</h3>
-                    <p>Un único SO gestiona globalmente todos los recursos. Los usuarios no perciben dónde se ejecutan sus procesos.</p>
+                    <h3>Sistema Operativo Distribuido (DOS)</h3>
+                    <p>Un sistema único que controla globalmente todas las computadoras de la red. El usuario ni se entera en qué máquina se ejecuta su tarea.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Sistemas de investigación como Amoeba o Plan 9 que unifican CPUs y memoria física.</p>
                 </div>
                 <div class="sub-card">
-                    <h3>Middleware</h3>
-                    <p>Capa de software situada entre las aplicaciones y el SO subyacente que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
+                    <h3>Middleware (El Traductor)</h3>
+                    <p>Capa de software intermedia situada entre las aplicaciones y el SO que brinda abstracción, gestión de RPC y comunicación heterogénea.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Apache Kafka, RabbitMQ o gRPC actuando como traductores entre servicios diferentes.</p>
                 </div>
             </div>
         </section>
@@ -462,91 +307,149 @@
         <section id="diseno" class="card">
             <h2 class="section-title">🛠️ 4. Aspectos Críticos del Diseño</h2>
             <p>Diseñar un sistema distribuido exige abordar desafíos clave de coordinación y fiabilidad:</p>
-            
             <div class="grid-cards">
                 <div class="sub-card">
-                    <h3>Transparencia</h3>
-                    <p>Abarca localización, acceso, migración, replicación y concurrencia.</p>
+                    <h3>Transparencia y Ocultamiento</h3>
+                    <p>Lograr que los cambios, mudanzas de datos, localización, migración y replicación ocurran de fondo sin molestar al usuario.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Migración en vivo de contenedores Docker de un servidor a otro sin interrupción en la pantalla.</p>
                 </div>
                 <div class="sub-card">
-                    <h3>Flexibilidad</h3>
-                    <p>Uso del modelo micronúcleo para delegar servicios a espacio de usuario.</p>
+                    <h3>Sistemas Modulares (Flexibilidad)</h3>
+                    <p>Diseñar el sistema en piezas pequeñas (modelo micronúcleo) para delegar servicios a espacio de usuario y facilitar reparaciones.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Sistemas como QNX o MINIX, donde la falla de un controlador de dispositivos no apaga el equipo completo.</p>
                 </div>
                 <div class="sub-card">
-                    <h3>Fiabilidad</h3>
-                    <p>Tolerancia a fallos para mantener disponibilidad y consistencia.</p>
+                    <h3>Tolerancia a Fallos y Fiabilidad</h3>
+                    <p>Garantizar que el sistema siga funcionando normalmente y mantenga disponibilidad aunque se rompa un cable o se apague una computadora.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Réplicas bancarias internacionales que mantienen la operación activa aunque caiga un centro de datos.</p>
                 </div>
                 <div class="sub-card">
-                    <h3>Rendimiento</h3>
-                    <p>Balanceo de carga y sincronización con relojes lógicos/físicos.</p>
+                    <h3>Sincronización de Tiempos</h3>
+                    <p>Balanceo de carga y aseguramiento de que los equipos tengan exactamente la misma hora mediante relojes lógicos/físicos.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #38bdf8;"><strong>💡 Ejemplo:</strong> Uso del protocolo NTP y Relojes de Lamport para registrar transacciones al milisegundo exacto.</p>
                 </div>
             </div>
         </section>
 
         <section id="repaso" class="card">
-  <h2 class="section-title">🧪 Repaso Rápido</h2>
+            <h2 class="section-title">🧪 Repaso Rápido (10 Preguntas)</h2>
 
-  <!-- Pregunta 1 -->
-  <div class="quiz-item" style="margin-bottom: 25px;">
-    <p><strong>1. ¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</strong></p>
-    <div class="quiz-options">
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">A) El Microprocesador</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 0)">B) El Middleware</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">C) La Topología en Anillo</button>
-    </div>
-    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-  </div>
+            <!-- Pregunta 1 -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>1. ¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">A) El Microprocesador</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 0)">B) El Middleware</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 0)">C) La Topología en Anillo</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
 
-  <!-- Pregunta 2 -->
-  <div class="quiz-item" style="margin-bottom: 25px;">
-    <p><strong>2. ¿Cuál es el objetivo que busca ocultar la distribución física de los recursos para que el sistema se perciba como una sola computadora?</strong></p>
-    <div class="quiz-options">
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">A) Escalabilidad</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">B) Apertura</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 1)">C) Transparencia</button>
-    </div>
-    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-  </div>
+            <!-- Pregunta 2 -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>2. ¿Cuál es el objetivo que busca ocultar la distribución física de los recursos para que el sistema se perciba como una sola computadora?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">A) Escalabilidad</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 1)">B) Apertura</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 1)">C) Transparencia</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
 
-  <!-- Pregunta 3 -->
-  <div class="quiz-item" style="margin-bottom: 25px;">
-    <p><strong>3. En las arquitecturas de hardware, ¿qué caracteriza a los sistemas fuertemente acoplados?</strong></p>
-    <div class="quiz-options">
-      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 2)">A) Comparten la misma memoria física y reloj</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">B) Cada equipo tiene su propia memoria local independiente</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">C) Están conectados exclusivamente por red WAN</button>
-    </div>
-    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-  </div>
+            <!-- Pregunta 3 -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>3. En las arquitecturas de hardware, ¿qué caracteriza a los sistemas fuertemente acoplados?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 2)">A) Comparten la misma memoria física y reloj</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">B) Cada equipo tiene su propia memoria local independiente</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 2)">C) Están conectados exclusivamente por red WAN</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
 
-  <!-- Pregunta 4 -->
-  <div class="quiz-item" style="margin-bottom: 25px;">
-    <p><strong>4. ¿En qué modelo de software el usuario NO percibe dónde se ejecutan sus procesos debido a una gestión global de recursos?</strong></p>
-    <div class="quiz-options">
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">A) Sistema Operativo de Red (NOS)</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 3)">B) Sistema Operativo Distribuido (DOS)</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">C) Navegador Web</button>
-    </div>
-    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-  </div>
+            <!-- Pregunta 4 -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>4. ¿En qué modelo de software el usuario NO percibe dónde se ejecutan sus procesos debido a una gestión global de recursos?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">A) Sistema Operativo de Red (NOS)</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 3)">B) Sistema Operativo Distribuido (DOS)</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 3)">C) Navegador Web</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
 
-  <!-- Pregunta 5 -->
-  <div class="quiz-item" style="margin-bottom: 25px;">
-    <p><strong>5. ¿Qué modelo arquitectónico de SO se menciona como un aspecto crítico de diseño para brindar flexibilidad?</strong></p>
-    <div class="quiz-options">
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">A) Monolítico</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, true, 4)">B) Micronúcleo (Microkernel)</button>
-      <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">C) Jerárquico por capas</button>
-    </div>
-    <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
-  </div>
+            <!-- Pregunta 5 -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>5. ¿Qué modelo arquitectónico de SO se menciona como un aspecto crítico de diseño para brindar flexibilidad?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">A) Monolítico</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 4)">B) Micronúcleo (Microkernel)</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 4)">C) Jerárquico por capas</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
 
-  <!-- Resumen Final -->
-  <div id="resumen-quiz" style="margin-top: 20px; padding: 15px; border-radius: 6px; background-color: #0f172a; border: 1px solid #334155; text-align: center; display: none;">
-    <h3 style="margin: 0; color: #38bdf8;">📊 Resumen de Evaluación</h3>
-    <p id="puntaje-texto" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;"></p>
-  </div>
-</section>
+            <!-- Pregunta 6 (Nueva) -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>6. ¿Qué objetivo de los sistemas distribuidos permite agregar más computadoras fácilmente si la carga de trabajo aumenta?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 5)">A) Apertura</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 5)">B) Escalabilidad</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 5)">C) Compartición de recursos</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
+
+            <!-- Pregunta 7 (Nueva) -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>7. ¿Cómo se denominan los equipos en los sistemas débilmente acoplados que poseen su propia memoria local y procesador?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 6)">A) Multicomputadoras</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 6)">B) Multiprocesadores simétricos</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 6)">C) Subsistemas centralizados</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
+
+            <!-- Pregunta 8 (Nueva) -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>8. En un Sistema Operativo de Red (NOS), ¿cuál es la característica principal respecto al usuario?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 7)">A) El sistema oculta por completo las máquinas físicas</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 7)">B) Los usuarios son conscientes de las máquinas individuales y usan comandos explícitos</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 7)">C) No requiere de ninguna red de comunicación</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
+
+            <!-- Pregunta 9 (Nueva) -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>9. ¿Qué aspecto crítico del diseño se encarga de garantizar que el sistema siga funcionando aunque falle un nodo o se rompa un cable?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 8)">A) Rendimiento</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 8)">B) Tolerancia a fallos y fiabilidad</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 8)">C) Sincronización de relojes lógicos</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
+
+            <!-- Pregunta 10 (Nueva) -->
+            <div class="quiz-item" style="margin-bottom: 25px;">
+                <p><strong>10. ¿Qué protocolo o herramientas se mencionan para lograr la sincronización de tiempos en los sistemas distribuidos?</strong></p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, true, 9)">A) El protocolo NTP y Relojes de Lamport</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 9)">B) Protocolos FTP y SSH exclusivamente</button>
+                    <button class="quiz-btn" onclick="evaluarPregunta(this, false, 9)">C) Sistemas de ficheros virtuales (VFS)</button>
+                </div>
+                <p class="pregunta-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+            </div>
+
+            <!-- Resumen Final -->
+            <div id="resumen-quiz" style="margin-top: 20px; padding: 15px; border-radius: 6px; background-color: #0f172a; border: 1px solid #334155; text-align: center; display: none;">
+                <h3 style="margin: 0; color: #38bdf8;">📊 Resumen de Evaluación</h3>
+                <p id="puntaje-texto" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;"></p>
+            </div>
+        </section>
 
         <footer>
             Universidad Tecnológica Intercontinental - Sistemas Operativos © 2026
@@ -554,54 +457,49 @@
     </main>
 
     <script>
-        // Arreglo para registrar el estado de cada una de las 5 preguntas (null = sin responder, true = correcta, false = incorrecta)
-const resultadosQuiz = [null, null, null, null, null];
+        // Arreglo actualizado para registrar el estado de cada una de las 10 preguntas
+        const resultadosQuiz = [null, null, null, null, null, null, null, null, null, null];
 
-function evaluarPregunta(boton, esCorrecto, indicePregunta) {
-  const contenedorPregunta = boton.closest('.quiz-item');
-  const botones = contenedorPregunta.querySelectorAll('.quiz-btn');
-  const feedback = contenedorPregunta.querySelector('.pregunta-feedback');
+        function evaluarPregunta(boton, esCorrecto, indicePregunta) {
+            const contenedorPregunta = boton.closest('.quiz-item');
+            const botones = contenedorPregunta.querySelectorAll('.quiz-btn');
+            const feedback = contenedorPregunta.querySelector('.pregunta-feedback');
 
-  // Marcar estado visual de los botones de esta pregunta
-  botones.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+            botones.forEach(btn => btn.classList.remove('correct', 'incorrect'));
 
-  if (esCorrecto) {
-    boton.classList.add('correct');
-    feedback.textContent = "¡Correcto! 🎉";
-    feedback.className = "pregunta-feedback feedback-correct";
-  } else {
-    boton.classList.add('incorrect');
-    feedback.textContent = "Incorrecto. ❌";
-    feedback.className = "pregunta-feedback feedback-incorrect";
-  }
+            if (esCorrecto) {
+                boton.classList.add('correct');
+                feedback.textContent = "¡Correcto! 🎉";
+                feedback.className = "pregunta-feedback feedback-correct";
+            } else {
+                boton.classList.add('incorrect');
+                feedback.textContent = "Incorrecto. ❌";
+                feedback.className = "pregunta-feedback feedback-incorrect";
+            }
 
-  // Guardar resultado
-  resultadosQuiz[indicePregunta] = esCorrecto;
+            resultadosQuiz[indicePregunta] = esCorrecto;
+            actualizarResumen();
+        }
 
-  // Actualizar resumen final de puntuación
-  actualizarResumen();
-}
+        function actualizarResumen() {
+            const respondidas = resultadosQuiz.filter(res => res !== null).length;
+            const correctas = resultadosQuiz.filter(res => res === true).length;
+            
+            const contenedorResumen = document.getElementById('resumen-quiz');
+            const textoPuntaje = document.getElementById('puntaje-texto');
 
-function actualizarResumen() {
-  const respondidas = resultadosQuiz.filter(res => res !== null).length;
-  const correctas = resultadosQuiz.filter(res => res === true).length;
-  
-  const contenedorResumen = document.getElementById('resumen-quiz');
-  const textoPuntaje = document.getElementById('puntaje-texto');
-
-  if (respondidas > 0) {
-    contenedorResumen.style.display = "block";
-    
-    if (respondidas === 5) {
-      textoPuntaje.textContent = `¡Completaste la evaluación! Obtuviste ${correctas} de 5 puntos posibles.`;
-      textoPuntaje.style.color = correctas >= 3 ? "#34d399" : "#f87171";
-    } else {
-      textoPuntaje.textContent = `Puntuación actual: ${correctas} de 5 puntos (${respondidas}/5 respondidas).`;
-      textoPuntaje.style.color = "#cbd5e1";
-    }
-  }
-}
+            if (respondidas > 0) {
+                contenedorResumen.style.display = "block";
+                
+                if (respondidas === 10) {
+                    textoPuntaje.textContent = `¡Completaste la evaluación! Obtuviste ${correctas} de 10 puntos posibles.`;
+                    textoPuntaje.style.color = correctas >= 6 ? "#34d399" : "#f87171";
+                } else {
+                    textoPuntaje.textContent = `Puntuación actual: ${correctas} de 10 puntos (${respondidas}/10 respondidas).`;
+                    textoPuntaje.style.color = "#cbd5e1";
+                }
+            }
+        }
     </script>
-
 </body>
 </html>
