@@ -1,0 +1,2412 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unidad 10 - Seguridad en Sistemas Operativos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        cardBg: '#121c2e',
+                        cardHover: '#1a2640',
+                        accentBlue: '#38bdf8',
+                        accentPurple: '#a855f7',
+                        accentGreen: '#10b981',
+                        neonCyan: '#06b6d4',
+                        accentRed: '#f43f5e',
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(56, 189, 248, 0.25)',
+                        'neon-purple': '0 0 20px rgba(168, 85, 247, 0.25)',
+                        'neon-red': '0 0 20px rgba(244, 63, 94, 0.25)'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #090d16;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        .glass-panel {
+            background: rgba(18, 28, 46, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+        .glass-panel-purple {
+            background: rgba(18, 28, 46, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(168, 85, 247, 0.15);
+        }
+        .glass-panel-red {
+            background: rgba(18, 28, 46, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(244, 63, 94, 0.15);
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 6s infinite ease-in-out;
+        }
+        @keyframes parpadeo {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+        .animate-parpadeo {
+            animation: parpadeo 1s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
+
+    <!-- Background Ambient Lighting -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-rose-600/20 rounded-full blur-3xl animate-pulse-glow"></div>
+        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl animate-pulse-glow" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-sky-600/15 rounded-full blur-3xl animate-pulse-glow" style="animation-delay: 4s;"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b08_1px,transparent_1px),linear-gradient(to_bottom,#1e293b08_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+    </div>
+
+    <!-- Top Floating Toolbar / Header -->
+    <header class="sticky top-0 z-50 px-4 lg:px-8 py-3 glass-panel border-b border-slate-800/80 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-purple-600 flex items-center justify-center shadow-neon-red">
+                <i data-lucide="shield-half" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <span class="text-xs uppercase tracking-widest text-rose-400 font-bold">Unidad 10</span>
+                <h1 class="text-base sm:text-lg font-bold text-white tracking-tight">Seguridad en Sistemas Operativos</h1>
+            </div>
+        </div>
+
+        <!-- Controls Center -->
+        <div class="flex items-center space-x-2 sm:space-x-4">
+            <!-- Timer Component -->
+            <div id="class-timer" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-xs font-mono text-rose-300">
+                <i data-lucide="timer" class="w-4 h-4 text-rose-400"></i>
+                <span id="timer-display">00:00:00</span>
+                <button onclick="toggleTimer()" id="timer-toggle-btn" class="hover:text-white transition" title="Pausar/Reanudar">⏸</button>
+            </div>
+
+            <!-- Mode Switcher -->
+            <div class="bg-slate-900/90 p-1 rounded-xl border border-slate-700 flex space-x-1">
+                <button onclick="switchView('dashboard')" id="btn-mode-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition bg-rose-500 text-slate-950 shadow-sm">
+                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchView('presentation')" id="btn-mode-presentation" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition text-slate-300 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+                    <span>Modo Exposición</span>
+                </button>
+            </div>
+
+            <!-- Fullscreen Toggle -->
+            <button onclick="toggleFullScreen()" class="p-2 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition" title="Pantalla Completa">
+                <i data-lucide="maximize" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Layout Container -->
+    <div class="flex-1 flex relative z-10 max-w-7xl mx-auto w-full">
+
+        <!-- Sidebar Navigation (Visible in Dashboard Mode) -->
+        <aside id="sidebar-nav" class="hidden lg:flex flex-col w-72 p-6 shrink-0 border-r border-slate-800/80 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto">
+            <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-4">Índice de la Clase</h3>
+            <nav class="space-y-1.5 flex-1">
+                <a href="#introduccion" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-rose-400 bg-rose-500/10 border border-rose-500/20">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span>Introducción</span>
+                </a>
+                <a href="#pilares" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="target" class="w-4 h-4"></i>
+                    <span>1. Pilares (CIA)</span>
+                </a>
+                <a href="#amenazas" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="triangle-alert" class="w-4 h-4"></i>
+                    <span>2. Amenazas</span>
+                </a>
+                <a href="#lab-amenazas" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-rose-300 hover:text-rose-200 hover:bg-rose-500/10">
+                    <i data-lucide="siren" class="w-4 h-4 text-rose-400"></i>
+                    <span>⚡ Lab: Mapa de Amenazas</span>
+                </a>
+                <a href="#proteccion" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>3. Protección</span>
+                </a>
+                <a href="#lab-proteccion" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-sky-300 hover:text-sky-200 hover:bg-sky-500/10">
+                    <i data-lucide="key-round" class="w-4 h-4 text-sky-400"></i>
+                    <span>⚡ Lab: Autenticación</span>
+                </a>
+                <a href="#lab-firewall" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-rose-300 hover:text-rose-200 hover:bg-rose-500/10">
+                    <i data-lucide="shield-half" class="w-4 h-4 text-rose-400"></i>
+                    <span>⚡ Lab: Cortafuegos</span>
+                </a>
+                <a href="#intrusos" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="user-round-search" class="w-4 h-4"></i>
+                    <span>4. Intrusos</span>
+                </a>
+                <a href="#malware" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="bug" class="w-4 h-4"></i>
+                    <span>5. Software Malicioso</span>
+                </a>
+                <a href="#lab-malware" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-amber-300 hover:text-amber-200 hover:bg-amber-500/10">
+                    <i data-lucide="scan-line" class="w-4 h-4 text-amber-400"></i>
+                    <span>⚡ Lab: Análisis Malware</span>
+                </a>
+                <a href="#confiabilidad" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="hard-drive" class="w-4 h-4"></i>
+                    <span>6. Sistemas Confiables</span>
+                </a>
+                <a href="#actuales" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="monitor-smartphone" class="w-4 h-4"></i>
+                    <span>7. SO Actuales</span>
+                </a>
+                <a href="#moviles" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                    <span>Android e iOS</span>
+                </a>
+                <a href="#consejos" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="lightbulb" class="w-4 h-4"></i>
+                    <span>8. 10 Consejos</span>
+                </a>
+                <a href="#normas" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="badge-check" class="w-4 h-4"></i>
+                    <span>9. Normas ISO</span>
+                </a>
+                <a href="#repaso" onclick="setActiveNav(this)" class="nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                    <i data-lucide="circle-check-big" class="w-4 h-4"></i>
+                    <span>10. Repaso Rápido (Quiz)</span>
+                </a>
+            </nav>
+
+            <div class="pt-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+                Universidad Tecnológica Intercontinental<br>&copy; 2026 Sistemas Operativos
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-container" class="flex-1 p-6 lg:p-10 max-w-5xl mx-auto">
+
+            <!-- Dashboard View Wrapper -->
+            <div id="view-dashboard" class="space-y-12">
+
+                <!-- Hero Section / Intro -->
+                <section id="introduccion" class="glass-panel-red rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-2xl">
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-rose-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold mb-6">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Presentación Interactiva</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
+                        Seguridad en Sistemas Operativos
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed max-w-3xl mb-6">
+                        La <strong>seguridad</strong> es el conjunto de mecanismos que incorpora el sistema operativo para
+                        <strong>proteger</strong> los datos, los programas y el hardware, <strong>controlar el acceso</strong> de los usuarios
+                        y <strong>garantizar que el sistema siga funcionando</strong> de manera confiable frente a errores y ataques.
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl">
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+                            <p class="text-[11px] uppercase tracking-wider text-slate-500">Foco de la unidad</p>
+                            <p class="text-sm font-bold text-rose-300">Amenazas e Intrusos</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+                            <p class="text-[11px] uppercase tracking-wider text-slate-500">Objetivo</p>
+                            <p class="text-sm font-bold text-sky-300">Tríada CIA</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+                            <p class="text-[11px] uppercase tracking-wider text-slate-500">Sistemas</p>
+                            <p class="text-sm font-bold text-emerald-300">Win / Linux / macOS</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 1. Pilares de Seguridad (CIA) -->
+                <section id="pilares" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                            <i data-lucide="target" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">1. Pilares de Seguridad (Tríada CIA)</h3>
+                            <p class="text-sm text-slate-400">Todo objetivo de seguridad de un SO se reduce a proteger tres propiedades</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel rounded-2xl p-6 hover:border-rose-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold">C</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-rose-400 transition">Confidencialidad</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Solo las personas autorizadas pueden leer la información. Se consigue con <strong>cifrado</strong>, permisos de archivo y control de acceso.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-rose-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-rose-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> BitLocker en Windows, LUKS en Linux y FileVault en macOS cifran el disco completo.</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6 hover:border-amber-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">I</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-amber-400 transition">Integridad</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                La información no es alterada ni modificada sin autorización. Se protege con <strong>firmas digitales</strong>, hashes y sumas de verificación.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-amber-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> el Secure Boot de Windows y la firma de paquetes en Linux y macOS verifican que el sistema no haya sido manipulado.</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6 hover:border-emerald-500/40 transition group">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">D</div>
+                                <h4 class="text-lg font-bold text-white group-hover:text-emerald-400 transition">Disponibilidad</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Los datos y el servicio están disponibles cuando el usuario legítimo los necesita. Se sostiene con <strong>redundancia</strong> y tolerancia a fallos.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-emerald-300 flex items-start space-x-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Ejemplo real:</strong> RAID 1, copias de seguridad y servicios que reinician automáticamente procesos caídos.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-rose-300 mb-3 flex items-center gap-2">
+                            <i data-lucide="key-round" class="w-4 h-4"></i>
+                            Dos columnas que completan la tríada
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-purple-300">Autenticación:</strong> el sistema verifica <em>quién</em> eres.
+                                <span class="block mt-1 text-xs text-slate-400">Windows Hello, contraseña de usuario, sudo en Linux, Touch ID en macOS.</span>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-purple-300">No repudio:</strong> queda constancia de que <em>tú</em> realizaste la acción.
+                                <span class="block mt-1 text-xs text-slate-400">Registros de auditoría, firmas digitales y bitácoras del sistema.</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Amenazas de Seguridad -->
+                <section id="amenazas" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                            <i data-lucide="triangle-alert" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">2. Amenazas de Seguridad</h3>
+                            <p class="text-sm text-slate-400">Todo aquello capaz de degradar uno de los tres pilares de la seguridad</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            Una <strong>amenaza</strong> es cualquier agente o fenomeno capaz de provocar un daño: malware, intrusos, errores humanos,
+                            fallos de energía o incluso las propias leyes que obligan a proteger ciertos datos. Las amenazas se clasifican en dos familias:
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="p-5 rounded-xl bg-rose-950/30 border border-rose-500/30">
+                                <h4 class="font-bold text-rose-300 mb-2 flex items-center gap-2">
+                                    <i data-lucide="eye" class="w-4 h-4"></i> Amenazas Pasivas
+                                </h4>
+                                <p class="text-slate-300 text-xs leading-relaxed">
+                                    No alteran el sistema, solo <strong>observan y recopilan información</strong> sin ser detectadas:
+                                    rastreo de navegación, keyloggers, escuchas de red, análisis pasivo del tráfico.
+                                </p>
+                                <span class="block mt-2 text-[11px] text-rose-400/80 font-mono">Riesgo principal: fuga silenciosa de datos.</span>
+                            </div>
+                            <div class="p-5 rounded-xl bg-rose-950/30 border border-rose-500/30">
+                                <h4 class="font-bold text-rose-300 mb-2 flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4"></i> Amenazas Activas
+                                </h4>
+                                <p class="text-slate-300 text-xs leading-relaxed">
+                                    <strong>Modifican, borran o bloquean</strong> el sistema: malware, ransomware, denegación de servicio,
+                                    corrupción de archivos, ataques Man-in-the-Middle.
+                                </p>
+                                <span class="block mt-2 text-[11px] text-rose-400/80 font-mono">Riesgo principal: destrucción o inutilización del servicio.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h4 class="text-base font-bold text-rose-300 mb-2">Robo de credenciales</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Contraseñas débiles o reutilizadas se prueban automáticamente contra miles de cuentas.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: gestor de contraseñas y segundo factor.</span>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h4 class="text-base font-bold text-rose-300 mb-2">Ingeniería Social</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                El atacante manipula a la persona: phishing por correo, SMS fraudulento o falso soporte técnico.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: verificar identidad, nunca compartir códigos.</span>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h4 class="text-base font-bold text-rose-300 mb-2">Ataques de Red</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Escucha de tráfico, interceptación de conexiones, ataques MITM y barridos de puertos.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: firewall, VPN, TLS y segmentación.</span>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h4 class="text-base font-bold text-rose-300 mb-2">Denegación de Servicio (DoS)</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Se satura un servicio con peticiones hasta dejarlo inutilizable para los usuarios legítimos.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: rate limiting, WAF, balanceo de carga.</span>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h4 class="text-base font-bold text-rose-300 mb-2">Amenaza Interna (Insider)</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                El propio empleado o usuario legítimo copia, borra o vende información desde dentro de la red.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: mínimo privilegio y auditoría.</span>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h4 class="text-base font-bold text-rose-300 mb-2">Amenazas Físicas</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-3">
+                                Robo de equipos, acceso no autorizado a la sala de servidores o destruccion de los medios de almacenamiento.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: control físico y cifrado del dispositivo.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LAB 1: Mapa de Amenazas -->
+                <section id="lab-amenazas" class="glass-panel-red rounded-3xl p-6 sm:p-8 border-rose-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-rose-400 font-bold">Laboratorio Interactivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Impacto de Amenazas (CIA)</h3>
+                        </div>
+                        <div class="flex flex-wrap gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                            <button onclick="setAmenaza('phishing')" id="btn-ame-phishing" class="px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white transition">Phishing</button>
+                            <button onclick="setAmenaza('ransomware')" id="btn-ame-ransom" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Ransomware</button>
+                            <button onclick="setAmenaza('dos')" id="btn-ame-dos" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">DoS</button>
+                            <button onclick="setAmenaza('insider')" id="btn-ame-insider" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Insider</button>
+                            <button onclick="setAmenaza('keylogger')" id="btn-ame-keylog" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Keylogger</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 min-h-[240px] flex flex-col relative overflow-hidden">
+                        <div id="ame-visual" class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+                            <!-- Dynamic content injected via JS -->
+                        </div>
+                        <div id="ame-desc" class="text-center text-sm text-slate-300 max-w-2xl mx-auto mb-6">
+                            Selecciona una amenaza para ver su impacto sobre la tríada CIA.
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto w-full">
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <p class="text-[11px] uppercase tracking-wider text-rose-400 mb-1">Confidencialidad</p>
+                                <div class="h-2 rounded-full bg-slate-800 overflow-hidden"><div id="bar-c" class="h-full bg-rose-500 w-0 transition-all duration-700"></div></div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <p class="text-[11px] uppercase tracking-wider text-amber-400 mb-1">Integridad</p>
+                                <div class="h-2 rounded-full bg-slate-800 overflow-hidden"><div id="bar-i" class="h-full bg-amber-500 w-0 transition-all duration-700"></div></div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <p class="text-[11px] uppercase tracking-wider text-emerald-400 mb-1">Disponibilidad</p>
+                                <div class="h-2 rounded-full bg-slate-800 overflow-hidden"><div id="bar-d" class="h-full bg-emerald-500 w-0 transition-all duration-700"></div></div>
+                            </div>
+                        </div>
+                        <p class="mt-5 text-center text-[11px] text-slate-500 font-mono" id="ame-log">Sistema en estado normal. Ninguna amenaza activa.</p>
+                    </div>
+                </section>
+                <!-- 3. Proteccion -->
+                <section id="proteccion" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                            <i data-lucide="lock" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">3. Proteccion y Control de Acceso</h3>
+                            <p class="text-sm text-slate-400">Mecanismos que usa el SO para decidir quien entra y que puede hacer</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-sky-300 mb-2 flex items-center gap-2">
+                                <i data-lucide="user-check" class="w-4 h-4"></i> Autenticacion
+                            </h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Verifica la identidad mediante algo que <strong>se sabe</strong> (contrasena), algo que <strong>se tiene</strong> (token, llave fisica) o algo que <strong>se es</strong> (huella, rostro).
+                            </p>
+                            <ul class="text-xs text-slate-400 space-y-1.5 list-disc list-inside">
+                                <li><strong class="text-sky-300">Windows:</strong> Windows Hello (huella o rostro) con PIN, respaldado por el chip TPM.</li>
+                                <li><strong class="text-sky-300">Linux:</strong> contrasena cifrada en <span class="code-font text-slate-300">/etc/shadow</span>, sudo y llaves SSH.</li>
+                                <li><strong class="text-sky-300">macOS:</strong> Touch ID / Face ID, FileVault y Gatekeeper.</li>
+                            </ul>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-purple-300 mb-2 flex items-center gap-2">
+                                <i data-lucide="key-square" class="w-4 h-4"></i> Autorizacion y Permisos
+                            </h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Una vez autenticado, el sistema decide <strong>que acciones</strong> puede hacer sobre cada recurso, siguiendo el principio de <strong>minimo privilegio</strong>.
+                            </p>
+                            <ul class="text-xs text-slate-400 space-y-1.5 list-disc list-inside">
+                                <li><strong class="text-purple-300">Linux:</strong> permisos rwx, <span class="code-font text-slate-300">chmod</span>, <span class="code-font text-slate-300">chown</span>, grupos y SELinux / AppArmor.</li>
+                                <li><strong class="text-purple-300">Windows:</strong> NTFS, grupos de usuarios, UAC e Integrity Levels.</li>
+                                <li><strong class="text-purple-300">macOS:</strong> ACLs extendidas, <span class="code-font text-slate-300">chmod</span>, SIP y sandbox por app.</li>
+                            </ul>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-emerald-300 mb-2 flex items-center gap-2">
+                                <i data-lucide="lock-keyhole" class="w-4 h-4"></i> Cifrado y Privacidad
+                            </h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Convierte la informacion en ilegible sin la clave correcta: en <strong>transito</strong> (TLS, SSH) y en <strong>reposo</strong> (disco completo).
+                            </p>
+                            <ul class="text-xs text-slate-400 space-y-1.5 list-disc list-inside">
+                                <li><strong class="text-emerald-300">Windows:</strong> BitLocker, DPAPI, EFS y TLS.</li>
+                                <li><strong class="text-emerald-300">Linux:</strong> LUKS / dm-crypt, GnuPG, SSH y WireGuard.</li>
+                                <li><strong class="text-emerald-300">macOS:</strong> FileVault, Keychain y Secure Enclave.</li>
+                            </ul>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-lg font-bold text-amber-300 mb-2 flex items-center gap-2">
+                                <i data-lucide="scroll-text" class="w-4 h-4"></i> Auditoria y Registro
+                            </h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Registra <strong>quien</strong>, <strong>que</strong> y <strong>cuando</strong> ocurrio cada accion, para detectar anomalias y新颖ades.
+                            </p>
+                            <ul class="text-xs text-slate-400 space-y-1.5 list-disc list-inside">
+                                <li><strong class="text-amber-300">Windows:</strong> Event Log, Windows Security y registro central.</li>
+                                <li><strong class="text-amber-300">Linux:</strong> <span class="code-font text-slate-300">/var/log/auth.log</span>, journald y auditd.</li>
+                                <li><strong class="text-amber-300">macOS:</strong> unified logging y <span class="code-font text-slate-300">log show</span>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-slate-200 mb-4 flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4 text-sky-400"></i>
+                            Modelo de proteccion en profundidad por capas
+                        </h4>
+                        <div class="space-y-2.5 text-sm">
+                            <div class="p-3.5 rounded-xl bg-rose-950/25 border border-rose-500/25 flex items-start gap-3">
+                                <span class="code-font text-rose-400 text-xs mt-0.5">Capa 1</span>
+                                <div><strong class="text-rose-300">Hardware (TPM / Secure Enclave):</strong> la raiz de confianza mas dificil de clonar. Windows 11 la exige para instalarse.</div>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-amber-950/25 border border-amber-500/25 flex items-start gap-3">
+                                <span class="code-font text-amber-400 text-xs mt-0.5">Capa 2</span>
+                                <div><strong class="text-amber-300">Firmware y arranque seguro:</strong> Secure Boot (Windows), shim y GRUB firmado (Linux), Startup Security Utility (macOS).</div>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-purple-950/25 border border-purple-500/25 flex items-start gap-3">
+                                <span class="code-font text-purple-400 text-xs mt-0.5">Capa 3</span>
+                                <div><strong class="text-purple-300">Nucleo del SO:</strong> aislamiento de memoria, proteccion de procesos, SELinux / AppArmor y sandbox de aplicaciones.</div>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-sky-950/25 border border-sky-500/25 flex items-start gap-3">
+                                <span class="code-font text-sky-400 text-xs mt-0.5">Capa 4</span>
+                                <div><strong class="text-sky-300">Red y perimetro:</strong> firewall (Defender Firewall, UFW / nftables, pf de macOS), VPN e IDS.</div>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-emerald-950/25 border border-emerald-500/25 flex items-start gap-3">
+                                <span class="code-font text-emerald-400 text-xs mt-0.5">Capa 5</span>
+                                <div><strong class="text-emerald-300">Datos y usuario:</strong> cifrado de archivos, respaldos, segundo factor y capacitacion contra phishing.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LAB 2: Autenticacion por Capas -->
+                <section id="lab-proteccion" class="glass-panel rounded-3xl p-6 sm:p-8 border-sky-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-sky-400 font-bold">Laboratorio Interactivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Autenticacion y Fortaleza de Claves</h3>
+                        </div>
+                        <div class="flex flex-wrap gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+                            <button onclick="setAuthMode('password')" id="btn-auth-pwd" class="px-3 py-2 rounded-lg text-xs font-semibold bg-sky-600 text-white transition">Solo contrasena</button>
+                            <button onclick="setAuthMode('mfa')" id="btn-auth-mfa" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">+ 2FA</button>
+                            <button onclick="setAuthMode('key')" id="btn-auth-key" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">+ Llave fisica</button>
+                            <button onclick="setAuthMode('bio')" id="btn-auth-bio" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">+ Biometria</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 min-h-[250px] flex flex-col relative overflow-hidden">
+                        <label class="text-xs uppercase tracking-wider text-slate-400 mb-2">Prueba la fortaleza de una contrasena (8+ caracteres, con numeros y simbolos):</label>
+                        <div class="flex flex-col sm:flex-row gap-3 mb-5">
+                            <input id="pass-input" type="text" oninput="analizarClave()" placeholder="Ej: Tg#2026!sistema" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white font-mono focus:outline-none focus:border-sky-500 transition">
+                            <div class="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono flex items-center gap-2 min-w-[190px]">
+                                <span class="text-slate-500">Fuerza:</span>
+                                <span id="pass-strength" class="font-bold text-slate-400">—</span>
+                            </div>
+                        </div>
+                        <div id="auth-stack" class="flex flex-col sm:flex-row items-center justify-center gap-3 flex-1">
+                            <!-- Dynamic content injected via JS -->
+                        </div>
+                        <p id="auth-desc" class="mt-5 text-center text-sm text-slate-300 max-w-2xl mx-auto">
+                            Selecciona un esquema de autenticacion para observar las capas de defensa.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- LAB 3: Cortafuegos y Puertos Expuestos -->
+                <section id="lab-firewall" class="glass-panel rounded-3xl p-6 sm:p-8 border-rose-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-rose-400 font-bold">Laboratorio Interactivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Cortafuegos y Puertos Criticos</h3>
+                        </div>
+                        <button onclick="toggleFirewall()" id="btn-firewall" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-rose-500 hover:bg-rose-400 text-slate-950 transition shadow-neon flex items-center space-x-2">
+                            <i data-lucide="shield-off" class="w-4 h-4"></i>
+                            <span>Desactivar Cortafuegos</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4 text-[11px]">
+                        <button onclick="toggleRegla('ssh')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition">Alternar regla SSH (22)</button>
+                        <button onclick="toggleRegla('web')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition">Alternar regla HTTPS (443)</button>
+                        <button onclick="toggleRegla('rdp')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition">Alternar regla RDP (3389)</button>
+                        <button onclick="toggleRegla('smb')" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition">Alternar regla SMB (445)</button>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 min-h-[240px] flex flex-col relative overflow-hidden">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="flex flex-col items-center p-3 rounded-2xl bg-slate-900 border border-sky-500/50 w-28">
+                                <i data-lucide="globe" class="w-6 h-6 text-sky-400 mb-1"></i>
+                                <span class="text-[10px] font-bold text-white text-center">Internet</span>
+                            </div>
+                            <i data-lucide="move-right" class="w-4 h-4 text-slate-600"></i>
+                            <div id="fw-escudo" class="flex flex-col items-center p-3 rounded-2xl bg-rose-950/60 border border-rose-500 w-28 transition-all">
+                                <i data-lucide="shield-half" class="w-6 h-6 text-rose-400 mb-1"></i>
+                                <span class="text-[10px] font-bold text-white text-center">Cortafuegos</span>
+                            </div>
+                            <i data-lucide="move-right" class="w-4 h-4 text-slate-600"></i>
+                            <div class="flex flex-col items-center p-3 rounded-2xl bg-slate-900 border border-slate-700 w-28">
+                                <i data-lucide="server" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                                <span class="text-[10px] font-bold text-white text-center">Servidor</span>
+                            </div>
+                        </div>
+                        <div id="fw-puertos" class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
+                            <!-- Dynamic content injected via JS -->
+                        </div>
+                        <p id="fw-log" class="mt-4 p-3 w-full rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-emerald-300 text-center">
+                            CONFIGURACION SEGURA: politica de denegar por defecto.
+                        </p>
+                        <p id="fw-resumen" class="mt-3 w-full text-xs text-slate-400 text-center">
+                            Politica activa: denegar todo lo que no este permitido de forma explicita.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 text-sm">
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-blue-500/20">
+                            <strong class="text-blue-300 block mb-1">Windows</strong>
+                            <p class="text-xs text-slate-400">Windows Defender Firewall con perfiles (Dominio, Privado, Publico) y reglas de entrada y salida.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-amber-500/20">
+                            <strong class="text-amber-300 block mb-1">Linux</strong>
+                            <p class="text-xs text-slate-400">UFV, firewalld o nftables. Politica por defecto DROP y solo se abren los puertos necesarios.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-purple-500/20">
+                            <strong class="text-purple-300 block mb-1">macOS</strong>
+                            <p class="text-xs text-slate-400">Packet filter (pf) y Application Firewall, que autoriza cada app que acepta conexiones entrantes.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Intrusos -->
+                <section id="intrusos" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                            <i data-lucide="user-round-search" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">4. Intrusos y Pruebas de Penetracion</h3>
+                            <p class="text-sm text-slate-400">Quienes rompen la seguridad, como lo hacen y como los descubrimos</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="glass-panel-purple rounded-2xl p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="badge-check" class="w-5 h-5 text-emerald-400"></i>
+                                <h4 class="text-lg font-bold text-emerald-300">Hacker Etico (White Hat)</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Intruso con autorizacion legal que prueba la seguridad y reporta las falhas. Trabaja con <strong>pentesting</strong> y auditorias.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-emerald-300">
+                                <strong>Ejemplo:</strong> un equipo que ejecuta <span class="code-font">nmap</span> y <span class="code-font">Metasploit</span> con permiso para encontrar fallos antes que un atacante real.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="user-round" class="w-5 h-5 text-amber-400"></i>
+                                <h4 class="text-lg font-bold text-amber-300">Hacker Gris (Gray Hat)</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Actua sin autorizacion clara, pero <strong>no busca dano economico</strong>: entra para demostrar la vulnerabilidad y luego avisa.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-amber-300">
+                                <strong>Ejemplo:</strong> alguien entra a un servidor web, deja un archivo con su nombre y contacta al dueno del sitio. Sigue siendo un delito.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="skull" class="w-5 h-5 text-rose-400"></i>
+                                <h4 class="text-lg font-bold text-rose-300">Hacker Malicioso (Black Hat)</h4>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Busca beneficio economico: robo de datos, Ransomware, venta de accesos, espionaje industrial o fraude bancario.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-rose-300">
+                                <strong>Ejemplo:</strong> grupos de ransomware que cifran servidores de hospitales y exigen rescate en criptomonedas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-sky-300 mb-3 flex items-center gap-2">
+                                <i data-lucide="scan-search" class="w-4 h-4"></i> Herramientas del intruso
+                            </h4>
+                            <ul class="text-sm text-slate-300 space-y-2">
+                                <li class="flex gap-2"><i data-lucide="terminal" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Escaneo de puertos y servicios:</strong> nmap, netcat, WPScan.</span></li>
+                                <li class="flex gap-2"><i data-lucide="terminal" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Escaner de vulnerabilidades:</strong> Nessus, OpenVAS, Nikto.</span></li>
+                                <li class="flex gap-2"><i data-lucide="terminal" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Explotacion:</strong> Metasploit, sqlmap, Hydra (fuerza bruta).</span></li>
+                                <li class="flex gap-2"><i data-lucide="terminal" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Interceptacion:</strong> Wireshark, tcpdump, mitmproxy, Burp Suite.</span></li>
+                            </ul>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-emerald-300 mb-3 flex items-center gap-2">
+                                <i data-lucide="radar" class="w-4 h-4"></i> Deteccion y defensa
+                            </h4>
+                            <ul class="text-sm text-slate-300 space-y-2">
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>IDS (deteccion):</strong> Snort (Linux), Suricata, Defender for Endpoint.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>IPS (bloqueo):</strong> Snort en linea, CrowdSec, WAF.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>SIEM:</strong> centraliza registros y correlaciona eventos (Splunk, Wazuh, Elastic).</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Senuelos (honeypots):</strong> sistemas falsos que atraen al atacante y registran sus tecnicas.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-amber-300 mb-4 flex items-center gap-2">
+                            <i data-lucide="git-branch" class="w-4 h-4"></i>
+                            Fases tipicas de un ataque
+                        </h4>
+                        <div class="flex flex-wrap items-center gap-2 text-xs">
+                            <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">1. Reconocimiento</span>
+                            <i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>
+                            <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">2. Escaneo</span>
+                            <i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>
+                            <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">3. Obtencion de acceso</span>
+                            <i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>
+                            <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">4. Escalada de privilegios</span>
+                            <i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>
+                            <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">5. Persistencia</span>
+                            <i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>
+                            <span class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">6. Exfiltracion</span>
+                        </div>
+                        <p class="mt-4 text-xs text-slate-400 leading-relaxed">
+                            Romper la cadena en cualquier punto detiene el ataque. Por eso un <strong>antivirus actualizado</strong>, un
+                            <strong>cortafuegos</strong> y una <strong>contrasena fuerte</strong> siguen siendo la primera linea de defensa.
+                        </p>
+                    </div>
+                </section>
+                <!-- 5. Software Malicioso -->
+                <section id="malware" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                            <i data-lucide="bug" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">5. Software Malicioso (Malware)</h3>
+                            <p class="text-sm text-slate-400">Programas disenados para danar, espiar o tomar control del sistema</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="bug" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Virus</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Se adhiere a un archivo o programa legitimo y se ejecuta cuando el usuario lo abre. Necesita una <strong>accion humana</strong> para propagarse.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Analogia: el virus biologico necesita una "portadora".</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="git-fork" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Gusano (Worm)</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Se replica <strong>solo</strong> a traves de la red, explotando vulnerabilidades, sin necesitar archivo anfitrion. El caso <strong class="text-slate-200">WannaCry</strong> inutilizo hospitales en 150 paises.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Se propaga por red: consume ancho de banda y CPU.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="gift" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Troyano (Trojan)</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Se disfraza de programa util (crack, juego, PDF) y una vez instalado <strong>abre una puerta trasera</strong> para el atacante.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">No se replica solo: engana al usuario.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="lock-keyhole" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Ransomware</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Cifra los archivos del usuario y exige un <strong>rescate</strong>. Los ataques con doble cifrado en Windowshingieron la vulnerabilidad <span class="code-font">EternalBlue</span>.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Mitigacion: respaldo offline, parches y EDR.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="eye-off" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Spyware / Keylogger</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Espia en silencio: registra teclas, captura pantallas y roba cookies de sesion. Ataca directo a la <strong>Confidencialidad</strong>.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Amenaza pasiva: la victima no se da cuenta.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="server-cog" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Rootkit / Botnet</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                El <strong>rootkit</strong> oculta su presencia en el nucleo; la <strong>botnet</strong> reune dispositivos infectados (IoT) para ataques DDoS coordinados.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Ejemplo: la botnet Mirai secastro camaras y routers.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="file-question-mark" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Adware / Criptominer</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Inyecta anuncios o usa tu procesador para <strong>minar criptomonedas</strong> de forma oculta, degradando el rendimiento.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Sintoma: ventilador al 100% sin carga real.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="fish-symbol" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Phishing / Smishing</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                No es software, pero su efecto es el mismo: roba credenciales mediante correo, SMS o llamadas falsas.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: nunca hacer clic en enlaces urgentes.</span>
+                        </div>
+
+                        <div class="glass-panel-red rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="package-x" class="w-4 h-4 text-rose-400"></i>
+                                <h4 class="font-bold text-rose-300">Software Inseguro</h4>
+                            </div>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                                Scripts de PowerShell, macros de Office, comandos de shell y binarios sin firmar tambien son vectores de entrada.
+                            </p>
+                            <span class="text-[11px] text-rose-400/80 font-mono">Defensa: AppLocker, WDAC y listas permitidas.</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-sky-300 mb-4 flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                            Como se protege cada sistema operativo
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-sky-500/20">
+                                <strong class="text-sky-300 block mb-2">Windows</strong>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Microsoft Defender Antivirus y Defender for Endpoint, SmartScreen (bloquea descargas dudosas),
+                                    <span class="code-font">Exploit Protection</span>, <span class="code-font">Controlled Folder Access</span> y AMSI para PowerShell.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-emerald-500/20">
+                                <strong class="text-emerald-300 block mb-2">Linux</strong>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    ClamAV, <span class="code-font">rkhunter</span>, <span class="code-font">chkrootkit</span>, AppArmor o SELinux,
+                                    actualizaciones de paquetes (apt / dnf) y repositorios firmados. Por diseno casi no usa antivirus residente.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-purple-500/20">
+                                <strong class="text-purple-300 block mb-2">macOS</strong>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    <span class="code-font">XProtect</span> (antimalware integrado), <span class="code-font">Gatekeeper</span> (apps no firmadas),
+                                    notarizacion de Apple, SIP y el sandbox obligatorio por aplicacion.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LAB 4: Analisis y Contencion de Malware -->
+                <section id="lab-malware" class="glass-panel rounded-3xl p-6 sm:p-8 border-amber-500/30">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Laboratorio Interactivo</span>
+                            <h3 class="text-xl font-bold text-white">Simulador de Respuesta a Incidentes</h3>
+                        </div>
+                        <button onclick="analizarMuestra()" id="btn-analizar" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition shadow-neon flex items-center space-x-2">
+                            <i data-lucide="scan-line" class="w-4 h-4"></i>
+                            <span>Analizar Muestra</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-5">
+                        <div class="flex-1">
+                            <p class="text-xs uppercase tracking-wider text-slate-400 mb-3">Selecciona el tipo de malware detectado:</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                <button onclick="setMalware('worm')" id="btn-mlw-worm" class="px-3 py-2.5 rounded-xl text-xs font-semibold bg-amber-600 text-white transition">Gusano</button>
+                                <button onclick="setMalware('trojan')" id="btn-mlw-trojan" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">Troyano</button>
+                                <button onclick="setMalware('ransom')" id="btn-mlw-ransom" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">Ransomware</button>
+                                <button onclick="setMalware('rootkit')" id="btn-mlw-rootkit" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">Rootkit</button>
+                                <button onclick="setMalware('miner')" id="btn-mlw-miner" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">Criptominer</button>
+                                <button onclick="setMalware('keylogger')" id="btn-mlw-keylog" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition">Keylogger</button>
+                            </div>
+                            <div id="malware-info" class="mt-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 min-h-[170px]">
+                                <p class="text-sm text-slate-400 text-center py-8">Sin muestra seleccionada.</p>
+                            </div>
+                        </div>
+                        <div class="lg:w-80">
+                            <p class="text-xs uppercase tracking-wider text-slate-400 mb-3">Red afectada (contencion)</p>
+                            <div class="bg-slate-950 rounded-2xl p-5 border border-slate-800 min-h-[230px] flex flex-col items-center justify-center">
+                                <div class="grid grid-cols-2 gap-4 w-full">
+                                    <div id="mlw-pc-a" class="flex flex-col items-center p-3 rounded-xl bg-slate-900 border border-emerald-500/50 transition-all">
+                                        <i data-lucide="monitor" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                                        <span class="text-[10px] font-bold text-white text-center">PC Contabilidad</span>
+                                        <span id="mlw-st-a" class="text-[9px] text-emerald-400">LIMPIO</span>
+                                    </div>
+                                    <div id="mlw-pc-b" class="flex flex-col items-center p-3 rounded-xl bg-slate-900 border border-emerald-500/50 transition-all">
+                                        <i data-lucide="monitor" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                                        <span class="text-[10px] font-bold text-white text-center">PC Recepcion</span>
+                                        <span id="mlw-st-b" class="text-[9px] text-emerald-400">LIMPIO</span>
+                                    </div>
+                                    <div id="mlw-srv" class="col-span-2 flex flex-col items-center p-3 rounded-xl bg-slate-900 border border-emerald-500/50 transition-all">
+                                        <i data-lucide="server" class="w-6 h-6 text-emerald-400 mb-1"></i>
+                                        <span class="text-[10px] font-bold text-white">Servidor de Archivos (SMB)</span>
+                                        <span id="mlw-st-srv" class="text-[9px] text-emerald-400">LIMPIO</span>
+                                    </div>
+                                </div>
+                                <p id="mlw-log" class="mt-4 text-center text-[11px] text-slate-400 font-mono">Red segmentada y monitoreada. Sin incidentes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. Sistemas Confiables -->
+                <section id="confiabilidad" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="hard-drive" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">6. Sistemas Confiables</h3>
+                            <p class="text-sm text-slate-400">Confiabilidad, tolerancia a fallos y recuperacion ante errores</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            Un sistema <strong>confiable</strong> es aquel que entrega resultados correctos y esta disponible durante el tiempo requerido.
+                            Para lograrlo se combinan tres estrategias: <strong>evitar</strong> la falla, <strong>detectarla</strong> y <strong>recuperarse</strong> de ella.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div class="p-4 rounded-xl bg-emerald-950/25 border border-emerald-500/25">
+                                <strong class="text-emerald-300 block mb-1">Evitar la falla</strong>
+                                <p class="text-xs text-slate-400">Hardware redundante, fuentes de poder y memoria con <span class="code-font">ECC</span>, proteccion RAID y journal.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-amber-950/25 border border-amber-500/25">
+                                <strong class="text-amber-300 block mb-1">Detectar el error</strong>
+                                <p class="text-xs text-slate-400">Codigos de paridad, <span class="code-font">SMART</span> en discos, <span class="code-font">memtest</span> y bitacora del kernel (dmesg, Event Viewer).</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-sky-950/25 border border-sky-500/25">
+                                <strong class="text-sky-300 block mb-1">Recuperarse</strong>
+                                <p class="text-xs text-slate-400">Respaldos <span class="code-font">3-2-1</span>, <span class="code-font">fsck</span> e instantaneas de volumen (VSS, LVM, APFS snapshots).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-emerald-300 mb-3 flex items-center gap-2">
+                                <i data-lucide="repeat" class="w-4 h-4"></i> Tolerancia a Fallos
+                            </h4>
+                            <ul class="text-sm text-slate-300 space-y-2.5">
+                                <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"></i><span><strong>RAID por software o hardware</strong> (0, 1, 5, 6, 10) para tolerar la caida de discos.</span></li>
+                                <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"></i><span><strong>Clustering y alta disponibilidad:</strong> servidores Active-Passive o Active-Active (keepalived, Windows Failover Clustering).</span></li>
+                                <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"></i><span><strong>Servicios autorecuperables:</strong> systemd Restart en Linux, SCM Recovery en Windows, launchd KeepAlive en macOS.</span></li>
+                            </ul>
+                        </div>
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h4 class="text-base font-bold text-sky-300 mb-3 flex items-center gap-2">
+                                <i data-lucide="notebook-pen" class="w-4 h-4"></i> Journaling (Bitacora)
+                            </h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Antes de escribir datos, el SO registra <strong>la intencion</strong> de la operacion. Si se corta la luz, al arrancar se reproduce el journal y el sistema de archivos queda consistente.
+                            </p>
+                            <ul class="text-sm text-slate-300 space-y-2">
+                                <li class="flex gap-2"><i data-lucide="hard-drive" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Linux:</strong> ext4, XFS, Btrfs (con instantaneas y copia en escritura).</span></li>
+                                <li class="flex gap-2"><i data-lucide="hard-drive" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>Windows:</strong> NTFS con <span class="code-font">$LogFile</span> y Transactional NTFS.</span></li>
+                                <li class="flex gap-2"><i data-lucide="hard-drive" class="w-4 h-4 text-slate-500 mt-0.5 shrink-0"></i><span><strong>macOS:</strong> APFS con journal nativo y <span class="code-font">copy-on-write</span>.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-amber-300 mb-4 flex items-center gap-2">
+                            <i data-lucide="list-checks" class="w-4 h-4"></i>
+                            Plan de continuidad: la regla 3-2-1
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <p class="text-2xl font-extrabold text-amber-400">3</p>
+                                <p class="text-xs text-slate-300 mt-1">copias de los datos</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <p class="text-2xl font-extrabold text-amber-400">2</p>
+                                <p class="text-xs text-slate-300 mt-1">medios distintos (disco y nube)</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <p class="text-2xl font-extrabold text-amber-400">1</p>
+                                <p class="text-xs text-slate-300 mt-1">copia offline o inmutable</p>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-xs text-slate-400 leading-relaxed text-center">
+                            Contra el ransomware la copia offline es decisiva: si el malware cifra tambien la red, la unica salida es restaurar desde un soporte desconectado.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 7. Seguridad en los SO Actuales -->
+                <section id="actuales" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                            <i data-lucide="monitor-smartphone" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">7. Seguridad en los Sistemas Operativos Actuales</h3>
+                            <p class="text-sm text-slate-400">Como resolvieron la seguridad Windows, Linux y macOS en la actualidad</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-panel rounded-2xl p-6 flex flex-col">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
+                                    <i data-lucide="monitor" class="w-6 h-6 text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-blue-300">Windows</h4>
+                                    <p class="text-[11px] text-slate-500 uppercase tracking-wider">Windows 10 / 11 / Server</p>
+                                </div>
+                            </div>
+                            <ul class="text-sm text-slate-300 space-y-2.5 flex-1">
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i><span><strong>Windows Defender</strong> integrado (antivirus + firewall + antiphishing) y <strong>Defender for Endpoint</strong> con deteccion en la nube.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i><span><strong>Secure Boot y TPM 2.0</strong> obligatorios: verifican firmware, cargador de arranque y firma de cada controlador.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i><span><strong>Windows Hello</strong> (rostro, huella, PIN) con credenciales guardadas dentro del TPM.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i><span><strong>BitLocker</strong> cifra el disco completo y <strong>UAC</strong> controla la escalada de privilegios.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i><span><strong>Credential Guard</strong> virtualiza el LSASS con Hyper-V; <strong>AppLocker y WDAC</strong> restringen aplicaciones no autorizadas.</span></li>
+                            </ul>
+                            <div class="mt-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-blue-300">
+                                <strong>Debilidad a vigilar:</strong> el correo y las descargas siguen siendo el vector principal, por eso el bloqueo de macros y las actualizaciones automaticas son clave.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6 flex flex-col">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                                    <i data-lucide="terminal" class="w-6 h-6 text-amber-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-amber-300">Linux</h4>
+                                    <p class="text-[11px] text-slate-500 uppercase tracking-wider">Debian / Ubuntu / RHEL / AlmaLinux</p>
+                                </div>
+                            </div>
+                            <ul class="text-sm text-slate-300 space-y-2.5 flex-1">
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><span><strong>Usuario sin privilegios:</strong> todo corre como usuario normal; escalar a root exige <span class="code-font">sudo</span>, que queda registrado en el log.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><span><strong>Control de acceso obligatorio:</strong> SELinux (RHEL, AlmaLinux) y AppArmor (Debian, Ubuntu) con perfiles por servicio.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><span><strong>Namespaces y contenedores:</strong> cada proceso tiene vista aislada de red, disco y procesos.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><span><strong>Firewall</strong> con UFW o firewalld / nftables, y SSH con llaves publicas en lugar de contrasena.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><span><strong>Repositorios firmados</strong> con verificacion GPG: el SO no instala codigo alterado.</span></li>
+                            </ul>
+                            <div class="mt-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-amber-300">
+                                <strong>Debilidad a vigilar:</strong> servidores con root remoto, SSH exposed y bots que prueban contrasenas debiles. Cambia la clave y desactiva el acceso directo a root.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6 flex flex-col">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center">
+                                    <i data-lucide="apple" class="w-6 h-6 text-purple-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-purple-300">macOS</h4>
+                                    <p class="text-[11px] text-slate-500 uppercase tracking-wider">macOS Sonoma / Sequoia</p>
+                                </div>
+                            </div>
+                            <ul class="text-sm text-slate-300 space-y-2.5 flex-1">
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-purple-500 mt-0.5 shrink-0"></i><span><strong>XProtect</strong> (antimalware nativo por firma) y <strong>Gatekeeper</strong>, que bloquea aplicaciones no notarizadas.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-purple-500 mt-0.5 shrink-0"></i><span><strong>Sandbox obligatorio</strong> por app: cada programa solo ve las carpetas que el usuario autoriza.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-purple-500 mt-0.5 shrink-0"></i><span><strong>SIP</strong> (System Integrity Protection) protege el sistema y el <strong>Secure Enclave</strong> guarda las claves biometricas.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-purple-500 mt-0.5 shrink-0"></i><span><strong>FileVault</strong> cifra el volumen y el <strong>Keychain</strong> administration las contrasenas.</span></li>
+                                <li class="flex gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-purple-500 mt-0.5 shrink-0"></i><span><strong>Touch ID / Face ID</strong> y <strong>Lockdown Mode</strong> para ataques muy sofisticados.</span></li>
+                            </ul>
+                            <div class="mt-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-purple-300">
+                                <strong>Debilidad a vigilar:</strong> el ecosistema cerrado reduce vectores, pero las apps no notarizadas y los perfiles de configuracion enganosos siguen siendo comunes.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tabla Comparativa -->
+                <section id="comparativa" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="table" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Tabla Comparativa: Seguridad por Sistema Operativo</h3>
+                            <p class="text-sm text-slate-400">Mismo objetivo, distintas estrategias en cada familia</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-4 sm:p-6 overflow-x-auto">
+                        <table class="w-full text-xs sm:text-sm min-w-[640px]">
+                            <thead>
+                                <tr class="text-left">
+                                    <th class="p-3 text-slate-400 uppercase tracking-wider text-[11px] font-bold border-b border-slate-800">Caracteristica</th>
+                                    <th class="p-3 text-blue-300 font-bold border-b border-slate-800">Windows</th>
+                                    <th class="p-3 text-amber-300 font-bold border-b border-slate-800">Linux</th>
+                                    <th class="p-3 text-purple-300 font-bold border-b border-slate-800">macOS</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-300">
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Modelo de permisos</td>
+                                    <td class="p-3">NTFS, grupos y UAC; administrador por defecto en muchas instalaciones</td>
+                                    <td class="p-3">rwx (777) y sudo; usuario sin privilegios por defecto</td>
+                                    <td class="p-3">POSIX, ACLs y SIP; usuario unico con sudo</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Control de acceso obligatorio</td>
+                                    <td class="p-3">ACLs, Integrity Levels, WDAC</td>
+                                    <td class="p-3">SELinux o AppArmor (contextos y perfiles)</td>
+                                    <td class="p-3">Sandbox por app y SIP</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Cifrado de disco</td>
+                                    <td class="p-3">BitLocker (con TPM)</td>
+                                    <td class="p-3">LUKS / dm-crypt</td>
+                                    <td class="p-3">FileVault 2</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Antimalware integrado</td>
+                                    <td class="p-3">Defender Antivirus y SmartScreen</td>
+                                    <td class="p-3">ClamAV opcional, mas repositorios firmados</td>
+                                    <td class="p-3">XProtect y notarizacion</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Firewall</td>
+                                    <td class="p-3">Windows Defender Firewall</td>
+                                    <td class="p-3">UFW, firewalld, nftables</td>
+                                    <td class="p-3">pf y Application Firewall</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Arranque seguro</td>
+                                    <td class="p-3">Secure Boot (UEFI) con TPM 2.0</td>
+                                    <td class="p-3">shim y GRUB con Secure Boot</td>
+                                    <td class="p-3">Startup Security Utility</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Biometria</td>
+                                    <td class="p-3">Windows Hello (huella, rostro)</td>
+                                    <td class="p-3">libfingerprint con pam_fprintd</td>
+                                    <td class="p-3">Touch ID y Face ID (Secure Enclave)</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/60">
+                                    <td class="p-3 font-semibold text-slate-200">Archivos con journal</td>
+                                    <td class="p-3">NTFS (journal e instantaneas VSS)</td>
+                                    <td class="p-3">ext4, XFS, Btrfs</td>
+                                    <td class="p-3">APFS (journal y copy-on-write)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-slate-200">Debilidad tipica</td>
+                                    <td class="p-3">Phishing, macros, ransomware</td>
+                                    <td class="p-3">SSH expuesto, rootkits, software viejo</td>
+                                    <td class="p-3">Apps no notarizadas, perfiles engañosos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Android e iOS -->
+                <section id="moviles" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="smartphone" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Seguridad en Android e iOS (Resena)</h3>
+                            <p class="text-sm text-slate-400">Los sistemas moviles aplican los mismos principios con un modelo centrado en permisos</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+                                <i data-lucide="bot" class="w-5 h-5 text-emerald-400"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-emerald-300">Android</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-emerald-300">Permisos granulares</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Cada app pide acceso a camara, ubicacion, contactos o microfono. Los permisos se otorgan por app y se pueden revocar: minimo privilegio llevado al extremo.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-emerald-300">Aislamiento por proceso</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Cada app corre en su propio <span class="code-font">UID</span> y sandbox; SELinux en modo <span class="code-font">Enforcing</span> bloquea el acceso entre aplicaciones.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-emerald-300">Play Protect</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Antimalware integrado que verifica las apps de la tienda y analiza el dispositivo, incluidas las instaladas fuera de ella.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-emerald-300">Riesgo principal</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Instalar APK de fuentes desconocidas. Desde Android 13 el permiso <span class="code-font">INSTALL_PACKAGES</span> esta restringido y Google Play Protect avisa fuera de la tienda.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-500/15 border border-slate-500/30 flex items-center justify-center">
+                                <i data-lucide="apple" class="w-5 h-5 text-slate-300"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-slate-200">iOS (iPhone / iPad)</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-slate-200">Sandbox estricto y App Store</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Las apps se distribuyen por App Store o TestFlight, con revision previa y firma obligatoria. La instalacion libre solo existe en empresas con <span class="code-font">MDM</span>.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-slate-200">Secure Enclave</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Un coprocesador dedicado guarda las claves y los datos de Face ID o Touch ID, fuera del alcance del sistema operativo principal.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-slate-200">Proteccion de datos</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Clases de proteccion por app: los datos se cifran con claves derivadas de la clave del dispositivo y se eliminan si el usuario pierde el acceso.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <strong class="text-slate-200">Riesgo principal</strong>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Suplantacion de la ID de Apple para phishing, perfiles de configuracion fraudulentos y fallos de memoria del kernel explotables.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-sky-300 mb-3 flex items-center gap-2">
+                            <i data-lucide="link" class="w-4 h-4"></i>
+                            Del escritorio al movil: la misma teoria
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Android e iOS reutilizan los conceptos de esta unidad: <strong>autenticacion</strong> (huella, rostro, PIN),
+                            <strong>autorizacion</strong> (permisos por app), <strong>aislamiento de procesos</strong> (sandbox),
+                            <strong>cifrado</strong> en reposo y <strong>actualizaciones firmadas</strong>.
+                            Lo que cambia es el equilibrio: el movil prioriza el aislamiento y la restriccion sobre la flexibilidad del escritorio.
+                        </p>
+                    </div>
+                </section>
+                <!-- 8. 10 Consejos de Seguridad -->
+                <section id="consejos" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">8. 10 Consejos de Seguridad en Sistemas Operativos</h3>
+                            <p class="text-sm text-slate-400">Recomendaciones practicas: del tecnico hacia el usuario y del tecnico hacia el tecnico</p>
+                        </div>
+                    </div>
+
+                    <!-- Del tecnico hacia el usuario -->
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-lg font-bold text-sky-300 mb-1 flex items-center gap-2">
+                            <i data-lucide="user-round" class="w-5 h-5"></i>
+                            Del tecnico hacia el usuario (6 consejos)
+                        </h4>
+                        <p class="text-xs text-slate-400 mb-5">Lo que el usuario final debe entender y hacer correctamente en su equipo.</p>
+
+                        <div class="space-y-3">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">01</div>
+                                <div>
+                                    <strong class="text-white text-sm">Usa contrasenas largas y un gestor de contrasenas</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Cuatro palabras aleatorias son mas seguras y mas faciles de recordar que <span class="code-font">P@ss2024</span>. Nunca reutilices la misma contrasena entre el correo, el banco y la Universidad.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">02</div>
+                                <div>
+                                    <strong class="text-white text-sm">Activa el segundo factor de autenticacion (2FA)</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Prefiere una app de codigos (Microsoft Authenticator, Google Authenticator) o una llave fisica antes que el SMS, que puede ser interceptado.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">03</div>
+                                <div>
+                                    <strong class="text-white text-sm">Actualiza el sistema y las aplicaciones</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Windows Update, <span class="code-font">apt upgrade</span>, <span class="code-font">dnf update</span> en Linux o las actualizaciones de iOS y Android. La mayoria de los ataques exitosos explotan vulnerabilidades ya corregidas.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">04</div>
+                                <div>
+                                    <strong class="text-white text-sm">No abras adjuntos ni enlaces sospechosos</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">La ingenieria social sigue siendo la puerta de entrada numero uno. Ante la duda, verifica el dominio real del remitente y no hagas clic en enlaces urgentes.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">05</div>
+                                <div>
+                                    <strong class="text-white text-sm">Instala el software solo desde fuentes oficiales</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Microsoft Store, App Store, Google Play, los repositorios oficiales de Linux. Fuera de ahi, un instalador puede traer troyanos, adware o criptominer.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">06</div>
+                                <div>
+                                    <strong class="text-white text-sm">Activa el cifrado de disco y el bloqueo de pantalla</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">BitLocker, LUKS o FileVault protegen el equipo si se pierde o se roba. Configura un bloqueo automatico y apaga el equipo al salir, no solo la pantalla.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Del tecnico hacia el tecnico -->
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-lg font-bold text-purple-300 mb-1 flex items-center gap-2">
+                            <i data-lucide="wrench" class="w-5 h-5"></i>
+                            Del tecnico hacia el tecnico (4 consejos)
+                        </h4>
+                        <p class="text-xs text-slate-400 mb-5">Buenas practicas de administracion, despliegue y mantenimiento de sistemas.</p>
+
+                        <div class="space-y-3">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs shrink-0">07</div>
+                                <div>
+                                    <strong class="text-white text-sm">Aplica minimo privilegio y cuentas separadas</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Nunca trabajes como administrador ni con root. En Linux usa <span class="code-font">sudo</span> solo para lo necesario; en Windows crea un usuario local estandar y usa otro para administrar. Revisa periodicamente quienes tienen permisos Wheel, Sudoers o Administradores.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs shrink-0">08</div>
+                                <div>
+                                    <strong class="text-white text-sm">Endurece el sistema desde la configuracion, no despues</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Politica de cortafuegos denegar por defecto, cerrar RDP y SSH de internet, desactivar SMBv1, habilitar SELinux o AppArmor, activar Secure Boot y auditar con <span class="code-font">lynis</span> o CIS Benchmarks.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs shrink-0">09</div>
+                                <div>
+                                    <strong class="text-white text-sm">Centraliza registros y define un plan de respuesta</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Un evento sin registro es un evento que no ocurrió. Enruta los logs a un servidor con SIEM, configura alertas y escribe un plan de respuesta a incidentes con responsables, contactos y tiempos de escalamiento.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs shrink-0">10</div>
+                                <div>
+                                    <strong class="text-white text-sm">Automatiza, documenta y prueba la recuperacion</strong>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Un respaldo que nunca se restaura no es un respaldo. Scriptea la configuracion segura con Ansible o PowerShell, documenta cada cambio y programa simulacros de recuperacion con la regla 3-2-1 y una copia offline.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. Normas ISO -->
+                <section id="normas" class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                            <i data-lucide="badge-check" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">9. Normas ISO: Calidad y Seguridad de la Informacion</h3>
+                            <p class="text-sm text-slate-400">Estandares internacionales que respaldan las buenas practicas de la unidad</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-2xl p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-11 h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center shrink-0">
+                                    <i data-lucide="badge-check" class="w-5 h-5 text-sky-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-sky-300">ISO 9001</h4>
+                                    <p class="text-[11px] text-slate-500 uppercase tracking-wider">Sistemas de gestion de la calidad</p>
+                                </div>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Es la norma internacional que define los requisitos de un <strong>sistema de gestion de la calidad</strong>. Describe como una
+                                organizacion debe planificar, implementar y mejorar de forma continua sus procesos, con foco en la satisfaccion del cliente,
+                                la mejora constante y la toma de decisiones basada en evidencia.
+                            </p>
+                            <ul class="text-xs text-slate-400 space-y-1.5 list-disc list-inside mb-4">
+                                <li><strong>Enfoque de proceso:</strong> medir, controlar y mejorar lo que se hace.</li>
+                                <li><strong>Gestion de riesgos:</strong> anticipar fallas y actuar antes de que se materialicen.</li>
+                                <li><strong>Documentacion:</strong> politicas, procedimientos y registros verificables.</li>
+                                <li><strong>Certificacion:</strong> auditoria externa que valida el sistema cada cierto tiempo.</li>
+                            </ul>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-sky-300">
+                                <strong>Ejemplo:</strong> una empresa que aplica ISO 9001 en soporte tecnico mide el tiempo de resolucion de incidentes, registra cada caso y mejora el proceso con esos datos. Es la base sobre la que despues se apoya la seguridad.
+                            </div>
+                        </div>
+
+                        <div class="glass-panel-purple rounded-2xl p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center shrink-0">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-purple-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-purple-300">ISO/IEC 27001 e ISO 27002</h4>
+                                    <p class="text-[11px] text-slate-500 uppercase tracking-wider">Seguridad de la informacion</p>
+                                </div>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                Es la norma internacional que define los requisitos del <strong>sistema de gestion de seguridad de la informacion (SGSI)</strong>.
+                                Es la que corresponde directamente a esta unidad: protege la confidencialidad, la integridad y la disponibilidad de los datos
+                                y de los sistemas que los procesan. La <strong>ISO 27002</strong> es la guia practica que describe los controles de referencia.
+                            </p>
+                            <ul class="text-xs text-slate-400 space-y-1.5 list-disc list-inside mb-4">
+                                <li><strong>Alcance y analisis de riesgos:</strong> que se protege y de que amenaza.</li>
+                                <li><strong>Controles organizacionales y tecnicos:</strong> politicas, accesos, cifrado, respaldos.</li>
+                                <li><strong>Gestion de incidentes:</strong> deteccion, contencion, analisis y mejora posterior.</li>
+                                <li><strong>Certificacion:</strong> auditoria externa y renovacion periodica del certificado.</li>
+                            </ul>
+                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-purple-300">
+                                <strong>Ejemplo:</strong> un banco certificado en ISO 27001 controla el acceso con minimo privilegio, cifra los datos, exige 2FA, segmenta la red y demuestra que puede restaurar sus sistemas tras un ransomware.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-base font-bold text-emerald-300 mb-4 flex items-center gap-2">
+                            <i data-lucide="git-compare-arrows" class="w-4 h-4"></i>
+                            Diferencia clave: no son lo mismo
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="p-4 rounded-xl bg-sky-950/25 border border-sky-500/25">
+                                <strong class="text-sky-300">ISO 9001 responde a:</strong>
+                                <span class="block mt-1 text-xs text-slate-400">¿El servicio que brindamos cumple con lo que prometimos y mejora de forma continua?</span>
+                            </div>
+                            <div class="p-4 rounded-xl bg-purple-950/25 border border-purple-500/25">
+                                <strong class="text-purple-300">ISO 27001 responde a:</strong>
+                                <span class="block mt-1 text-xs text-slate-400">¿Nuestra informacion esta protegida contra accesos no autorizados, alteracion o perdida?</span>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-xs text-slate-400 leading-relaxed text-center">
+                            En la practica se combinan: la <strong>ISO 9001</strong> aporta el proceso de gestion y mejora, y la <strong>ISO 27001</strong> aporta los controles de seguridad que protegen ese proceso.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 10. Repaso Rapido / Quiz Interactivo -->
+                <section id="repaso" class="glass-panel rounded-3xl p-6 sm:p-8 space-y-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="circle-check-big" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">10. Repaso Rapido (Quiz Interactivo)</h3>
+                            <p class="text-sm text-slate-400">Pon a prueba el conocimiento de la clase en tiempo real</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Pregunta 1 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="0">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>1. Cuales son las tres propiedades clasicas que la seguridad de un sistema operativo debe garantizar?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 0)">A) Confidencialidad, Integridad y Disponibilidad</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 0)">B) Rapidez, Memoria y Almacenamiento</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 0)">C) Usuarios, Archivos y Redes</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 2 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="1">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>2. Que diferencia existe entre una amenaza pasiva y una amenaza activa?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 1)">A) La pasiva solo observa y recopila; la activa modifica, borra o bloquea el sistema</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 1)">B) La pasiva dana el hardware y la activa solo roba software</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 1)">C) No existe diferencia: ambas son igual de peligrosas</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 3 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="2">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>3. Que tipo de malware se propaga solo a traves de la red, sin que el usuario abra ningun archivo?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 2)">A) El gusano (worm)</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 2)">B) El virus tradicional con portada</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 2)">C) El troyano</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 4 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="3">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>4. En Linux, que mecanismo de control de acceso obligatorio asigna contextos y politicas a procesos y archivos?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 3)">A) NTFS</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 3)">B) SELinux o AppArmor</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 3)">C) BitLocker</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 5 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="4">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>5. Que componente de macOS impide modificar archivos protegidos del sistema, incluso para el usuario root?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 4)">A) FileVault</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 4)">B) SIP (System Integrity Protection)</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 4)">C) Gatekeeper</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 6 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="5">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>6. Cual es la principal ventaja de una configuracion RAID 1 frente a RAID 0?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 5)">A) Ofrece espejado: el sistema sigue funcionando si cae un disco</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 5)">B) Duplica el rendimiento de lectura y de escritura</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 5)">C) No necesita ningun sistema de archivos</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 7 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="6">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>7. Que afirma correctamente sobre el Journaling de un sistema de archivos?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 6)">A) Duplica todos los archivos para acelerar la lectura</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 6)">B) Registra la intencion de las operaciones para recuperar la consistencia tras una caida</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 6)">C) Es exclusivo de Windows Server</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 8 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="7">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>8. Que dos componentes son obligatorios desde Windows 11 para arrancar de forma segura?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 7)">A) TPM 2.0 y Secure Boot</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 7)">B) BitLocker y Windows Defender</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 7)">C) UAC e Hyper-V</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 9 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="8">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>9. Como se denomina al hacker que trabaja con autorizacion formal, prueba la seguridad y reporta sus hallazgos?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 8)">A) Hacker Black Hat</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 8)">B) Hacker Gray Hat</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 8)">C) Hacker Etico (White Hat)</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 10 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="9">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>10. Cual es el principal vector de entrada del malware en Android?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 9)">A) La instalacion de APK de fuentes desconocidas</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 9)">B) La actualizacion del kernel</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 9)">C) El uso de la biometria</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 11 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="10">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>11. Cual es la politica de cortafuegos mas segura para un servidor?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 10)">A) Aceptar todo el trafico y bloquear solo por IP</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 10)">B) Denegar todo por defecto y abrir solo los puertos necesarios</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 10)">C) Dejar el cortafuegos desactivado y confiar en el antivirus</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+
+                        <!-- Pregunta 12 -->
+                        <div class="quiz-item bg-slate-950/80 p-6 rounded-2xl border border-slate-800" data-qid="11">
+                            <p class="text-sm font-semibold text-white mb-4"><strong>12. Que norma ISO regula directamente la seguridad de la informacion?</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 11)">A) ISO 9001</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, true, 11)">B) ISO/IEC 27001</button>
+                                <button class="quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition" onclick="evaluarPregunta(this, false, 11)">C) ISO 14001</button>
+                            </div>
+                            <p class="pregunta-feedback text-xs mt-3 font-semibold"></p>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de Evaluacion -->
+                    <div id="resumen-quiz" class="hidden p-6 rounded-2xl bg-slate-950 border border-rose-500/40 text-center space-y-2">
+                        <h4 class="text-base font-bold text-rose-400">Resumen de Evaluacion de la Clase</h4>
+                        <p id="puntaje-texto" class="text-lg font-bold text-white"></p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Presentation Mode View (Hidden by default, activated via top toolbar) -->
+            <div id="view-presentation" class="hidden space-y-8 min-h-[70vh] flex flex-col justify-between">
+                <div class="flex items-center justify-between bg-slate-900/80 px-6 py-3 rounded-2xl border border-slate-800">
+                    <span id="slide-indicator" class="text-xs uppercase font-bold text-rose-400 tracking-wider">Diapositiva 1 de 8</span>
+                    <div class="flex space-x-2">
+                        <button onclick="changeSlide(-1)" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center space-x-1">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            <span>Anterior</span>
+                        </button>
+                        <button onclick="changeSlide(1)" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-slate-950 text-xs font-bold transition flex items-center space-x-1">
+                            <span>Siguiente</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide Container Card -->
+                <div id="slide-content-box" class="glass-panel rounded-3xl p-8 sm:p-12 flex-1 flex flex-col justify-center shadow-2xl transition-all duration-300">
+                    <!-- Dynamic Slide Injection -->
+                </div>
+
+                <!-- Slide Quick Navigation Dots -->
+                <div class="flex justify-center space-x-2 pb-4" id="slide-dots">
+                    <!-- Generated via JS -->
+                </div>
+            </div>
+
+            <footer class="mt-16 pb-8 text-center text-slate-500 text-xs">
+                Universidad Tecnologica Intercontinental &bull; Seguridad en Sistemas Operativos &copy; 2026
+            </footer>
+        </main>
+    </div>
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Timer Logic
+        let secondsElapsed = 0;
+        let timerRunning = true;
+        const timerDisplay = document.getElementById('timer-display');
+
+        function updateTimer() {
+            if (!timerRunning) return;
+            secondsElapsed++;
+            const hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+            const secs = String(secondsElapsed % 60).padStart(2, '0');
+            timerDisplay.textContent = `${hrs}:${mins}:${secs}`;
+        }
+        setInterval(updateTimer, 1000);
+
+        function toggleTimer() {
+            timerRunning = !timerRunning;
+            document.getElementById('timer-toggle-btn').textContent = timerRunning ? '⏸' : '▶';
+        }
+
+        // Fullscreen Toggle
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error("Error attempting to enable fullscreen:", err);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // View Switcher (Dashboard vs Presentation Mode)
+        let currentMode = 'dashboard';
+        function switchView(mode) {
+            currentMode = mode;
+            const dashView = document.getElementById('view-dashboard');
+            const presView = document.getElementById('view-presentation');
+            const btnDash = document.getElementById('btn-mode-dashboard');
+            const btnPres = document.getElementById('btn-mode-presentation');
+            const sidebar = document.getElementById('sidebar-nav');
+
+            if (mode === 'presentation') {
+                dashView.classList.add('hidden');
+                presView.classList.remove('hidden');
+                btnPres.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition bg-purple-600 text-white shadow-sm";
+                btnDash.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition text-slate-300 hover:text-white hover:bg-slate-800";
+                if (sidebar) sidebar.classList.add('lg:hidden');
+                renderSlide();
+            } else {
+                presView.classList.add('hidden');
+                dashView.classList.remove('hidden');
+                btnDash.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition bg-rose-500 text-slate-950 shadow-sm";
+                btnPres.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition text-slate-300 hover:text-white hover:bg-slate-800";
+                if (sidebar) sidebar.classList.remove('lg:hidden');
+            }
+            lucide.createIcons();
+        }
+
+        // Sidebar Navigation Active State
+        function setActiveNav(element) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.className = "nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/60";
+            });
+            element.className = "nav-item flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-rose-400 bg-rose-500/10 border border-rose-500/20";
+        }
+
+        // --- LAB 1: MAPA DE AMENAZAS ---
+        const amenazas = {
+            phishing: {
+                icono: 'phishing',
+                titulo: 'Phishing y robo de credenciales',
+                desc: 'El atacante se hace pasar por un banco o servicio legitimo y roba usuario y contrasena. No necesita vulnerabilidades: basta con ingenieria social.',
+                c: 95, i: 30, d: 10,
+                estado: 'Credenciales filtradas. El atacante accede a la cuenta sin tocar el sistema.',
+                defensa: 'Verificacion en dos pasos (2FA) y capacitacion del usuario'
+            },
+            ransomware: {
+                icono: 'lock-keyhole',
+                titulo: 'Ransomware',
+                desc: 'Cifra los archivos de la victima y exige pago. Llega por correo, descargas o explotacion de vulnerabilidades, como el ataque WannaCry.',
+                c: 60, i: 100, d: 100,
+                estado: 'Integridad y disponibilidad destruidas. Los archivos quedan inaccesibles hasta pagar.',
+                defensa: 'Respaldo offline, parcheo de vulnerabilidades y EDR'
+            },
+            dos: {
+                icono: 'zap-off',
+                titulo: 'Denegacion de servicio (DoS / DDoS)',
+                desc: 'Satura el servicio con peticiones hasta que deja de responder. No roba datos: niega el servicio a los usuarios legitimos.',
+                c: 10, i: 20, d: 95,
+                estado: 'Disponibilidad critica. El servicio no responde, pero los datos siguen intactos.',
+                defensa: 'Rate limiting, WAF y balanceo de carga'
+            },
+            insider: {
+                icono: 'user-round-search',
+                titulo: 'Amenaza interna (Insider threat)',
+                desc: 'Un usuario con acceso legitimo copia o filtra informacion. Evita las defensas perimetrales porque ya se encuentra dentro.',
+                c: 90, i: 70, d: 20,
+                estado: 'Fuga de datos desde adentro, solo detectable mediante auditoria.',
+                defensa: 'Minimo privilegio, DLP y registro de auditoria'
+            },
+            keylogger: {
+                icono: 'eye-off',
+                titulo: 'Keylogger (amenaza pasiva)',
+                desc: 'Software invisible que registra cada tecla pulsada, incluidas contrasenas y datos bancarios. No modifica nada, solo espia.',
+                c: 85, i: 5, d: 5,
+                estado: 'Vigilancia silenciosa. El usuario no percibe que esta siendo espiado.',
+                defensa: 'Antimalware, teclado cifrado y equipos de confianza'
+            }
+        };
+
+        function setAmenaza(tipo) {
+            const ame = amenazas[tipo];
+            const box = document.getElementById('ame-visual');
+            const desc = document.getElementById('ame-desc');
+            const log = document.getElementById('ame-log');
+
+            document.querySelectorAll('[id^="btn-ame-"]').forEach(b => {
+                b.className = "px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition";
+            });
+            const mapIds = { phishing: 'btn-ame-phishing', ransomware: 'btn-ame-ransom', dos: 'btn-ame-dos', insider: 'btn-ame-insider', keylogger: 'btn-ame-keylog' };
+            document.getElementById(mapIds[tipo]).className = "px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white transition";
+
+            box.innerHTML = `
+                <div class="flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-rose-500/50 w-32">
+                    <i data-lucide="${ame.icono}" class="w-8 h-8 text-rose-400 mb-2"></i>
+                    <span class="text-[10px] font-bold text-white text-center">Atacante</span>
+                </div>
+                <div class="h-0.5 border-t-2 border-dashed border-rose-500 w-12"></div>
+                <div class="flex flex-col items-center p-4 rounded-xl bg-rose-950/60 border border-rose-500 w-32">
+                    <i data-lucide="monitor" class="w-8 h-8 text-rose-400 mb-2 animate-parpadeo"></i>
+                    <span class="text-[10px] font-bold text-white text-center">Equipo victima</span>
+                </div>
+                <div class="h-0.5 border-t-2 border-dashed border-rose-500 w-12"></div>
+                <div class="flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-700 w-32">
+                    <i data-lucide="database" class="w-8 h-8 text-amber-400 mb-2"></i>
+                    <span class="text-[10px] font-bold text-white text-center">Datos</span>
+                </div>
+            `;
+
+            desc.innerHTML = `<strong class="text-rose-300">${ame.titulo}</strong><br>${ame.desc}<br><span class="text-[11px] text-emerald-300 font-mono">Defensa clave: ${ame.defensa}</span>`;
+
+            setTimeout(() => {
+                document.getElementById('bar-c').style.width = ame.c + '%';
+                document.getElementById('bar-i').style.width = ame.i + '%';
+                document.getElementById('bar-d').style.width = ame.d + '%';
+            }, 80);
+
+            log.textContent = 'ALERTA: ' + ame.estado;
+            log.className = "mt-5 text-center text-[11px] text-rose-300 font-mono";
+            lucide.createIcons();
+        }
+
+        // --- LAB 2: AUTENTICACION POR CAPAS ---
+        const metodosAuth = {
+            password: {
+                titulo: 'Solo contrasena (un solo factor)',
+                capas: [
+                    { icon: 'key-round', label: 'Contrasena', color: 'rose' },
+                    { icon: 'x', label: 'Sin 2FA', color: 'slate' },
+                    { icon: 'x', label: 'Sin biometria', color: 'slate' }
+                ],
+                desc: 'Un unico factor que <strong>se sabe</strong>. Vulnerable a fuerza bruta, diccionarios y filtraciones. Windows, Linux y macOS ya no la consideran suficiente por si sola.'
+            },
+            mfa: {
+                titulo: 'Contrasena mas segundo factor (2FA)',
+                capas: [
+                    { icon: 'key-round', label: 'Contrasena', color: 'rose' },
+                    { icon: 'smartphone', label: 'App o token', color: 'amber' },
+                    { icon: 'shield-check', label: 'Anti-replay', color: 'emerald' }
+                ],
+                desc: 'Combina algo que <strong>sabes</strong> con algo que <strong>tienes</strong> (app TOTP, Microsoft Authenticator o llave FIDO2). Bloquea la gran mayoria de los ataques automatizados.'
+            },
+            key: {
+                titulo: 'Llave fisica o passkey (FIDO2)',
+                capas: [
+                    { icon: 'key-round', label: 'Credencial', color: 'rose' },
+                    { icon: 'usb', label: 'Llave USB o NFC', color: 'sky' },
+                    { icon: 'shield-check', label: 'Resistente a phishing', color: 'emerald' }
+                ],
+                desc: 'La <strong>passkey</strong> vincula criptograficamente el sitio con el dispositivo: aunque el atacante robe la contrasena, no puede usarla desde otro equipo. Es el estandar que Windows Hello, iCloud Keychain y Linux ya implementan.'
+            },
+            bio: {
+                titulo: 'Biometria y dispositivo de confianza',
+                capas: [
+                    { icon: 'fingerprint', label: 'Huella o rostro', color: 'rose' },
+                    { icon: 'cpu', label: 'TPM o Secure Enclave', color: 'purple' },
+                    { icon: 'shield-check', label: 'Anti-spoofing', color: 'emerald' }
+                ],
+                desc: 'Lo que <strong>eres</strong> se valida dentro de un chip dedicado e inextraible: <strong>Windows Hello con TPM</strong>, <strong>Touch ID o Face ID con Secure Enclave</strong>, o libfingerprint en Linux con sensor adecuado.'
+            }
+        };
+
+        const colorMap = {
+            rose: 'border-rose-500/50 bg-rose-950/40 text-rose-300',
+            amber: 'border-amber-500/50 bg-amber-950/40 text-amber-300',
+            sky: 'border-sky-500/50 bg-sky-950/40 text-sky-300',
+            purple: 'border-purple-500/50 bg-purple-950/40 text-purple-300',
+            emerald: 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300',
+            slate: 'border-slate-700 bg-slate-900 text-slate-500'
+        };
+
+        function setAuthMode(modo) {
+            const m = metodosAuth[modo];
+            const stack = document.getElementById('auth-stack');
+            const desc = document.getElementById('auth-desc');
+
+            document.querySelectorAll('[id^="btn-auth-"]').forEach(b => {
+                b.className = "px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition";
+            });
+            const mapIds = { password: 'btn-auth-pwd', mfa: 'btn-auth-mfa', key: 'btn-auth-key', bio: 'btn-auth-bio' };
+            document.getElementById(mapIds[modo]).className = "px-3 py-2 rounded-lg text-xs font-semibold bg-sky-600 text-white transition";
+
+            stack.innerHTML = m.capas.map((c, idx) => `
+                ${idx > 0 ? '<i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 hidden sm:block"></i>' : ''}
+                <div class="flex flex-col items-center p-4 rounded-2xl border w-32 ${colorMap[c.color]}">
+                    <i data-lucide="${c.icon}" class="w-7 h-7 mb-2"></i>
+                    <span class="text-[11px] font-bold text-center">${c.label}</span>
+                </div>
+            `).join('');
+
+            desc.innerHTML = `<strong class="text-sky-300">${m.titulo}</strong><br>${m.desc}`;
+            lucide.createIcons();
+        }
+
+        function analizarClave() {
+            const val = document.getElementById('pass-input').value;
+            const out = document.getElementById('pass-strength');
+
+            if (val.length === 0) {
+                out.textContent = '-';
+                out.className = 'font-bold text-slate-400';
+                return;
+            }
+
+            let puntos = 0;
+            if (val.length >= 8) puntos++;
+            if (val.length >= 12) puntos++;
+            if (val.length >= 16) puntos++;
+            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) puntos++;
+            if (/[0-9]/.test(val)) puntos++;
+            if (/[^A-Za-z0-9]/.test(val)) puntos++;
+            if (/(.)\1{2,}/.test(val)) puntos -= 1;
+            if (/^(123|abc|qwerty|password|admin)/i.test(val)) puntos -= 2;
+
+            if (puntos <= 1) {
+                out.textContent = 'Muy debil';
+                out.className = 'font-bold text-rose-400';
+            } else if (puntos <= 3) {
+                out.textContent = 'Debil';
+                out.className = 'font-bold text-amber-400';
+            } else if (puntos === 4) {
+                out.textContent = 'Aceptable';
+                out.className = 'font-bold text-yellow-400';
+            } else if (puntos === 5) {
+                out.textContent = 'Fuerte';
+                out.className = 'font-bold text-emerald-400';
+            } else {
+                out.textContent = 'Excelente';
+                out.className = 'font-bold text-emerald-300';
+            }
+        }
+
+        // --- LAB 3: RESPUESTA A MALWARE ---
+        const malwares = {
+            worm: {
+                icono: 'git-fork',
+                titulo: 'Gusano (Worm)',
+                desc: 'Se propaga automaticamente por la red explotando vulnerabilidades, sin intervencion humana.',
+                pasos: ['Equipo infectado', 'Explota vulnerabilidad', 'Escanea la red', 'Se replica'],
+                clave: 'Aislar el segmento de red y aplicar el parche de seguridad.'
+            },
+            trojan: {
+                icono: 'gift',
+                titulo: 'Troyano (Trojan)',
+                desc: 'Disfrazado de programa legitimo, abre una puerta trasera para el atacante.',
+                pasos: ['El usuario instala', 'Se abre la backdoor', 'El atacante accede', 'Control remoto'],
+                clave: 'Desinstalar, cambiar contrasenas y revisar el arranque automatico.'
+            },
+            ransom: {
+                icono: 'lock-keyhole',
+                titulo: 'Ransomware',
+                desc: 'Cifra los archivos de la victima y exige un rescate en dinero.',
+                pasos: ['Correo o descarga', 'Ejecuta el cifrado', 'Borra las copias', 'Muestra la nota de rescate'],
+                clave: 'Restaurar desde el respaldo offline y no pagar si se puede evitar.'
+            },
+            rootkit: {
+                icono: 'server-cog',
+                titulo: 'Rootkit',
+                desc: 'Se oculta en el nucleo del sistema para persistir y esconderse del antivirus.',
+                pasos: ['Eleva privilegios', 'Se oculta en el kernel', 'Filtra el antivirus', 'Persiste tras reiniciar'],
+                clave: 'Arrancar desde un medio externo y reconstruir el sistema de confianza.'
+            },
+            miner: {
+                icono: 'cpu',
+                titulo: 'Criptominer',
+                desc: 'Usa el procesador y la GPU de la victima para minar criptomonedas.',
+                pasos: ['Se instala sin permiso', 'Consume CPU y GPU', 'Envia monedas al atacante', 'Ventilador al maximo'],
+                clave: 'Terminar el proceso, eliminar la tarea programada y revisar permisos.'
+            },
+            keylogger: {
+                icono: 'eye-off',
+                titulo: 'Keylogger',
+                desc: 'Registra de forma silenciosa todo lo que el usuario teclea.',
+                pasos: ['Captura pulsaciones', 'Almacena en un archivo', 'Lo envia al atacante', 'Borra rastros'],
+                clave: 'Analisis offline, cambiar contrasenas y usar teclado cifrado.'
+            }
+        };
+
+        function setMalware(tipo) {
+            const m = malwares[tipo];
+
+            document.querySelectorAll('[id^="btn-mlw-"]').forEach(b => {
+                b.className = "px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition";
+            });
+            const mapIds = { worm: 'btn-mlw-worm', trojan: 'btn-mlw-trojan', ransom: 'btn-mlw-ransom', rootkit: 'btn-mlw-rootkit', miner: 'btn-mlw-miner', keylogger: 'btn-mlw-keylog' };
+            document.getElementById(mapIds[tipo]).className = "px-3 py-2.5 rounded-xl text-xs font-semibold bg-amber-600 text-white transition";
+
+            const info = document.getElementById('malware-info');
+            info.innerHTML = `
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="${m.icono}" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-bold text-amber-300">${m.titulo}</h4>
+                        <p class="text-xs text-slate-400">${m.desc}</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 mt-3">
+                    ${m.pasos.map((p, i) => `
+                        <span class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-300">${i + 1}. ${p}</span>
+                        ${i < m.pasos.length - 1 ? '<i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>' : ''}
+                    `).join('')}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function analizarMuestra() {
+            const btn = document.getElementById('btn-analizar');
+            const log = document.getElementById('mlw-log');
+            const a = document.getElementById('mlw-pc-a');
+            const b = document.getElementById('mlw-pc-b');
+            const srv = document.getElementById('mlw-srv');
+            const stA = document.getElementById('mlw-st-a');
+            const stB = document.getElementById('mlw-st-b');
+            const stSrv = document.getElementById('mlw-st-srv');
+
+            if (btn.disabled) return;
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            log.textContent = '1. Analisis estatico en curso: comparando hashes con bases de firmas conocidas...';
+            log.className = "mt-4 text-center text-[11px] text-amber-300 font-mono";
+
+            setTimeout(() => {
+                stA.textContent = 'INFECTADO';
+                stA.className = "text-[9px] text-rose-400 font-bold";
+                a.className = "flex flex-col items-center p-3 rounded-xl bg-rose-950/60 border border-rose-500/80 transition-all";
+                log.textContent = '2. Deteccion positiva en PC Contabilidad. Proceso no firmado detectado en memoria...';
+            }, 1200);
+
+            setTimeout(() => {
+                stB.textContent = 'INFECTADO';
+                stB.className = "text-[9px] text-rose-400 font-bold";
+                b.className = "flex flex-col items-center p-3 rounded-xl bg-rose-950/60 border border-rose-500/80 transition-all";
+                log.textContent = '3. Propagacion detectada hacia el servidor de archivos por el recurso compartido...';
+            }, 2400);
+
+            setTimeout(() => {
+                stSrv.textContent = 'AISLADO';
+                stSrv.className = "text-[9px] text-amber-400 font-bold";
+                srv.className = "col-span-2 flex flex-col items-center p-3 rounded-xl bg-amber-950/50 border border-amber-500/80 transition-all";
+                log.textContent = '4. Contencion: servidor de archivos aislado de la red. Archivos en cuarentena, sin cifrado.';
+                log.className = "mt-4 text-center text-[11px] text-emerald-300 font-mono";
+            }, 3600);
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                log.textContent = '5. Accion recomendada: parcheo, cambio de contrasenas y verificacion del respaldo 3-2-1.';
+            }, 4800);
+        }
+
+        // --- LAB 4: CORTAFUEGOS (FIREWALL) ---
+        const puertos = {
+            ssh: {
+                puerto: 22,
+                servicio: 'SSH (administracion remota)',
+                riesgo: 'medio',
+                estado: 'ok',
+                motivo: 'Solo debe acceptarse desde redes internas o con llaves. Exponerlo a internet facilita los ataques de fuerza bruta.',
+                defensa: 'Cambiar la contrasena, usar llaves, desactivar el acceso directo de root y filtrar por IP.'
+            },
+            web: {
+                puerto: 443,
+                servicio: 'HTTPS (sitio web seguro)',
+                riesgo: 'bajo',
+                estado: 'ok',
+                motivo: 'Es el puerto publico de una web con TLS. Debe quedar abierto para que los usuarios ingresen.',
+                defensa: 'Certificado valido, HSTS y renovacion automatica del certificado.'
+            },
+            rdp: {
+                puerto: 3389,
+                servicio: 'RDP (escritorio remoto de Windows)',
+                riesgo: 'critico',
+                estado: 'ok',
+                motivo: 'Si se expone a internet es el objetivo numero uno de los ataques automatizados: fuerza bruta, exploiting y ransomware.',
+                defensa: 'VPN o Jump Server, permitirlo solo desde la red de la oficina y MFA obligatorio.'
+            },
+            smb: {
+                puerto: 445,
+                servicio: 'SMB (archivos compartidos)',
+                riesgo: 'critico',
+                estado: 'ok',
+                motivo: 'Nunca debe salir a internet. Es el vector favorito de WannaCry y de los ataques de ransomware actuales.',
+                defensa: 'Restringirlo a la red local, deshabilitar SMBv1 y exigir autenticacion con credenciales.'
+            }
+        };
+
+        let firewallActivo = true;
+
+        function renderFirewall() {
+            const box = document.getElementById('fw-puertos');
+            const log = document.getElementById('fw-log');
+            const resumen = document.getElementById('fw-resumen');
+
+            box.innerHTML = Object.keys(puertos).map(key => {
+                const p = puertos[key];
+                const abierto = firewallActivo && p.estado === 'ok';
+                const claseBorde = abierto
+                    ? (p.riesgo === 'critico' ? 'border-rose-500/70 bg-rose-950/40' : 'border-amber-500/60 bg-amber-950/30')
+                    : 'border-emerald-500/50 bg-slate-900';
+                const claseIcono = abierto
+                    ? (p.riesgo === 'critico' ? 'text-rose-400' : 'text-amber-400')
+                    : 'text-emerald-400';
+
+                return `
+                    <div class="p-4 rounded-2xl border ${claseBorde} transition-all">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i data-lucide="network" class="w-5 h-5 ${claseIcono}"></i>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-white">Puerto ${p.puerto}</p>
+                                <p class="text-[11px] text-slate-400">${p.servicio}</p>
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${abierto ? (p.riesgo === 'critico' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300') : 'bg-emerald-500/20 text-emerald-300'}">
+                                ${abierto ? 'ABIERTO' : 'BLOQUEADO'}
+                            </span>
+                        </div>
+                        <p class="text-[11px] leading-relaxed ${abierto ? (p.riesgo === 'critico' ? 'text-rose-200' : 'text-amber-200') : 'text-emerald-200'}">${abierto ? p.motivo : 'El firewall rechaza el trafico: el servicio no es alcanzable desde fuera.'}</p>
+                        <p class="text-[11px] mt-2 text-slate-400 font-mono">Defensa: ${p.defensa}</p>
+                    </div>`;
+            }).join('');
+
+            const expuestos = Object.keys(puertos).filter(k => firewallActivo && puertos[k].estado === 'ok' && puertos[k].riesgo === 'critico').length;
+
+            if (!firewallActivo) {
+                log.textContent = 'ALERTA: el cortafuegos esta DESACTIVADO. Todos los servicios del sistema quedan alcanzables desde cualquier red.';
+                log.className = "mt-4 p-3 w-full rounded-xl bg-rose-950/50 border border-rose-500/50 text-xs font-mono text-rose-300 text-center";
+            } else if (expuestos > 0) {
+                log.textContent = 'CONFIGURACION INSEGURA: hay ' + expuestos + ' servicio(s) critico(s) expuesto(s) a internet. Ajusta las reglas antes de salir a produccion.';
+                log.className = "mt-4 p-3 w-full rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs font-mono text-amber-300 text-center";
+            } else {
+                log.textContent = 'CONFIGURACION SEGURA: politica de denegar por defecto. Solo los servicios estrictamente necesarios aceptan trafico.';
+                log.className = "mt-4 p-3 w-full rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-emerald-300 text-center";
+            }
+
+            resumen.textContent = firewallActivo
+                ? 'Politica activa: denegar todo lo que no este permitido de forma explicita.'
+                : 'Politica desactivada: el equipo depende solo del sistema operativo y sus actualizaciones.';
+
+            const escudo = document.getElementById('fw-escudo');
+            if (escudo) {
+                escudo.className = 'flex flex-col items-center p-3 rounded-2xl w-28 transition-all ' + (firewallActivo
+                    ? 'bg-rose-950/60 border border-rose-500'
+                    : 'bg-slate-900 border border-slate-700');
+                const icono = escudo.querySelector('i');
+                if (icono) {
+                    icono.className = 'w-6 h-6 mb-1 ' + (firewallActivo ? 'text-rose-400' : 'text-slate-600');
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        function toggleRegla(key) {
+            puertos[key].estado = puertos[key].estado === 'ok' ? 'bloqueado' : 'ok';
+            renderFirewall();
+        }
+
+        function toggleFirewall() {
+            firewallActivo = !firewallActivo;
+            const btn = document.getElementById('btn-firewall');
+            if (firewallActivo) {
+                btn.className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-rose-500 hover:bg-rose-400 text-slate-950 transition shadow-neon flex items-center space-x-2";
+                btn.querySelector('span').textContent = 'Desactivar Cortafuegos';
+            } else {
+                btn.className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center space-x-2";
+                btn.querySelector('span').textContent = 'Activar Cortafuegos';
+            }
+            renderFirewall();
+        }
+
+        // --- QUIZ LOGIC (12 PREGUNTAS) ---
+        const resultadosQuiz = [null, null, null, null, null, null, null, null, null, null, null, null];
+
+        function evaluarPregunta(boton, esCorrecto, indicePregunta) {
+            const contenedorPregunta = boton.closest('.quiz-item');
+            const botones = contenedorPregunta.querySelectorAll('.quiz-btn');
+            const feedback = contenedorPregunta.querySelector('.pregunta-feedback');
+
+            botones.forEach(btn => {
+                btn.className = "quiz-btn px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs text-left hover:border-sky-500 transition";
+            });
+
+            if (esCorrecto) {
+                boton.className = "quiz-btn px-4 py-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs text-left font-bold transition";
+                feedback.textContent = "Correcto.";
+                feedback.className = "pregunta-feedback text-xs mt-3 font-semibold text-emerald-400";
+            } else {
+                boton.className = "quiz-btn px-4 py-3 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-300 text-xs text-left transition";
+                feedback.textContent = "Incorrecto. Intentalo de nuevo.";
+                feedback.className = "pregunta-feedback text-xs mt-3 font-semibold text-rose-400";
+            }
+
+            resultadosQuiz[indicePregunta] = esCorrecto;
+            actualizarResumenQuiz();
+        }
+
+        function actualizarResumenQuiz() {
+            const respondidas = resultadosQuiz.filter(res => res !== null).length;
+            const correctas = resultadosQuiz.filter(res => res === true).length;
+
+            const contenedorResumen = document.getElementById('resumen-quiz');
+            const textoPuntaje = document.getElementById('puntaje-texto');
+
+            if (respondidas > 0) {
+                contenedorResumen.classList.remove('hidden');
+
+                if (respondidas === 12) {
+                    textoPuntaje.textContent = `Completaste la evaluacion. Obtuviste ${correctas} de 12 puntos posibles.`;
+                    textoPuntaje.className = correctas >= 8 ? "text-lg font-bold text-emerald-400" : "text-lg font-bold text-rose-400";
+                } else {
+                    textoPuntaje.textContent = `Puntuacion actual: ${correctas} de 12 puntos (${respondidas}/12 respondidas).`;
+                    textoPuntaje.className = "text-lg font-bold text-slate-300";
+                }
+            }
+        }
+
+        // --- PRESENTATION MODE SLIDES ---
+        let currentSlide = 0;
+        const slidesData = [
+            {
+                title: "Unidad 10: Seguridad en Sistemas Operativos",
+                subtitle: "Concepto fundamental",
+                content: `<p class="text-xl text-slate-200 leading-relaxed">Conjunto de mecanismos que <strong>protegen</strong> los datos, controlan el acceso de los usuarios y garantizan que el sistema <strong>siga funcionando</strong> frente a errores y ataques.</p>`
+            },
+            {
+                title: "1. Pilares de Seguridad",
+                subtitle: "La triada CIA",
+                content: `
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start space-x-3"><span class="text-rose-400 font-bold">•</span><span><strong>Confidencialidad:</strong> solo los autorizados leen la informacion (cifrado, permisos).</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-amber-400 font-bold">•</span><span><strong>Integridad:</strong> la informacion no se altera sin permiso (firmas, hashes).</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-emerald-400 font-bold">•</span><span><strong>Disponibilidad:</strong> el servicio esta disponible cuando se necesita (redundancia).</span></li>
+                    </ul>
+                `
+            },
+            {
+                title: "2. Amenazas de Seguridad",
+                subtitle: "Pasivas y activas",
+                content: `
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-6 rounded-2xl bg-slate-900/80 border border-rose-500/30">
+                            <h4 class="text-rose-300 font-bold mb-2">Amenazas pasivas</h4>
+                            <p class="text-sm text-slate-300">Observan y recopilan sin ser detectadas: keyloggers, escuchas de red, rastreo.</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-slate-900/80 border border-rose-500/30">
+                            <h4 class="text-rose-300 font-bold mb-2">Amenazas activas</h4>
+                            <p class="text-sm text-slate-300">Modifican, borran o bloquean: malware, ransomware, denegacion de servicio.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "3. Proteccion",
+                subtitle: "Autenticacion, permisos y cifrado",
+                content: `
+                    <p class="text-slate-300 text-base leading-relaxed mb-4">La proteccion se aplica en <strong>capas</strong>: hardware (TPM, Secure Enclave), arranque seguro, nucleo del SO, red y finalmente los datos del usuario.</p>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Windows Hello y TPM 2.0</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">SELinux, AppArmor y sudo</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">BitLocker, LUKS y FileVault</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Bitacoras y auditoria de acciones</div>
+                    </div>
+                `
+            },
+            {
+                title: "4. Intrusos",
+                subtitle: "Eticos, grises y maliciosos",
+                content: `
+                    <ul class="space-y-3 text-slate-300">
+                        <li class="p-4 rounded-xl bg-slate-900/80 border border-emerald-500/30 text-sm"><strong class="text-emerald-300">White Hat:</strong> autorizado, prueba y reporta las fallas (pentesting).</li>
+                        <li class="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 text-sm"><strong class="text-amber-300">Gray Hat:</strong> entra sin permiso pero avisa; sigue siendo delito.</li>
+                        <li class="p-4 rounded-xl bg-slate-900/80 border border-rose-500/30 text-sm"><strong class="text-rose-300">Black Hat:</strong> busca beneficio economico con robo de datos o ransomware.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "5. Software Malicioso",
+                subtitle: "Tipos y respuesta",
+                content: `
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Virus: necesita un archivo anfitrion</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Gusano: se replica solo por la red</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Troyano: abre una puerta trasera</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Ransomware: cifra y exige rescate</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Rootkit: se oculta en el nucleo</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Spyware y criptominer: espian y degradan</div>
+                    </div>
+                `
+            },
+            {
+                title: "6. Sistemas Confiables",
+                subtitle: "Evitar, detectar y recuperarse",
+                content: `
+                    <div class="grid grid-cols-3 gap-4 text-sm text-center">
+                        <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300">Evitar<br><span class="text-xs text-slate-300">RAID, redundancia, ECC</span></div>
+                        <div class="p-5 rounded-2xl bg-amber-950/30 border border-amber-500/30 text-amber-300">Detectar<br><span class="text-xs text-slate-300">paridad, SMART, journal</span></div>
+                        <div class="p-5 rounded-2xl bg-sky-950/30 border border-sky-500/30 text-sky-300">Recuperarse<br><span class="text-xs text-slate-300">respaldos 3-2-1, instantaneas</span></div>
+                    </div>
+                `
+            },
+            {
+                title: "7. Seguridad en los SO Actuales",
+                subtitle: "Windows, Linux, macOS, Android e iOS",
+                content: `
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Windows: Defender, Secure Boot, TPM, BitLocker</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Linux: sudo, SELinux o AppArmor, LUKS, repos firmados</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">macOS: XProtect, Gatekeeper, SIP, FileVault</div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-slate-300">Android e iOS: permisos, sandbox, Play Protect, Secure Enclave</div>
+                    </div>
+                `
+            },
+            {
+                title: "8. 10 Consejos de Seguridad",
+                subtitle: "Tecnico - Usuario / Tecnico - Tecnico",
+                content: `
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="p-5 rounded-2xl bg-sky-950/30 border border-sky-500/30">
+                            <strong class="text-sky-300 block mb-2">Del tecnico hacia el usuario</strong>
+                            <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                                <li>Contrasenas largas y gestor de contrasenas</li>
+                                <li>Activar 2FA (app o llave fisica)</li>
+                                <li>Actualizar sistema y aplicaciones</li>
+                                <li>Desconfiar de adjuntos y enlaces</li>
+                                <li>Instalar solo desde fuentes oficiales</li>
+                                <li>Cifrado de disco y bloqueo de pantalla</li>
+                            </ul>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-purple-950/30 border border-purple-500/30">
+                            <strong class="text-purple-300 block mb-2">Del tecnico hacia el tecnico</strong>
+                            <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                                <li>Minimo privilegio y cuentas separadas</li>
+                                <li>Endurecer desde la configuracion (cortafuegos, SELinux)</li>
+                                <li>Centralizar registros y plan de respuesta</li>
+                                <li>Automatizar, documentar y probar la recuperacion 3-2-1</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "9. Normas ISO",
+                subtitle: "Calidad y seguridad de la informacion",
+                content: `
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="p-5 rounded-2xl bg-sky-950/30 border border-sky-500/30">
+                            <strong class="text-sky-300 block mb-1">ISO 9001</strong>
+                            <span class="text-[10px] uppercase tracking-wider text-slate-500 block mb-2">Gestion de la calidad</span>
+                            <p class="text-xs text-slate-300 leading-relaxed">Enfoque de proceso, gestion de riesgos y mejora continua con enfoque en el cliente. Una organizacion que aplica ISO 9001 mide sus procesos, los documenta y los mejora con evidencia.</p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-purple-950/30 border border-purple-500/30">
+                            <strong class="text-purple-300 block mb-1">ISO/IEC 27001</strong>
+                            <span class="text-[10px] uppercase tracking-wider text-slate-500 block mb-2">Seguridad de la informacion</span>
+                            <p class="text-xs text-slate-300 leading-relaxed">Define los requisitos del SGSI: protege la confidencialidad, la integridad y la disponibilidad. La ISO 27002 aporta los controles de referencia.</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-xs text-slate-400 text-center">En la practica se combinan: la 9001 aporta el proceso de mejora y la 27001 los controles de seguridad.</p>
+                `
+            },
+            {
+                title: "Resumen y Evaluacion",
+                subtitle: "Fin de la leccion",
+                content: `<p class="text-center text-lg text-emerald-400 font-bold">Listos para proceder con el Quiz interactivo del Dashboard</p>`
+            }
+        ];
+
+        function renderSlide() {
+            const box = document.getElementById('slide-content-box');
+            const indicator = document.getElementById('slide-indicator');
+            const slide = slidesData[currentSlide];
+
+            box.innerHTML = `
+                <span class="text-xs font-bold uppercase text-rose-400 tracking-widest mb-2">${slide.subtitle}</span>
+                <h2 class="text-3xl font-extrabold text-white mb-6">${slide.title}</h2>
+                <div>${slide.content}</div>
+            `;
+
+            indicator.textContent = `Diapositiva ${currentSlide + 1} de ${slidesData.length}`;
+            renderDots();
+            lucide.createIcons();
+        }
+
+        function changeSlide(direction) {
+            currentSlide = (currentSlide + direction + slidesData.length) % slidesData.length;
+            renderSlide();
+        }
+
+        function renderDots() {
+            const dotsBox = document.getElementById('slide-dots');
+            dotsBox.innerHTML = slidesData.map((_, idx) => `
+                <button onclick="currentSlide=${idx}; renderSlide();" class="w-3 h-3 rounded-full transition ${idx === currentSlide ? 'bg-rose-400 scale-125' : 'bg-slate-700 hover:bg-slate-500'}"></button>
+            `).join('');
+        }
+
+        // Initialize First View
+        renderFirewall();
+    </script>
+</body>
+</html>
+
