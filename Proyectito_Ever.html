@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+     <meta charset="UTF-8">
+     <!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=2217f13e-7fdf-4c59-9905-6b8342a3ebb5
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+     <meta name="hosting-provider" content="Netlify">
+     <meta name="netlify-deploy"
+          content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=2217f13e-7fdf-4c59-9905-6b8342a3ebb5">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Bloqueos en Sistemas Operativos</title>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+     <style>
+          :root {
+               --bg: #070b12;
+               --bg-panel: #0d1420;
+               --bg-panel-2: #111c2b;
+               --line: #1f3045;
+               --text: #e8f1ff;
+               --text-muted: #8fa7c2;
+               --red: #3b82f6;
+               --red-dim: #1d4ed8;
+               --amber: #38bdf8;
+               --amber-dim: #155e75;
+               --green: #60a5fa;
+               --green-dim: #1e40af;
+               --yellow-line: #7dd3fc;
+               --font-display: 'Archivo', sans-serif;
+               --font-body: 'IBM Plex Sans', sans-serif;
+               --font-mono: 'IBM Plex Mono', monospace;
+          }
+
+          * {
+               box-sizing: border-box;
+          }
+
+          html {
+               scroll-behavior: smooth;
+          }
+
+          body {
+               margin: 0;
+               background: var(--bg);
+               color: var(--text);
+               font-family: var(--font-body);
+               line-height: 1.65;
+               font-size: 17px;
+               overflow-x: hidden;
+          }
+
+          h1,
+          h2,
+          h3,
+          h4 {
+               font-family: var(--font-display);
+               font-weight: 700;
+               margin: 0;
+               letter-spacing: -0.01em;
+          }
+
+          p {
+               margin: 0 0 1.1em 0;
+               color: var(--text);
+          }
+
+          code,
+          .mono {
+               font-family: var(--font-mono);
+          }
+
+          .wrap {
+               max-width: 760px;
+               margin: 0 auto;
+               padding: 0 28px;
+          }
+
+          .wrap-wide {
+               max-width: 1000px;
+               margin: 0 auto;
+               padding: 0 28px;
+          }
+
+          a {
+               color: var(--amber);
+          }
+
+          /* Progress bar */
+          #progress {
+               position: fixed;
+               top: 0;
+               left: 0;
+               height: 3px;
+               background: linear-gradient(90deg, var(--red), var(--amber), var(--green));
+               width: 0%;
+               z-index: 500;
+               transition: width 0.1s linear;
+          }
+
+          /* Nav */
+          nav {
+               position: fixed;
+               top: 0;
+               left: 0;
+               right: 0;
+               z-index: 400;
+               display: flex;
+               align-items: center;
+               justify-content: space-between;
+               padding: 18px 32px;
+               background: rgba(7, 11, 18, 0);
+               border-bottom: 1px solid rgba(255, 255, 255, 0);
+               transition: background 0.3s ease, border-color 0.3s ease;
+          }
+
+          nav.scrolled {
+               background: rgba(7, 11, 18, 0.92);
+               backdrop-filter: blur(6px);
+               border-bottom: 1px solid var(--line);
+          }
+
+          nav .brand {
+               font-family: var(--font-display);
+               font-weight: 700;
+               font-size: 15px;
+               color: var(--text);
+          }
+
+          nav .brand span {
+               color: var(--amber);
+          }
+
+          nav ul {
+               list-style: none;
+               display: flex;
+               gap: 22px;
+               margin: 0;
+               padding: 0;
+          }
+
+          nav a {
+               color: var(--text-muted);
+               text-decoration: none;
+               font-size: 14px;
+               font-weight: 500;
+          }
+
+          nav a:hover {
+               color: var(--text);
+          }
+
+          nav .navtoggle {
+               display: none;
+          }
+
+          @media (max-width: 760px) {
+               nav ul {
+                    display: none;
+               }
+          }
+
+          /* ---------------- HERO ---------------- */
+          .hero {
+               position: relative;
+               height: 100vh;
+               min-height: 620px;
+               overflow: hidden;
+               display: flex;
+               align-items: flex-end;
+               border-bottom: 1px solid var(--line);
+          }
+
+          .hero-layer {
+               position: absolute;
+               inset: 0;
+               width: 100%;
+               height: 130%;
+               will-change: transform;
+          }
+
+          .layer-sky {
+               background: linear-gradient(180deg, #04070c 0%, #0a101a 60%, #0d1420 100%);
+          }
+
+          .layer-buildings svg,
+          .layer-road svg,
+          .layer-signals svg {
+               position: absolute;
+               bottom: 0;
+               left: 0;
+               width: 100%;
+               height: auto;
+          }
+
+          .hero-content {
+               position: relative;
+               z-index: 10;
+               width: 100%;
+               padding: 0 28px 80px 28px;
+          }
+
+          .hero-content .kicker {
+               font-family: var(--font-mono);
+               font-size: 13px;
+               color: var(--amber);
+               margin-bottom: 14px;
+               display: block;
+          }
+
+          .hero-content h1 {
+               font-size: clamp(2.6rem, 7vw, 5.2rem);
+               line-height: 0.98;
+               color: var(--text);
+               max-width: 900px;
+          }
+
+          .hero-content h1 em {
+               font-style: normal;
+               color: var(--red);
+          }
+
+          .hero-content .sub {
+               max-width: 560px;
+               color: var(--text-muted);
+               font-size: 18px;
+               margin-top: 22px;
+          }
+
+          .scrollcue {
+               position: absolute;
+               bottom: 26px;
+               left: 28px;
+               z-index: 10;
+               font-family: var(--font-mono);
+               font-size: 12px;
+               color: var(--text-muted);
+               display: flex;
+               align-items: center;
+               gap: 10px;
+          }
+
+          .scrollcue .dot {
+               width: 6px;
+               height: 6px;
+               border-radius: 50%;
+               background: var(--amber);
+               animation: pulse 1.6s infinite;
+          }
+
+          @keyframes pulse {
+
+               0%,
+               100% {
+                    opacity: 1;
+               }
+
+               50% {
+                    opacity: 0.2;
+               }
+          }
+
+          /* ---------------- NAV DOTS (adaptado de main.js) ---------------- */
+          .nav-dots {
+               position: fixed;
+               right: 26px;
+               top: 50%;
+               transform: translateY(-50%);
+               z-index: 450;
+               display: flex;
+               flex-direction: column;
+               gap: 15px;
+          }
+
+          .dot-container {
+               position: relative;
+               display: flex;
+               align-items: center;
+               justify-content: flex-end;
+               cursor: pointer;
+               padding: 4px;
+          }
+
+          .dot-container .dot {
+               width: 9px;
+               height: 9px;
+               border-radius: 50%;
+               background: #26364a;
+               border: 1px solid var(--line);
+               transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+          }
+
+          .dot-container .label {
+               position: absolute;
+               right: 26px;
+               top: 50%;
+               transform: translateY(-50%);
+               background: var(--bg-panel);
+               border: 1px solid var(--line);
+               border-radius: 6px;
+               padding: 5px 11px;
+               font-family: var(--font-mono);
+               font-size: 11px;
+               color: var(--text-muted);
+               white-space: nowrap;
+               opacity: 0;
+               pointer-events: none;
+               transition: opacity 0.2s;
+          }
+
+          .dot-container:hover .label {
+               opacity: 1;
+          }
+
+          .dot-container:hover .dot {
+               background: var(--text-muted);
+          }
+
+          .dot-container.active .dot {
+               background: var(--amber);
+               transform: scale(1.5);
+               box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
+          }
+
+          @media (max-width: 900px) {
+               .nav-dots {
+                    display: none;
+               }
+          }
+
+          /* ---------------- SECTIONS ---------------- */
+          section {
+               position: relative;
+               padding: 110px 0;
+               overflow: hidden;
+          }
+
+          section.tight {
+               padding: 80px 0;
+          }
+
+          .wrap,
+          .wrap-wide {
+               position: relative;
+               z-index: 1;
+          }
+
+          /* Capa de parallax de fondo por sección (adaptado de .parent/.child de main.js) */
+          .section-parallax-bg {
+               position: absolute;
+               left: 0;
+               top: 0;
+               width: 100%;
+               height: 145%;
+               background: radial-gradient(circle at 25% 20%, var(--tint-color, var(--amber)) 0%, transparent 55%);
+               opacity: 0.07;
+               pointer-events: none;
+               will-change: transform;
+               z-index: 0;
+          }
+
+          /* Reveal on scroll (adaptado del patrón fade-in) */
+          .reveal {
+               opacity: 0;
+               transform: translateY(24px);
+               transition: opacity 0.7s ease, transform 0.7s ease;
+          }
+
+          .reveal.visible {
+               opacity: 1;
+               transform: translateY(0);
+          }
+
+          /* Marquee */
+          .marquee {
+               width: 100%;
+               overflow: hidden;
+               background: var(--bg-panel-2);
+               border-top: 1px solid var(--line);
+               border-bottom: 1px solid var(--line);
+               padding: 18px 0;
+          }
+
+          .marquee-track {
+               display: flex;
+               width: max-content;
+               animation: marquee-scroll 22s linear infinite;
+          }
+
+          .marquee-track span {
+               font-family: var(--font-mono);
+               font-size: 14px;
+               color: var(--text-muted);
+               padding: 0 26px;
+               white-space: nowrap;
+               display: inline-flex;
+               align-items: center;
+          }
+
+          .marquee-track span::after {
+               content: '✦';
+               color: var(--amber);
+               margin-left: 26px;
+               opacity: 0.6;
+          }
+
+          @keyframes marquee-scroll {
+               from {
+                    transform: translateX(0);
+               }
+
+               to {
+                    transform: translateX(-50%);
+               }
+          }
+
+          .marquee:hover .marquee-track {
+               animation-play-state: paused;
+          }
+
+          .section-label {
+               font-family: var(--font-mono);
+               font-size: 13px;
+               color: var(--amber);
+               margin-bottom: 16px;
+          }
+
+          .section-label.red {
+               color: var(--red);
+          }
+
+          .section-label.green {
+               color: var(--green);
+          }
+
+          h2.h2 {
+               font-size: clamp(1.9rem, 4vw, 2.6rem);
+               margin-bottom: 28px;
+               max-width: 640px;
+          }
+
+          h3.h3 {
+               font-size: 1.3rem;
+               margin: 40px 0 12px 0;
+          }
+
+          .lead {
+               font-size: 19px;
+               color: var(--text-muted);
+               max-width: 620px;
+          }
+
+          .panel {
+               background: var(--bg-panel);
+               border: 1px solid var(--line);
+               border-radius: 10px;
+               padding: 28px 30px;
+               margin: 26px 0;
+          }
+
+          .panel h4 {
+               font-size: 15px;
+               margin-bottom: 10px;
+               color: var(--text);
+          }
+
+          .condgrid {
+               display: grid;
+               grid-template-columns: repeat(2, 1fr);
+               gap: 18px;
+               margin: 30px 0;
+          }
+
+          @media (max-width: 640px) {
+               .condgrid {
+                    grid-template-columns: 1fr;
+               }
+          }
+
+          .cond {
+               border: 1px solid var(--line);
+               border-radius: 10px;
+               padding: 22px;
+               background: var(--bg-panel);
+               border-top: 3px solid var(--amber);
+          }
+
+          .cond .num {
+               font-family: var(--font-mono);
+               font-size: 13px;
+               color: var(--text-muted);
+          }
+
+          .cond h4 {
+               font-size: 17px;
+               margin: 8px 0 8px 0;
+          }
+
+          .cond p {
+               font-size: 15px;
+               color: var(--text-muted);
+               margin: 0;
+          }
+
+          table {
+               width: 100%;
+               border-collapse: collapse;
+               margin: 22px 0;
+               font-size: 15px;
+          }
+
+          th,
+          td {
+               border: 1px solid var(--line);
+               padding: 10px 12px;
+               text-align: center;
+          }
+
+          th {
+               background: var(--bg-panel-2);
+               font-family: var(--font-mono);
+               font-weight: 500;
+               font-size: 13px;
+               color: var(--text-muted);
+          }
+
+          td.safe {
+               color: var(--green);
+               font-weight: 600;
+          }
+
+          td.unsafe {
+               color: var(--red);
+               font-weight: 600;
+          }
+
+          ul.list,
+          ol.list {
+               padding-left: 22px;
+          }
+
+          ul.list li,
+          ol.list li {
+               margin-bottom: 10px;
+               color: var(--text);
+          }
+
+          ul.list li::marker {
+               color: var(--amber);
+          }
+
+          .quote {
+               border-left: 3px solid var(--amber);
+               padding-left: 20px;
+               margin: 30px 0;
+               color: var(--text-muted);
+               font-size: 16px;
+               font-style: normal;
+          }
+
+          .diagram {
+               margin: 34px 0;
+               text-align: center;
+          }
+
+          .diagram svg {
+               max-width: 100%;
+               height: auto;
+          }
+
+          .caption {
+               font-family: var(--font-mono);
+               font-size: 12.5px;
+               color: var(--text-muted);
+               margin-top: 10px;
+          }
+
+          /* Divider parallax band between sections */
+          .divider {
+               position: relative;
+               height: 260px;
+               overflow: hidden;
+               border-top: 1px solid var(--line);
+               border-bottom: 1px solid var(--line);
+          }
+
+          .divider-layer {
+               position: absolute;
+               inset: 0;
+               height: 140%;
+               will-change: transform;
+          }
+
+          .final-table-wrap {
+               overflow-x: auto;
+          }
+
+          .twocol {
+               display: grid;
+               grid-template-columns: 1fr 1fr;
+               gap: 40px;
+          }
+
+          @media (max-width: 760px) {
+               .twocol {
+                    grid-template-columns: 1fr;
+               }
+          }
+
+          footer {
+               padding: 60px 0 80px 0;
+               border-top: 1px solid var(--line);
+               color: var(--text-muted);
+               font-size: 14px;
+          }
+
+          footer .wrap {
+               display: flex;
+               flex-direction: column;
+               gap: 6px;
+          }
+
+          .badge {
+               display: inline-flex;
+               align-items: center;
+               gap: 8px;
+               font-family: var(--font-mono);
+               font-size: 12.5px;
+               padding: 5px 12px;
+               border-radius: 999px;
+               border: 1px solid var(--line);
+               color: var(--text-muted);
+               margin-bottom: 18px;
+          }
+
+          .badge .sw {
+               width: 8px;
+               height: 8px;
+               border-radius: 50%;
+          }
+
+          /* ---------------- ACTIVIDADES / QUIZ ---------------- */
+          .quiz-progress {
+               display: flex;
+               gap: 8px;
+               margin: 8px 0 40px 0;
+          }
+
+          .quiz-progress .qp-dot {
+               width: 28px;
+               height: 4px;
+               border-radius: 2px;
+               background: var(--line);
+               transition: background 0.3s;
+          }
+
+          .quiz-progress .qp-dot.done {
+               background: var(--green);
+          }
+
+          .quiz-progress .qp-dot.current {
+               background: var(--amber);
+          }
+
+          .quiz-card {
+               background: var(--bg-panel);
+               border: 1px solid var(--line);
+               border-radius: 12px;
+               padding: 32px 32px 28px 32px;
+               margin: 0 0 24px 0;
+          }
+
+          .quiz-card .qnum {
+               font-family: var(--font-mono);
+               font-size: 12.5px;
+               color: var(--amber);
+               margin-bottom: 10px;
+               display: block;
+          }
+
+          .quiz-card h4 {
+               font-size: 20px;
+               line-height: 1.35;
+               margin-bottom: 22px;
+               max-width: 640px;
+          }
+
+          .quiz-options {
+               display: flex;
+               flex-direction: column;
+               gap: 10px;
+          }
+
+          .quiz-option {
+               display: flex;
+               align-items: flex-start;
+               gap: 12px;
+               text-align: left;
+               width: 100%;
+               background: var(--bg-panel-2);
+               border: 1px solid var(--line);
+               border-radius: 8px;
+               padding: 14px 16px;
+               color: var(--text);
+               font-family: var(--font-body);
+               font-size: 15px;
+               cursor: pointer;
+               transition: border-color 0.2s, background 0.2s, transform 0.15s;
+          }
+
+          .quiz-option:hover:not(:disabled) {
+               border-color: var(--amber);
+               transform: translateX(2px);
+          }
+
+          .quiz-option:disabled {
+               cursor: default;
+          }
+
+          .quiz-option .opt-letter {
+               font-family: var(--font-mono);
+               font-size: 12px;
+               color: var(--text-muted);
+               border: 1px solid var(--line);
+               border-radius: 50%;
+               width: 22px;
+               height: 22px;
+               min-width: 22px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               margin-top: 1px;
+          }
+
+          .quiz-option.correct {
+               border-color: var(--green);
+               background: rgba(96, 165, 250, 0.1);
+          }
+
+          .quiz-option.correct .opt-letter {
+               background: var(--green);
+               color: var(--bg);
+               border-color: var(--green);
+          }
+
+          .quiz-option.incorrect {
+               border-color: var(--red);
+               background: rgba(59, 130, 246, 0.1);
+          }
+
+          .quiz-option.incorrect .opt-letter {
+               background: var(--red);
+               color: var(--bg);
+               border-color: var(--red);
+          }
+
+          .quiz-feedback {
+               display: none;
+               margin-top: 18px;
+               padding: 14px 16px;
+               border-radius: 8px;
+               font-size: 14.5px;
+               border-left: 3px solid var(--line);
+               color: var(--text-muted);
+          }
+
+          .quiz-feedback.show {
+               display: block;
+          }
+
+          .quiz-feedback.ok {
+               border-left-color: var(--green);
+          }
+
+          .quiz-feedback.ok strong {
+               color: var(--green);
+          }
+
+          .quiz-feedback.bad {
+               border-left-color: var(--red);
+          }
+
+          .quiz-feedback.bad strong {
+               color: var(--red);
+          }
+
+          .quiz-summary {
+               background: var(--bg-panel-2);
+               border: 1px solid var(--line);
+               border-radius: 12px;
+               padding: 36px 32px;
+               text-align: center;
+               display: none;
+          }
+
+          .quiz-summary.show {
+               display: block;
+          }
+
+          .quiz-summary .score {
+               font-family: var(--font-display);
+               font-size: 3rem;
+               color: var(--amber);
+          }
+
+          .quiz-summary p {
+               color: var(--text-muted);
+               max-width: 460px;
+               margin: 10px auto 20px auto;
+          }
+
+          .quiz-retry {
+               font-family: var(--font-mono);
+               font-size: 13px;
+               color: var(--bg);
+               background: var(--amber);
+               border: none;
+               border-radius: 999px;
+               padding: 11px 24px;
+               cursor: pointer;
+               transition: opacity 0.2s;
+          }
+
+          .quiz-retry:hover {
+               opacity: 0.85;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+
+               .hero-layer,
+               .divider-layer {
+                    transform: none !important;
+               }
+
+               html {
+                    scroll-behavior: auto;
+               }
+          }
+
+
+          /* ============================================================
+   EFECTOS TEMÁTICOS — flechas, autos, ventanas, semáforos
+   ============================================================ */
+
+          /* 1) Flechas de solicitud/espera que "fluyen" */
+          /* Solo las rojas: las blancas (asignaciones) quedan estáticas,
+   así el ojo distingue lo estable de lo que espera en círculo */
+          .diagram line[stroke="#3b82f6"] {
+               stroke-dasharray: 7 6;
+               animation: dash-flow 0.9s linear infinite;
+          }
+
+          /* esta keyframe ya la tenés del simulador; si está dos veces no pasa nada */
+          @keyframes dash-flow {
+               to {
+                    stroke-dashoffset: -13;
+               }
+          }
+
+          /* 2) Autos que empujan hacia el cruce y frenan */
+          .car {
+               animation: nudge 3.2s ease-in-out infinite;
+               animation-delay: var(--d, 0s);
+          }
+
+          @keyframes nudge {
+
+               0%,
+               20%,
+               100% {
+                    transform: translate(0, 0);
+               }
+
+               9% {
+                    transform: translate(var(--nx, 10px), var(--ny, 0px));
+               }
+
+               16% {
+                    transform: translate(0, 0);
+               }
+          }
+
+          /* 3) Ventanas que parpadean (doble parpadeo corto, tipo fluorescente) */
+          .layer-buildings .windows rect {
+               animation: flicker 9s infinite;
+          }
+
+          @keyframes flicker {
+
+               0%,
+               94.8%,
+               96.2%,
+               97.6%,
+               100% {
+                    opacity: 1;
+               }
+
+               95.5%,
+               97% {
+                    opacity: 0.06;
+               }
+          }
+
+          /* Bonus: luces encendidas de los semáforos */
+          .layer-signals .lit {
+               animation: light-pulse 3s ease-in-out infinite;
+          }
+
+          @keyframes light-pulse {
+
+               0%,
+               100% {
+                    opacity: 1;
+               }
+
+               50% {
+                    opacity: 0.5;
+               }
+          }
+
+          /* Accesibilidad */
+          @media (prefers-reduced-motion: reduce) {
+
+               .diagram line[stroke="#3b82f6"],
+               .car,
+               .layer-buildings .windows rect,
+               .layer-signals .lit {
+                    animation: none !important;
+               }
+          }
+
+          /* ============================================================
+   EFECTOS AMBIENTALES — grano, scroll-spy, semáforos
+   ============================================================ */
+
+          /* --- 1) Grano de película sobre toda la página --- */
+          body::after {
+               content: '';
+               position: fixed;
+               inset: -60px;
+               /* sobredimensionado para que el shift no muestre bordes */
+               z-index: 9999;
+               pointer-events: none;
+               opacity: .05;
+               /* probá entre .03 y .08 */
+               background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+               background-size: 140px;
+               animation: grain 1.4s steps(1, end) infinite;
+          }
+
+          @keyframes grain {
+
+               0%,
+               100% {
+                    transform: translate(0, 0);
+               }
+
+               20% {
+                    transform: translate(-28px, 14px);
+               }
+
+               40% {
+                    transform: translate(18px, -22px);
+               }
+
+               60% {
+                    transform: translate(-14px, -18px);
+               }
+
+               80% {
+                    transform: translate(22px, 18px);
+               }
+          }
+
+          /* --- 2) Scroll-spy: subrayado animado del nav --- */
+          nav ul a {
+               position: relative;
+          }
+
+          nav ul a::after {
+               content: '';
+               position: absolute;
+               left: 0;
+               bottom: -5px;
+               width: 100%;
+               height: 2px;
+               background: var(--amber);
+               transform: scaleX(0);
+               transform-origin: left center;
+               transition: transform .3s ease;
+          }
+
+          nav ul a:hover::after {
+               transform: scaleX(.5);
+          }
+
+          nav ul a.active {
+               color: var(--text);
+          }
+
+          nav ul a.active::after {
+               transform: scaleX(1);
+          }
+
+          /* --- 3) Semáforos que ciclan (verde → ámbar → rojo) --- */
+          .layer-signals .l-red {
+               fill: var(--red);
+               animation: sig-red 8s infinite;
+          }
+
+          .layer-signals .l-amber {
+               fill: var(--amber);
+               animation: sig-amber 8s infinite;
+          }
+
+          .layer-signals .l-green {
+               fill: var(--green);
+               animation: sig-green 8s infinite;
+          }
+
+          /* el segundo semáforo va desfasado media fase: cuando uno está en verde, el otro en rojo */
+          .layer-signals .sig2 circle {
+               animation-delay: -4s;
+          }
+
+          @keyframes sig-green {
+
+               0%,
+               50% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 7px rgba(96, 165, 250, .75));
+               }
+
+               50.01%,
+               100% {
+                    opacity: .13;
+                    filter: none;
+               }
+          }
+
+          @keyframes sig-amber {
+
+               0%,
+               50% {
+                    opacity: .13;
+                    filter: none;
+               }
+
+               50.01%,
+               70% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 7px rgba(56, 189, 248, .75));
+               }
+
+               70.01%,
+               100% {
+                    opacity: .13;
+                    filter: none;
+               }
+          }
+
+          @keyframes sig-red {
+
+               0%,
+               70% {
+                    opacity: .13;
+                    filter: none;
+               }
+
+               70.01%,
+               100% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 7px rgba(59, 130, 246, .75));
+               }
+          }
+
+          /* Accesibilidad (agregá estas líneas a tu bloque existente de prefers-reduced-motion) */
+          @media (prefers-reduced-motion: reduce) {
+               body::after {
+                    animation: none;
+               }
+
+               .layer-signals .l-red,
+               .layer-signals .l-amber,
+               .layer-signals .l-green {
+                    animation: none;
+                    opacity: .13;
+               }
+
+               /* estado fijo sensato: un semáforo en rojo, el otro en verde */
+               .layer-signals .sig1 .l-red {
+                    opacity: 1;
+               }
+
+               .layer-signals .sig2 .l-green {
+                    opacity: 1;
+               }
+          }
+     </style>
+</head>
+
+<body>
+
+     <div id="progress"></div>
+
+     <div class="nav-dots" id="navDots">
+          <div class="dot-container" data-target="intro"><span class="dot"></span><span class="label">Por qué
+                    importa</span></div>
+          <div class="dot-container" data-target="recursos"><span class="dot"></span><span class="label">Recursos</span>
+          </div>
+          <div class="dot-container" data-target="bloqueos"><span class="dot"></span><span class="label">Bloqueos</span>
+          </div>
+          <div class="dot-container" data-target="deteccion"><span class="dot"></span><span class="label">Detección y
+                    recuperación</span></div>
+          <div class="dot-container" data-target="evasion"><span class="dot"></span><span class="label">Evasión</span>
+          </div>
+          <div class="dot-container" data-target="prevencion"><span class="dot"></span><span
+                    class="label">Prevención</span></div>
+          <div class="dot-container" data-target="sintesis"><span class="dot"></span><span class="label">Síntesis</span>
+          </div>
+          <div class="dot-container" data-target="conclusion"><span class="dot"></span><span
+                    class="label">Conclusión</span></div>
+          <div class="dot-container" data-target="actividades"><span class="dot"></span><span
+                    class="label">Actividades</span></div>
+     </div>
+
+     <nav id="mainnav">
+          <div class="brand">SISTEMAS OPERATIVOS <span>/ Bloqueos</span></div>
+          <ul>
+               <li><a href="#recursos">Recursos</a></li>
+               <li><a href="#bloqueos">Bloqueos</a></li>
+               <li><a href="#deteccion">Detección</a></li>
+               <li><a href="#evasion">Evasión</a></li>
+               <li><a href="#prevencion">Prevención</a></li>
+               <li><a href="#actividades">Actividades</a></li>
+          </ul>
+     </nav>
+
+     <!-- ============ HERO ============ -->
+     <div class="hero">
+          <div class="hero-layer layer-sky" data-speed="0.15"></div>
+
+          <div class="hero-layer layer-buildings" data-speed="0.3">
+               <svg viewBox="0 0 1600 500" preserveAspectRatio="xMidYMax slice">
+                    <rect x="40" y="180" width="120" height="320" fill="#0b1220" />
+                    <rect x="180" y="120" width="90" height="380" fill="#0a101b" />
+                    <rect x="290" y="220" width="140" height="280" fill="#0e1624" />
+                    <rect x="460" y="90" width="100" height="410" fill="#080e18" />
+                    <rect x="590" y="200" width="160" height="300" fill="#0b1220" />
+                    <rect x="790" y="150" width="110" height="350" fill="#0a101b" />
+                    <rect x="930" y="240" width="150" height="260" fill="#0e1624" />
+                    <rect x="1110" y="100" width="95" height="400" fill="#080e18" />
+                    <rect x="1230" y="210" width="130" height="290" fill="#0b1220" />
+                    <rect x="1390" y="160" width="150" height="340" fill="#0a101b" />
+                    <g class="windows" fill="#38bdf8" opacity="0.55">
+                         <rect x="60" y="210" width="10" height="14" />
+                         <rect x="90" y="210" width="10" height="14" />
+                         <rect x="60" y="250" width="10" height="14" />
+                         <rect x="120" y="270" width="10" height="14" />
+                         <rect x="300" y="260" width="10" height="14" />
+                         <rect x="340" y="300" width="10" height="14" />
+                         <rect x="480" y="140" width="10" height="14" />
+                         <rect x="510" y="180" width="10" height="14" />
+                         <rect x="610" y="240" width="10" height="14" />
+                         <rect x="650" y="280" width="10" height="14" />
+                         <rect x="810" y="200" width="10" height="14" />
+                         <rect x="850" y="240" width="10" height="14" />
+                         <rect x="950" y="280" width="10" height="14" />
+                         <rect x="1140" y="150" width="10" height="14" />
+                         <rect x="1250" y="250" width="10" height="14" />
+                         <rect x="1410" y="200" width="10" height="14" />
+                    </g>
+               </svg>
+          </div>
+
+          <div class="hero-layer layer-road" data-speed="0.55">
+               <svg viewBox="0 0 1600 500" preserveAspectRatio="xMidYMax slice">
+                    <rect x="0" y="380" width="1600" height="120" fill="#101a28" />
+                    <rect x="0" y="380" width="1600" height="6" fill="#24344a" />
+                    <g fill="#7dd3fc" opacity="0.85">
+                         <rect x="50" y="435" width="60" height="8" />
+                         <rect x="180" y="435" width="60" height="8" />
+                         <rect x="310" y="435" width="60" height="8" />
+                         <rect x="440" y="435" width="60" height="8" />
+                         <rect x="1100" y="435" width="60" height="8" />
+                         <rect x="1230" y="435" width="60" height="8" />
+                         <rect x="1360" y="435" width="60" height="8" />
+                         <rect x="1490" y="435" width="60" height="8" />
+                    </g>
+                    <!-- cars stopped, forming a ring at center intersection -->
+                    <g>
+                         <!-- <rect class="car" style="--nx:10px;  --d:0s" x="620" y="405" width="90" height="40" rx="6"
+                              fill="#3b82f6" />
+                         <rect class="car" style="--nx:-10px; --d:0.8s" x="890" y="405" width="90" height="40" rx="6"
+                              fill="#60a5fa" /> -->
+                         <rect class="car" style="--nx:10px;  --d:0.3s" x="700" y="120" width="70" height="30" rx="4"
+                              fill="#3b82f6" />
+                         <rect class="car" style="--nx:-10px; --d:1.9s" x="830" y="120" width="70" height="30" rx="4"
+                              fill="#60a5fa" />
+                         <rect class="car" style="--ny:10px;  --d:1.6s" x="750" y="330" width="40" height="80" rx="6"
+                              fill="#38bdf8" />
+                         <rect class="car" style="--ny:-10px; --d:2.4s" x="760" y="440" width="40" height="80" rx="6"
+                              fill="#8fa7c2" />
+                    </g>
+               </svg>
+          </div>
+
+          <div class="hero-layer layer-signals" data-speed="0.8">
+               <svg viewBox="0 0 1600 500" preserveAspectRatio="xMidYMax slice">
+                    <g transform="translate(560,250)" class="sig sig1">
+                         <rect x="-4" y="0" width="8" height="120" fill="#1f3045" />
+                         <rect x="-16" y="-70" width="32" height="76" rx="6" fill="#080d15" stroke="#1f3045" />
+                         <circle class="l-red" cx="0" cy="-52" r="8" />
+                         <circle class="l-amber" cx="0" cy="-30" r="8" />
+                         <circle class="l-green" cx="0" cy="-8" r="8" />
+                    </g>
+                    <g transform="translate(1030,250)" class="sig sig2">
+                         <rect x="-4" y="0" width="8" height="120" fill="#1f3045" />
+                         <rect x="-16" y="-70" width="32" height="76" rx="6" fill="#080d15" stroke="#1f3045" />
+                         <circle class="l-red" cx="0" cy="-52" r="8" />
+                         <circle class="l-amber" cx="0" cy="-30" r="8" />
+                         <circle class="l-green" cx="0" cy="-8" r="8" />
+                    </g>
+               </svg>
+          </div>
+
+          <div class="hero-content">
+               <span class="kicker">SISTEMAS OPERATIVOS — TRABAJO PRÁCTICO</span>
+               <h1>Cuando todos<br>esperan y <em>nadie<br>avanza</em></h1>
+               <p class="sub">Recursos, bloqueos, detección y recuperación, evasión y prevención: cómo un sistema
+                    operativo evita que sus procesos queden atrapados esperándose entre sí para siempre.</p>
+          </div>
+
+          <div class="scrollcue"><span class="dot"></span> DESPLAZATE PARA COMENZAR</div>
+     </div>
+
+     <!-- ============ INTRO ============ -->
+     <section id="intro" class="tight">
+          <div class="section-parallax-bg" style="--tint-color: var(--amber);"></div>
+          <div class="wrap">
+               <div class="section-label">00 — Por qué importa</div>
+               <h2 class="h2">Un problema tan viejo como la multiprogramación</h2>
+               <p class="lead">Desde el momento en que un sistema operativo permite que varios procesos compartan
+                    impresoras, archivos, memoria o dispositivos, aparece la posibilidad de que se traben entre sí de
+                    forma permanente.</p>
+               <p>Un sistema operativo moderno rara vez ejecuta un solo programa a la vez. Ejecuta decenas o cientos de
+                    procesos que compiten por una cantidad limitada de recursos: tiempo de CPU, memoria, archivos,
+                    impresoras, semáforos, conexiones de red. Para que esa competencia no termine en caos, el sistema le
+                    da a cada proceso mecanismos para pedir un recurso, usarlo y devolverlo cuando termina.</p>
+               <p>El problema aparece cuando esa disciplina de "pedir, usar, liberar" se cruza mal entre varios
+                    procesos. Si el proceso A tiene el recurso que necesita B, y B tiene el recurso que necesita A,
+                    ninguno de los dos puede continuar. Ninguno libera lo que tiene porque está esperando algo más. Este
+                    trabajo recorre exactamente ese fenómeno: cómo se define, cómo se detecta, cómo se recupera un
+                    sistema que ya cayó en él, y cómo se puede evitar o prevenir que ocurra.</p>
+          </div>
+     </section>
+
+     <!-- ============ DIVIDER 1 ============ -->
+     <div class="divider">
+          <div class="divider-layer" data-speed="0.2" style="background: linear-gradient(180deg, #080d15, #0d1420);">
+          </div>
+          <div class="divider-layer" data-speed="0.5">
+               <svg viewBox="0 0 1600 260" preserveAspectRatio="xMidYMid slice" style="width:100%; height:100%;">
+                    <rect x="0" y="140" width="1600" height="60" fill="#101a28" />
+                    <g fill="#7dd3fc" opacity="0.6">
+                         <rect x="0" y="168" width="70" height="6" />
+                         <rect x="120" y="168" width="70" height="6" />
+                         <rect x="240" y="168" width="70" height="6" />
+                         <rect x="360" y="168" width="70" height="6" />
+                         <rect x="480" y="168" width="70" height="6" />
+                         <rect x="1080" y="168" width="70" height="6" />
+                         <rect x="1200" y="168" width="70" height="6" />
+                         <rect x="1320" y="168" width="70" height="6" />
+                         <rect x="1440" y="168" width="70" height="6" />
+                    </g>
+                    <rect x="700" y="120" width="70" height="30" rx="4" fill="#3b82f6" />
+                    <rect x="830" y="120" width="70" height="30" rx="4" fill="#60a5fa" />
+               </svg>
+          </div>
+     </div>
+
+     <!-- ============ RECURSOS ============ -->
+     <section id="recursos">
+          <div class="section-parallax-bg" style="--tint-color: var(--amber);"></div>
+          <div class="wrap">
+               <div class="section-label">01 — Recursos</div>
+               <h2 class="h2">Todo bloqueo empieza con un recurso compartido</h2>
+               <p class="lead">Un recurso es cualquier cosa que un proceso necesita para avanzar y que el sistema
+                    operativo administra de forma controlada.</p>
+
+               <p>En el contexto de sistemas operativos, un <strong>recurso</strong> puede ser físico (una impresora,
+                    una unidad de disco, un puerto de E/S) o lógico (un archivo abierto, un registro de una base de
+                    datos, una entrada en una tabla, un semáforo). Lo que los une a todos es que un proceso los
+                    solicita, los usa durante un tiempo, y luego los libera para que otro proceso pueda usarlos.</p>
+
+               <h3 class="h3">Recursos compartibles y no compartibles</h3>
+               <p>Los recursos se dividen en dos grandes categorías según cuántos procesos pueden usarlos
+                    simultáneamente:</p>
+
+               <div class="condgrid">
+                    <div class="cond" style="border-top-color: var(--green);">
+                         <div class="num">TIPO A</div>
+                         <h4>Recursos compartibles</h4>
+                         <p>Varios procesos pueden acceder a ellos al mismo tiempo sin generar conflicto, por ejemplo un
+                              archivo de solo lectura o el código de un programa reentrante. No pueden producir bloqueos
+                              por sí solos.</p>
+                    </div>
+                    <div class="cond" style="border-top-color: var(--red);">
+                         <div class="num">TIPO B</div>
+                         <h4>Recursos no compartibles (de exclusión mutua)</h4>
+                         <p>Solo un proceso puede usarlos a la vez: una impresora, una grabadora de CD, un registro de
+                              una base de datos en modo escritura. Son estos los que generan las condiciones para un
+                              bloqueo.</p>
+                    </div>
+               </div>
+
+               <h3 class="h3">El ciclo de vida de un recurso</h3>
+               <p>Cuando un proceso necesita un recurso no compartible, atraviesa normalmente tres pasos:</p>
+               <ol class="list">
+                    <li><strong>Solicitud:</strong> el proceso pide el recurso al sistema operativo. Si no está
+                         disponible, el proceso queda en espera.</li>
+                    <li><strong>Uso:</strong> el proceso obtiene el recurso y lo utiliza para su tarea.</li>
+                    <li><strong>Liberación:</strong> el proceso devuelve el recurso, que vuelve a estar disponible para
+                         otros procesos en espera.</li>
+               </ol>
+               <p>Este ciclo, tan simple en apariencia, es la raíz del problema: si un proceso obtiene un recurso y no
+                    lo libera hasta obtener otro que a su vez está en manos de un tercer proceso, se empieza a tejer una
+                    cadena de dependencias que puede cerrarse sobre sí misma.</p>
+
+               <h3 class="h3">El grafo de asignación de recursos</h3>
+               <p>Para razonar formalmente sobre estas dependencias, se usa el <strong>grafo de asignación de
+                         recursos</strong> (Resource Allocation Graph). Es un grafo dirigido con dos tipos de nodos
+                    —procesos y recursos— y dos tipos de arista:</p>
+               <ul class="list">
+                    <li>Una arista de <strong>solicitud</strong> (P → R) indica que el proceso P pidió el recurso R y
+                         está esperando que se lo asignen.</li>
+                    <li>Una arista de <strong>asignación</strong> (R → P) indica que el recurso R ya fue asignado al
+                         proceso P.</li>
+               </ul>
+
+               <div class="diagram">
+                    <svg viewBox="0 0 620 260" width="620">
+                         <defs>
+                              <marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                                   <path d="M0,0 L8,3 L0,6 Z" fill="#e8f1ff" />
+                              </marker>
+                         </defs>
+                         <circle cx="120" cy="70" r="34" fill="none" stroke="#e8f1ff" stroke-width="2" />
+                         <text x="120" y="76" text-anchor="middle" fill="#e8f1ff" font-family="IBM Plex Mono"
+                              font-size="16">P1</text>
+                         <circle cx="480" cy="70" r="34" fill="none" stroke="#e8f1ff" stroke-width="2" />
+                         <text x="480" y="76" text-anchor="middle" fill="#e8f1ff" font-family="IBM Plex Mono"
+                              font-size="16">P2</text>
+                         <rect x="270" y="30" width="60" height="60" fill="none" stroke="#38bdf8" stroke-width="2" />
+                         <text x="300" y="65" text-anchor="middle" fill="#38bdf8" font-family="IBM Plex Mono"
+                              font-size="16">R1</text>
+                         <rect x="270" y="170" width="60" height="60" fill="none" stroke="#38bdf8" stroke-width="2" />
+                         <text x="300" y="205" text-anchor="middle" fill="#38bdf8" font-family="IBM Plex Mono"
+                              font-size="16">R2</text>
+                         <line x1="270" y1="55" x2="154" y2="65" stroke="#e8f1ff" stroke-width="2"
+                              marker-end="url(#arrow1)" />
+                         <line x1="154" y1="85" x2="270" y2="195" stroke="#3b82f6" stroke-width="2"
+                              marker-end="url(#arrow1)" />
+                         <line x1="330" y1="200" x2="446" y2="85" stroke="#e8f1ff" stroke-width="2"
+                              marker-end="url(#arrow1)" />
+                         <line x1="446" y1="60" x2="330" y2="45" stroke="#3b82f6" stroke-width="2"
+                              marker-end="url(#arrow1)" />
+                    </svg>
+                    <div class="caption">R1 asignado a P1 (blanco), P1 solicita R2 (rojo) — R2 asignado a P2 (blanco),
+                         P2 solicita R1 (rojo): el ciclo ya está formado.</div>
+               </div>
+
+               <p>Cuando este grafo contiene un <strong>ciclo</strong> y todos los recursos involucrados tienen una sola
+                    instancia, existe un bloqueo con certeza. Si algún recurso del ciclo tiene varias instancias, el
+                    ciclo es una condición necesaria pero no suficiente: puede que otro proceso libere una instancia y
+                    rompa el estancamiento.</p>
+          </div>
+     </section>
+
+     <!-- ============ BLOQUEOS ============ -->
+     <section id="bloqueos"
+          style="background: var(--bg-panel-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+          <div class="section-parallax-bg" style="--tint-color: var(--red);"></div>
+          <div class="wrap">
+               <div class="section-label red">02 — Bloqueos</div>
+               <h2 class="h2">La definición formal de un deadlock</h2>
+               <p class="lead reveal">Un conjunto de procesos está en bloqueo cuando cada proceso del conjunto espera un
+                    evento que solo otro proceso del mismo conjunto puede producir.</p>
+
+               <p>Esta definición, tomada de la literatura clásica de sistemas operativos (Silberschatz, Galvin y
+                    Gagne), tiene una consecuencia dura: como el evento que cada proceso espera es típicamente "que se
+                    libere un recurso", y ese recurso está en manos de otro proceso del mismo grupo que también está
+                    esperando, ninguno de ellos puede avanzar nunca por sus propios medios. No es una espera larga: es
+                    una espera infinita, salvo que intervenga algo externo al conjunto (el sistema operativo, un
+                    operador humano, o el reinicio del sistema).</p>
+
+               <div class="quote">Un bloqueo no es lo mismo que un sistema lento o un proceso que tarda. Un proceso
+                    bloqueado no va a terminar nunca, sin importar cuánto tiempo se le dé, porque la condición que
+                    espera nunca se va a cumplir por sí sola.</div>
+
+               <h3 class="h3">Las cuatro condiciones de Coffman</h3>
+               <p>En 1971, Edward G. Coffman y sus colegas identificaron cuatro condiciones que deben cumplirse
+                    <strong>simultáneamente</strong> para que un bloqueo sea posible. Si al menos una de las cuatro no
+                    se cumple, el bloqueo no puede ocurrir. Esta observación es la base tanto de las estrategias de
+                    prevención como de gran parte del razonamiento sobre detección.
+               </p>
+
+               <div class="condgrid">
+                    <div class="cond">
+                         <div class="num">CONDICIÓN 1</div>
+                         <h4>Exclusión mutua</h4>
+                         <p>Al menos un recurso debe mantenerse en modo no compartible: solo un proceso puede usarlo a
+                              la vez. Si todos los recursos fueran compartibles, ningún proceso tendría que esperar a
+                              otro.</p>
+                    </div>
+                    <div class="cond">
+                         <div class="num">CONDICIÓN 2</div>
+                         <h4>Retención y espera</h4>
+                         <p>Un proceso que ya tiene asignado al menos un recurso está esperando adquirir recursos
+                              adicionales que están en manos de otros procesos, sin soltar los que ya tiene.</p>
+                    </div>
+                    <div class="cond">
+                         <div class="num">CONDICIÓN 3</div>
+                         <h4>No apropiación (no preemption)</h4>
+                         <p>Un recurso solo puede ser liberado voluntariamente por el proceso que lo retiene, una vez
+                              que termina de usarlo. El sistema operativo no puede quitárselo por la fuerza.</p>
+                    </div>
+                    <div class="cond">
+                         <div class="num">CONDICIÓN 4</div>
+                         <h4>Espera circular</h4>
+                         <p>Existe un conjunto de procesos {P0, P1, ..., Pn} donde P0 espera un recurso de P1, P1 espera
+                              uno de P2, y así sucesivamente hasta que Pn espera un recurso de P0.</p>
+                    </div>
+               </div>
+
+               <h3 class="h3">Un ejemplo mínimo</h3>
+               <p>El caso más citado en la bibliografía es el de dos procesos y dos recursos no compartibles,
+                    típicamente representando un mutex o un semáforo binario:</p>
+               <div class="panel">
+                    <h4>Proceso A</h4>
+                    <p class="mono" style="color:var(--text-muted); font-size:14px; margin:0;">
+                         lock(recurso_1);<br>
+                         &nbsp;&nbsp;// ... trabajo ...<br>
+                         lock(recurso_2); &nbsp;<span style="color:var(--red)">// espera si B ya tomó
+                              recurso_2</span><br>
+                         &nbsp;&nbsp;// ...<br>
+                         unlock(recurso_2);<br>
+                         unlock(recurso_1);
+                    </p>
+               </div>
+               <div class="panel">
+                    <h4>Proceso B</h4>
+                    <p class="mono" style="color:var(--text-muted); font-size:14px; margin:0;">
+                         lock(recurso_2);<br>
+                         &nbsp;&nbsp;// ... trabajo ...<br>
+                         lock(recurso_1); &nbsp;<span style="color:var(--red)">// espera si A ya tomó
+                              recurso_1</span><br>
+                         &nbsp;&nbsp;// ...<br>
+                         unlock(recurso_1);<br>
+                         unlock(recurso_2);
+                    </p>
+               </div>
+               <p>Si el planificador intercala la ejecución de forma que A toma recurso_1 y, antes de que A pida
+                    recurso_2, B toma recurso_2, ambos procesos quedan esperando indefinidamente al otro. Las cuatro
+                    condiciones de Coffman se cumplen: los mutex son de exclusión mutua, cada proceso retiene su primer
+                    lock mientras espera el segundo, ninguno puede ser despojado de su lock, y la espera es circular (A
+                    espera a B, B espera a A).</p>
+          </div>
+     </section>
+
+     <!-- ============ DIVIDER 2 ============ -->
+     <div class="divider">
+          <div class="divider-layer" data-speed="0.2" style="background: linear-gradient(180deg, #0d1420, #080d15);">
+          </div>
+          <div class="divider-layer" data-speed="0.6">
+               <svg viewBox="0 0 1600 260" preserveAspectRatio="xMidYMid slice" style="width:100%; height:100%;">
+                    <circle cx="500" cy="130" r="60" fill="none" stroke="#3b82f6" stroke-width="3" opacity="0.7" />
+                    <circle cx="800" cy="130" r="60" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.7" />
+                    <circle cx="1100" cy="130" r="60" fill="none" stroke="#60a5fa" stroke-width="3" opacity="0.7" />
+                    <path d="M560 130 A300 300 0 0 1 1040 130" fill="none" stroke="#e8f1ff" stroke-width="1.5"
+                         stroke-dasharray="6 8" opacity="0.4" />
+               </svg>
+          </div>
+     </div>
+
+     <!-- ============ DETECCION Y RECUPERACION ============ -->
+     <section id="deteccion">
+          <div class="section-parallax-bg" style="--tint-color: var(--amber);"></div>
+          <div class="wrap">
+               <div class="section-label">03 — Detección y recuperación</div>
+               <h2 class="h2">Dejar que ocurra, y salir a tiempo</h2>
+               <p class="lead">Una estrategia razonable en sistemas donde los bloqueos son poco frecuentes: permitir que
+                    el sistema entre en un bloqueo, detectarlo periódicamente, y recuperarse cuando sucede.</p>
+
+               <p>Esta filosofía tiene sentido cuando prevenir o evitar el bloqueo de forma estricta resultaría
+                    demasiado costoso o restrictivo para el uso normal del sistema. En cambio, se invierte en dos
+                    mecanismos: un <strong>algoritmo de detección</strong> que se ejecuta cada cierto tiempo, y un
+                    <strong>procedimiento de recuperación</strong> que actúa cuando la detección confirma un bloqueo.
+               </p>
+
+               <h3 class="h3">Detección con una instancia por recurso</h3>
+               <p>Cuando cada tipo de recurso tiene exactamente una instancia, la detección se reduce a buscar un ciclo
+                    en el <strong>grafo de espera</strong> (wait-for graph), una simplificación del grafo de asignación
+                    de recursos donde los nodos de recursos se eliminan y las aristas conectan directamente un proceso
+                    que espera con el proceso que retiene lo que necesita.</p>
+
+               <div class="diagram">
+                    <svg viewBox="0 0 640 220" width="640">
+                         <defs>
+                              <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                                   <path d="M0,0 L8,3 L0,6 Z" fill="#3b82f6" />
+                              </marker>
+                         </defs>
+                         <circle cx="120" cy="110" r="34" fill="none" stroke="#e8f1ff" stroke-width="2" />
+                         <text x="120" y="116" text-anchor="middle" fill="#e8f1ff" font-family="IBM Plex Mono"
+                              font-size="16">P1</text>
+                         <circle cx="320" cy="40" r="34" fill="none" stroke="#e8f1ff" stroke-width="2" />
+                         <text x="320" y="46" text-anchor="middle" fill="#e8f1ff" font-family="IBM Plex Mono"
+                              font-size="16">P2</text>
+                         <circle cx="520" cy="110" r="34" fill="none" stroke="#e8f1ff" stroke-width="2" />
+                         <text x="520" y="116" text-anchor="middle" fill="#e8f1ff" font-family="IBM Plex Mono"
+                              font-size="16">P3</text>
+                         <circle cx="320" cy="185" r="34" fill="none" stroke="#e8f1ff" stroke-width="2" />
+                         <text x="320" y="191" text-anchor="middle" fill="#e8f1ff" font-family="IBM Plex Mono"
+                              font-size="16">P4</text>
+                         <line x1="148" y1="92" x2="292" y2="52" stroke="#3b82f6" stroke-width="2"
+                              marker-end="url(#arrow2)" />
+                         <line x1="348" y1="52" x2="492" y2="92" stroke="#3b82f6" stroke-width="2"
+                              marker-end="url(#arrow2)" />
+                         <line x1="492" y1="128" x2="348" y2="173" stroke="#3b82f6" stroke-width="2"
+                              marker-end="url(#arrow2)" />
+                         <line x1="292" y1="173" x2="148" y2="128" stroke="#3b82f6" stroke-width="2"
+                              marker-end="url(#arrow2)" />
+                    </svg>
+                    <div class="caption">P1 espera a P2, P2 espera a P3, P3 espera a P4, P4 espera a P1: ciclo cerrado →
+                         bloqueo confirmado.</div>
+               </div>
+
+               <p>El algoritmo recorre el grafo buscando ciclos con una complejidad de orden n² en el peor caso, siendo
+                    n la cantidad de procesos y aristas. Si existe un ciclo, hay bloqueo; si no existe, el sistema está
+                    libre de bloqueos en ese instante.</p>
+
+               <h3 class="h3">Detección con varias instancias por recurso</h3>
+               <p>Cuando los recursos tienen múltiples instancias, un ciclo ya no garantiza un bloqueo, así que se
+                    necesita un algoritmo más parecido al del banquero (que veremos en la sección de evasión), pero
+                    aplicado después de los hechos. Este algoritmo usa estructuras similares:</p>
+               <ul class="list">
+                    <li><strong>Available:</strong> vector con las instancias disponibles de cada recurso.</li>
+                    <li><strong>Allocation:</strong> matriz con las instancias que cada proceso tiene asignadas
+                         actualmente.</li>
+                    <li><strong>Request:</strong> matriz con las instancias que cada proceso está solicitando en este
+                         momento.</li>
+               </ul>
+               <p>El algoritmo intenta encontrar una secuencia en la que cada proceso pueda satisfacer su solicitud
+                    pendiente con los recursos disponibles más los que iría liberando a medida que termina. Si al final
+                    queda algún proceso que nunca pudo completarse en esa simulación, ese proceso —y los que dependen de
+                    él— están bloqueados.</p>
+
+               <h3 class="h3">¿Cuándo ejecutar el algoritmo de detección?</h3>
+               <p>Existe un compromiso entre la frecuencia de detección y el costo computacional:</p>
+               <ul class="list">
+                    <li>Ejecutarlo cada vez que se deniega una solicitud detecta el bloqueo apenas ocurre, pero consume
+                         ciclos de CPU constantemente.</li>
+                    <li>Ejecutarlo a intervalos fijos (cada cierto número de minutos, o cuando la utilización de CPU cae
+                         por debajo de un umbral, señal típica de procesos esperando) reduce el costo, a cambio de
+                         tardar más en notar el problema.</li>
+               </ul>
+
+               <h3 class="h3">Recuperación: qué hacer una vez detectado el bloqueo</h3>
+               <p>Una vez confirmado el bloqueo, el sistema operativo tiene dos grandes caminos, que además puede
+                    combinar:</p>
+
+               <div class="twocol">
+                    <div>
+                         <h4 style="color:var(--red); font-size:16px; margin-bottom:8px;">Terminación de procesos</h4>
+                         <p style="font-size:15px; color:var(--text-muted);">Se eliminan uno o más procesos del ciclo
+                              para romperlo.</p>
+                         <ul class="list" style="font-size:15px;">
+                              <li><strong>Terminar todos los procesos bloqueados:</strong> rompe el ciclo con certeza,
+                                   pero es costoso: se pierde todo el trabajo hecho.</li>
+                              <li><strong>Terminar de a uno:</strong> se elimina un proceso a la vez y se vuelve a
+                                   correr la detección, hasta romper el ciclo. Es más económico en trabajo perdido, pero
+                                   requiere ejecutar la detección repetidamente.</li>
+                         </ul>
+                    </div>
+                    <div>
+                         <h4 style="color:var(--amber); font-size:16px; margin-bottom:8px;">Apropiación de recursos</h4>
+                         <p style="font-size:15px; color:var(--text-muted);">Se le quita un recurso a un proceso del
+                              ciclo sin terminarlo, y se lo entrega a otro para romper la espera.</p>
+                         <ul class="list" style="font-size:15px;">
+                              <li><strong>Selección de la víctima:</strong> qué proceso pierde el recurso, minimizando
+                                   el costo (prioridad, tiempo de ejecución ya invertido, recursos que usa).</li>
+                              <li><strong>Retroceso (rollback):</strong> el proceso víctima debe volver a un estado
+                                   seguro anterior, lo que exige llevar un registro de puntos de control.</li>
+                              <li><strong>Inanición (starvation):</strong> hay que evitar elegir siempre al mismo
+                                   proceso como víctima, o nunca terminará de ejecutarse.</li>
+                         </ul>
+                    </div>
+               </div>
+          </div>
+     </section>
+
+     <!-- ============ DIVIDER 3 ============ -->
+     <div class="divider">
+          <div class="divider-layer" data-speed="0.25" style="background: linear-gradient(180deg, #080d15, #0d1420);">
+          </div>
+          <div class="divider-layer" data-speed="0.55">
+               <svg viewBox="0 0 1600 260" preserveAspectRatio="xMidYMid slice" style="width:100%; height:100%;">
+                    <g font-family="IBM Plex Mono" font-size="13" fill="#8fa7c2" opacity="0.55">
+                         <text x="120" y="60">Available: [3,3,2]</text>
+                         <text x="120" y="90">Max: [7,5,3]</text>
+                         <text x="120" y="120">Allocation: [0,1,0]</text>
+                         <text x="820" y="150">Need = Max − Allocation</text>
+                         <text x="820" y="180">¿estado seguro?</text>
+                    </g>
+                    <rect x="1250" y="60" width="90" height="90" fill="none" stroke="#60a5fa" stroke-width="2"
+                         opacity="0.6" />
+                    <text x="1295" y="112" text-anchor="middle" fill="#60a5fa" font-family="IBM Plex Mono"
+                         font-size="20" opacity="0.8">✓</text>
+               </svg>
+          </div>
+     </div>
+
+     <!-- ============ EVASION ============ -->
+     <section id="evasion"
+          style="background: var(--bg-panel-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+          <div class="section-parallax-bg" style="--tint-color: var(--green);"></div>
+          <div class="wrap">
+               <div class="section-label green">04 — Evasión de bloqueo</div>
+               <h2 class="h2">Decidir antes de que sea tarde</h2>
+               <p class="lead">En lugar de esperar a que el bloqueo ocurra, la evasión exige información adicional por
+                    adelantado: cuántos recursos de cada tipo va a necesitar como máximo cada proceso a lo largo de su
+                    vida.</p>
+
+               <p>Con esa información, el sistema operativo puede examinar cada solicitud de recursos antes de
+                    concederla y decidir si otorgarla mantiene al sistema en un <strong>estado seguro</strong>. Si
+                    concederla llevaría a un <strong>estado inseguro</strong> (uno donde eventualmente podría producirse
+                    un bloqueo), la solicitud se pospone, aunque los recursos pedidos estén disponibles en ese momento.
+               </p>
+
+               <h3 class="h3">Estado seguro</h3>
+               <p>Un estado es seguro si existe al menos una secuencia de ejecución de todos los procesos —una
+                    <strong>secuencia segura</strong>— tal que cada proceso pueda obtener los recursos que le faltan
+                    usando los recursos disponibles más los que liberarán los procesos que lo preceden en la secuencia.
+                    En otras palabras: aunque no haya recursos para atender a todos a la vez, existe un orden en el que,
+                    uno por uno, todos pueden terminar.
+               </p>
+
+               <div class="quote">Todo estado seguro está libre de bloqueos. Pero no todo estado inseguro termina en
+                    bloqueo: simplemente ya no hay garantía de que se pueda evitar. La evasión es una postura
+                    conservadora a propósito.</div>
+
+               <h3 class="h3">El algoritmo del banquero</h3>
+               <p>Propuesto por Edsger Dijkstra, el algoritmo del banquero es la técnica de evasión más citada. Se llama
+                    así por analogía con un banco que nunca compromete más crédito del que puede cubrir con su efectivo
+                    disponible, considerando el máximo que cada cliente podría llegar a pedir.</p>
+
+               <p>El algoritmo trabaja con estas estructuras de datos, para n procesos y m tipos de recursos:</p>
+               <ul class="list">
+                    <li><strong>Available[m]:</strong> instancias disponibles de cada tipo de recurso.</li>
+                    <li><strong>Max[n][m]:</strong> la demanda máxima que cada proceso puede llegar a hacer de cada
+                         recurso.</li>
+                    <li><strong>Allocation[n][m]:</strong> instancias actualmente asignadas a cada proceso.</li>
+                    <li><strong>Need[n][m]:</strong> lo que a cada proceso le puede faltar todavía, calculado como Need
+                         = Max − Allocation.</li>
+               </ul>
+
+               <h3 class="h3">Ejemplo numérico</h3>
+               <p>Consideremos 5 procesos (P0 a P4) y 3 tipos de recursos (A, B, C), con Available = (3, 3, 2):</p>
+
+               <div class="final-table-wrap">
+                    <table>
+                         <thead>
+                              <tr>
+                                   <th rowspan="2">Proceso</th>
+                                   <th colspan="3">Allocation</th>
+                                   <th colspan="3">Max</th>
+                                   <th colspan="3">Need</th>
+                              </tr>
+                              <tr>
+                                   <th>A</th>
+                                   <th>B</th>
+                                   <th>C</th>
+                                   <th>A</th>
+                                   <th>B</th>
+                                   <th>C</th>
+                                   <th>A</th>
+                                   <th>B</th>
+                                   <th>C</th>
+                              </tr>
+                         </thead>
+                         <tbody>
+                              <tr>
+                                   <td>P0</td>
+                                   <td>0</td>
+                                   <td>1</td>
+                                   <td>0</td>
+                                   <td>7</td>
+                                   <td>5</td>
+                                   <td>3</td>
+                                   <td>7</td>
+                                   <td>4</td>
+                                   <td>3</td>
+                              </tr>
+                              <tr>
+                                   <td>P1</td>
+                                   <td>2</td>
+                                   <td>0</td>
+                                   <td>0</td>
+                                   <td>3</td>
+                                   <td>2</td>
+                                   <td>2</td>
+                                   <td>1</td>
+                                   <td>2</td>
+                                   <td>2</td>
+                              </tr>
+                              <tr>
+                                   <td>P2</td>
+                                   <td>3</td>
+                                   <td>0</td>
+                                   <td>2</td>
+                                   <td>9</td>
+                                   <td>0</td>
+                                   <td>2</td>
+                                   <td>6</td>
+                                   <td>0</td>
+                                   <td>0</td>
+                              </tr>
+                              <tr>
+                                   <td>P3</td>
+                                   <td>2</td>
+                                   <td>1</td>
+                                   <td>1</td>
+                                   <td>2</td>
+                                   <td>2</td>
+                                   <td>2</td>
+                                   <td>0</td>
+                                   <td>1</td>
+                                   <td>1</td>
+                              </tr>
+                              <tr>
+                                   <td>P4</td>
+                                   <td>0</td>
+                                   <td>0</td>
+                                   <td>2</td>
+                                   <td>4</td>
+                                   <td>3</td>
+                                   <td>3</td>
+                                   <td>4</td>
+                                   <td>3</td>
+                                   <td>1</td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+
+               <p>El algoritmo de seguridad busca un proceso cuyo Need pueda satisfacerse con Available. En este estado,
+                    P1 (Need = 1,2,2) y P3 (Need = 0,1,1) pueden completarse con Available = (3,3,2). Al simular que
+                    terminan y liberan sus recursos, Available crece, permitiendo luego completar a P0, P2 y P4 en ese
+                    orden. La secuencia &lt;P1, P3, P0, P2, P4&gt; es segura, así que este estado es seguro.</p>
+
+               <table>
+                    <thead>
+                         <tr>
+                              <th>Situación</th>
+                              <th>Secuencia segura</th>
+                              <th>Resultado</th>
+                         </tr>
+                    </thead>
+                    <tbody>
+                         <tr>
+                              <td>Estado del ejemplo</td>
+                              <td>P1, P3, P0, P2, P4</td>
+                              <td class="safe">Seguro</td>
+                         </tr>
+                         <tr>
+                              <td>Si P4 solicitara (3,3,0) adicional</td>
+                              <td>ninguna secuencia posible</td>
+                              <td class="unsafe">Inseguro — se deniega</td>
+                         </tr>
+                    </tbody>
+               </table>
+
+               <p>Cuando llega una nueva solicitud, el algoritmo de solicitud de recursos simula concederla, recalcula
+                    Available, Allocation y Need, y vuelve a correr el algoritmo de seguridad. Si el estado resultante
+                    es seguro, la asignación se concede de verdad; si es inseguro, el proceso solicitante debe esperar,
+                    aunque en ese instante existan recursos físicos suficientes para atenderlo.</p>
+
+               <h3 class="h3">Limitaciones del algoritmo del banquero</h3>
+               <ul class="list">
+                    <li>Necesita conocer de antemano la demanda máxima de cada proceso, algo poco realista en sistemas
+                         de propósito general donde los procesos se crean y destruyen dinámicamente.</li>
+                    <li>Asume una cantidad fija de instancias de cada recurso; agregar o quitar recursos en caliente
+                         complica el modelo.</li>
+                    <li>Su costo computacional crece con el cuadrado del número de procesos, lo que limita su uso a
+                         sistemas con una cantidad moderada de procesos activos.</li>
+               </ul>
+               <p>Por estas razones, en la práctica se usa más en sistemas embebidos o de tiempo real con un conjunto de
+                    procesos conocido y estable, que en sistemas operativos de propósito general.</p>
+          </div>
+     </section>
+
+     <!-- ============ DIVIDER 4 ============ -->
+     <div class="divider">
+          <div class="divider-layer" data-speed="0.2" style="background: linear-gradient(180deg, #0d1420, #080d15);">
+          </div>
+          <div class="divider-layer" data-speed="0.5">
+               <svg viewBox="0 0 1600 260" preserveAspectRatio="xMidYMid slice" style="width:100%; height:100%;">
+                    <line x1="200" y1="130" x2="1400" y2="130" stroke="#1f3045" stroke-width="4" />
+                    <circle cx="300" cy="130" r="10" fill="#3b82f6" />
+                    <circle cx="600" cy="130" r="10" fill="#38bdf8" />
+                    <circle cx="900" cy="130" r="10" fill="#60a5fa" />
+                    <circle cx="1200" cy="130" r="10" fill="#e8f1ff" />
+                    <text x="300" y="170" text-anchor="middle" fill="#8fa7c2" font-family="IBM Plex Mono"
+                         font-size="12">Exclusión mutua</text>
+                    <text x="600" y="170" text-anchor="middle" fill="#8fa7c2" font-family="IBM Plex Mono"
+                         font-size="12">Retención y espera</text>
+                    <text x="900" y="170" text-anchor="middle" fill="#8fa7c2" font-family="IBM Plex Mono"
+                         font-size="12">No apropiación</text>
+                    <text x="1200" y="170" text-anchor="middle" fill="#8fa7c2" font-family="IBM Plex Mono"
+                         font-size="12">Espera circular</text>
+               </svg>
+          </div>
+     </div>
+
+     <!-- ============ PREVENCION ============ -->
+     <section id="prevencion">
+          <div class="section-parallax-bg" style="--tint-color: var(--amber);"></div>
+          <div class="wrap">
+               <div class="section-label">05 — Prevención de bloqueos</div>
+               <h2 class="h2">Romper una de las cuatro condiciones, a propósito</h2>
+               <p class="lead">Si el bloqueo requiere que se cumplan las cuatro condiciones de Coffman al mismo tiempo,
+                    basta con garantizar que al menos una nunca se cumpla para que el bloqueo se vuelva imposible por
+                    diseño.</p>
+
+               <p>La prevención es la estrategia más estricta de las tres: no requiere conocer por adelantado el
+                    comportamiento de los procesos (como la evasión) ni tolerar que el bloqueo ocurra (como la
+                    detección), pero suele pagar el precio de restringir la concurrencia o el uso de recursos más de lo
+                    estrictamente necesario.</p>
+
+               <h3 class="h3">Atacando la exclusión mutua</h3>
+               <p>Esta condición es, en general, la más difícil de eliminar: algunos recursos son intrínsecamente no
+                    compartibles (no tiene sentido que dos procesos impriman sobre la misma hoja al mismo tiempo).
+                    Cuando es posible, se recurre al <strong>spooling</strong>: en vez de dar acceso exclusivo directo a
+                    la impresora, cada proceso escribe en una cola y un único proceso spooler decide el orden real de
+                    impresión. Los recursos que sí admiten esta técnica dejan de ser un cuello de botella; los que no,
+                    simplemente quedan fuera del alcance de esta estrategia.</p>
+
+               <h3 class="h3">Atacando la retención y espera</h3>
+               <p>Se puede exigir que un proceso solicite <strong>todos</strong> los recursos que va a necesitar de una
+                    sola vez, antes de comenzar a ejecutar, liberando lo que ya tenga si alguno no está disponible. Una
+                    variante más flexible obliga a que un proceso solo pueda solicitar recursos cuando no retiene
+                    ninguno: para pedir uno nuevo, primero libera todos los que tiene.</p>
+               <p>El costo es doble: baja la utilización de recursos (un proceso puede acaparar un recurso mucho antes
+                    de necesitarlo realmente) y puede provocar inanición, ya que un proceso que necesita muchos recursos
+                    populares puede esperar indefinidamente a que todos estén libres al mismo tiempo.</p>
+
+               <h3 class="h3">Atacando la no apropiación</h3>
+               <p>Se permite que el sistema operativo le quite un recurso a un proceso, en lugar de esperar a que lo
+                    libere voluntariamente. Una variante común: si un proceso que retiene recursos solicita otro que no
+                    está disponible de inmediato, se le retiran todos los recursos que ya tenía (quedan implícitamente
+                    liberados) y el proceso solo los recuperará —junto con el nuevo que pidió— cuando estén todos
+                    disponibles a la vez. Esto funciona bien para recursos cuyo estado se puede guardar y restaurar
+                    fácilmente (registros de CPU, espacio de memoria), pero es impracticable para recursos como una
+                    impresora a mitad de un trabajo.</p>
+
+               <h3 class="h3">Atacando la espera circular</h3>
+               <p>Esta es la condición más habitual de atacar en la práctica, porque su solución es elegante y
+                    relativamente barata: se impone un <strong>orden total</strong> sobre todos los tipos de recursos
+                    del sistema, numerándolos, y se exige que cada proceso solicite recursos en orden estrictamente
+                    creciente según esa numeración. Un proceso que ya tiene el recurso número 5 no puede pedir el
+                    recurso número 3; si lo necesita, debe haberlo solicitado antes.</p>
+               <p>Con esta regla, es imposible construir un ciclo de espera: si existiera un ciclo P0 → P1 → ... → Pn →
+                    P0, cada arista implicaría un recurso de número mayor al anterior, lo cual es contradictorio al
+                    cerrar el ciclo sobre P0. Es la técnica que más se usa en la práctica —por ejemplo, en el diseño de
+                    manejadores de bloqueos (locks) dentro del núcleo de sistemas operativos reales— porque no exige
+                    conocer por adelantado el comportamiento futuro de los procesos, solo disciplina en el orden de las
+                    solicitudes.</p>
+
+               <div class="panel">
+                    <h4>Ejemplo de orden total de recursos</h4>
+                    <p style="margin:0; color:var(--text-muted); font-size:15px;">Si se numeran: 1) dispositivo de
+                         cinta, 2) unidad de disco, 3) impresora — un proceso que ya tomó el disco (2) puede pedir la
+                         impresora (3), pero no puede volver a pedir la cinta (1) sin liberar antes el disco y la
+                         impresora.</p>
+               </div>
+          </div>
+     </section>
+
+     <!-- ============ COMPARACION FINAL ============ -->
+     <section id="sintesis" style="background: var(--bg-panel-2); border-top: 1px solid var(--line);">
+          <div class="section-parallax-bg" style="--tint-color: var(--amber);"></div>
+          <div class="wrap-wide">
+               <div class="section-label">06 — Síntesis</div>
+               <h2 class="h2">Tres estrategias, tres compromisos distintos</h2>
+               <p class="lead">No existe una técnica universalmente mejor: la elección depende de cuánto se conoce por
+                    adelantado sobre los procesos y cuánta concurrencia se está dispuesto a sacrificar.</p>
+
+               <div class="final-table-wrap">
+                    <table>
+                         <thead>
+                              <tr>
+                                   <th style="text-align:left;">Aspecto</th>
+                                   <th>Prevención</th>
+                                   <th>Evasión</th>
+                                   <th>Detección y recuperación</th>
+                              </tr>
+                         </thead>
+                         <tbody>
+                              <tr>
+                                   <td style="text-align:left;">Momento de actuar</td>
+                                   <td>Diseño del sistema</td>
+                                   <td>Antes de conceder cada solicitud</td>
+                                   <td>Después de que el bloqueo ya ocurrió</td>
+                              </tr>
+                              <tr>
+                                   <td style="text-align:left;">Información previa requerida</td>
+                                   <td>Ninguna sobre el futuro de los procesos</td>
+                                   <td>Demanda máxima de cada proceso</td>
+                                   <td>Ninguna por adelantado</td>
+                              </tr>
+                              <tr>
+                                   <td style="text-align:left;">Efecto sobre la concurrencia</td>
+                                   <td>Restringe bastante el uso de recursos</td>
+                                   <td>Restringe solo cuando el estado sería inseguro</td>
+                                   <td>No restringe nada por adelantado</td>
+                              </tr>
+                              <tr>
+                                   <td style="text-align:left;">Costo computacional</td>
+                                   <td>Bajo, es una regla de diseño</td>
+                                   <td>Alto, recalcula seguridad en cada solicitud</td>
+                                   <td>Variable, según frecuencia de chequeo</td>
+                              </tr>
+                              <tr>
+                                   <td style="text-align:left;">Qué pasa si falla</td>
+                                   <td>El bloqueo es imposible por construcción</td>
+                                   <td>El bloqueo es imposible mientras se respete</td>
+                                   <td>Hay que recuperarse, con costo en trabajo perdido</td>
+                              </tr>
+                              <tr>
+                                   <td style="text-align:left;">Dónde se usa típicamente</td>
+                                   <td>Núcleos de sistemas operativos, orden de locks</td>
+                                   <td>Sistemas embebidos y de tiempo real con procesos conocidos</td>
+                                   <td>Bases de datos, sistemas donde el bloqueo es infrecuente</td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+     </section>
+
+     <!-- ============ MARQUEE ============ -->
+     <div class="marquee">
+          <div class="marquee-track">
+               <span>Recursos</span><span>Bloqueos</span><span>Detección</span><span>Recuperación</span><span>Evasión</span><span>Prevención</span>
+               <span>Recursos</span><span>Bloqueos</span><span>Detección</span><span>Recuperación</span><span>Evasión</span><span>Prevención</span>
+          </div>
+     </div>
+
+     <!-- ============ CONCLUSION ============ -->
+     <section id="conclusion" class="tight">
+          <div class="section-parallax-bg" style="--tint-color: var(--green);"></div>
+          <div class="wrap">
+               <div class="section-label">07 — Conclusión</div>
+               <h2 class="h2">Un mismo problema, mirado en distintos momentos</h2>
+               <p>Los bloqueos son, en el fondo, un problema de coordinación: procesos independientes que comparten
+                    recursos escasos sin una visión global de lo que los demás están haciendo. Las cuatro condiciones de
+                    Coffman explican por qué pueden ocurrir; el grafo de asignación de recursos y el grafo de espera dan
+                    una forma de razonar sobre ellos visualmente; y las tres grandes familias de soluciones —prevención,
+                    evasión, y detección con recuperación— representan tres momentos distintos para intervenir: antes de
+                    que el sistema exista, en cada decisión de asignación, o después de que el daño ya está hecho.</p>
+               <p>Ningún sistema operativo real usa una sola de estas estrategias de forma pura y exclusiva. Es más
+                    común encontrar combinaciones: orden total de recursos para los locks internos del núcleo
+                    (prevención), tolerancia a que ciertos bloqueos ocurran en subsistemas donde es infrecuente y barato
+                    recuperarse (detección), y algoritmos de tipo banquero en entornos específicos donde se puede
+                    predecir la demanda (evasión). Entender las tres perspectivas es lo que permite, frente a un sistema
+                    concreto, elegir la combinación adecuada.</p>
+
+               <div class="badge"><span class="sw" style="background:var(--red);"></span> Bloqueo real: las 4
+                    condiciones se cumplen</div><br>
+               <div class="badge"><span class="sw" style="background:var(--amber);"></span> Estado inseguro: puede o no
+                    terminar en bloqueo</div><br>
+               <div class="badge"><span class="sw" style="background:var(--green);"></span> Estado seguro: el bloqueo es
+                    imposible desde aquí</div>
+
+               <h3 class="h3">Referencias sugeridas</h3>
+               <ul class="list">
+                    <li>Silberschatz, A., Galvin, P. B., & Gagne, G. — <em>Operating System Concepts</em>, capítulo
+                         sobre Deadlocks.</li>
+                    <li>Tanenbaum, A. S., & Bos, H. — <em>Modern Operating Systems</em>, capítulo sobre Deadlocks.</li>
+                    <li>Coffman, E. G., Elphick, M., & Shoshani, A. (1971). <em>System Deadlocks</em>. ACM Computing
+                         Surveys.</li>
+               </ul>
+          </div>
+     </section>
+
+     <!-- ============ ACTIVIDADES ============ -->
+     <section id="actividades" class="tight" style="background: var(--bg-panel-2); border-top: 1px solid var(--line);">
+          <div class="section-parallax-bg" style="--tint-color: var(--amber);"></div>
+          <div class="wrap">
+               <div class="section-label">08 — Actividades</div>
+               <h2 class="h2">Poné a prueba lo que leíste</h2>
+               <p class="lead">Cinco preguntas de repaso sobre las condiciones de Coffman, los grafos de asignación, la
+                    detección y recuperación, la evasión y la prevención de bloqueos.</p>
+
+               <div class="quiz-progress" id="quizProgress"></div>
+
+               <form id="quizForm">
+                    <div class="quiz-card" data-answer="1">
+                         <span class="qnum">Pregunta 1 de 5</span>
+                         <h4>¿Cuál de las siguientes NO es una de las cuatro condiciones de Coffman necesarias para que
+                              ocurra un bloqueo?</h4>
+                         <div class="quiz-options">
+                              <button type="button" class="quiz-option" data-index="0"><span
+                                        class="opt-letter">A</span><span>Exclusión mutua</span></button>
+                              <button type="button" class="quiz-option" data-index="1"><span
+                                        class="opt-letter">B</span><span>Planificación por turno rotativo (round
+                                        robin)</span></button>
+                              <button type="button" class="quiz-option" data-index="2"><span
+                                        class="opt-letter">C</span><span>Retención y espera</span></button>
+                              <button type="button" class="quiz-option" data-index="3"><span
+                                        class="opt-letter">D</span><span>Espera circular</span></button>
+                         </div>
+                         <div class="quiz-feedback">
+                              <strong data-ok-label></strong> <span data-explain>La planificación round robin es una
+                                   política del planificador de CPU, no una de las cuatro condiciones de Coffman. Las
+                                   cuatro son: exclusión mutua, retención y espera, no apropiación, y espera
+                                   circular.</span>
+                         </div>
+                    </div>
+
+                    <div class="quiz-card" data-answer="2">
+                         <span class="qnum">Pregunta 2 de 5</span>
+                         <h4>En el grafo de asignación de recursos, si existe un ciclo y cada recurso involucrado tiene
+                              una única instancia, ¿qué se puede afirmar?</h4>
+                         <div class="quiz-options">
+                              <button type="button" class="quiz-option" data-index="0"><span
+                                        class="opt-letter">A</span><span>El ciclo es condición necesaria pero nunca
+                                        suficiente</span></button>
+                              <button type="button" class="quiz-option" data-index="1"><span
+                                        class="opt-letter">B</span><span>No puede haber bloqueo si hay más de dos
+                                        procesos</span></button>
+                              <button type="button" class="quiz-option" data-index="2"><span
+                                        class="opt-letter">C</span><span>Existe un bloqueo con certeza</span></button>
+                              <button type="button" class="quiz-option" data-index="3"><span
+                                        class="opt-letter">D</span><span>El ciclo se rompe automáticamente por el
+                                        sistema operativo</span></button>
+                         </div>
+                         <div class="quiz-feedback">
+                              <strong data-ok-label></strong> <span data-explain>Cuando todos los recursos del ciclo
+                                   tienen una sola instancia, el ciclo garantiza un bloqueo. Con múltiples instancias
+                                   por recurso, el ciclo pasa a ser necesario pero no suficiente.</span>
+                         </div>
+                    </div>
+
+                    <div class="quiz-card" data-answer="2">
+                         <span class="qnum">Pregunta 3 de 5</span>
+                         <h4>En la estrategia de detección y recuperación, ¿qué riesgo se busca evitar al elegir
+                              repetidamente una misma "víctima" para apropiarle recursos o terminarla?</h4>
+                         <div class="quiz-options">
+                              <button type="button" class="quiz-option" data-index="0"><span
+                                        class="opt-letter">A</span><span>Un desbordamiento del grafo de
+                                        espera</span></button>
+                              <button type="button" class="quiz-option" data-index="1"><span
+                                        class="opt-letter">B</span><span>Un aumento del orden total de
+                                        recursos</span></button>
+                              <button type="button" class="quiz-option" data-index="2"><span
+                                        class="opt-letter">C</span><span>Inanición (starvation) de ese
+                                        proceso</span></button>
+                              <button type="button" class="quiz-option" data-index="3"><span
+                                        class="opt-letter">D</span><span>Una condición de exclusión mutua
+                                        adicional</span></button>
+                         </div>
+                         <div class="quiz-feedback">
+                              <strong data-ok-label></strong> <span data-explain>Si siempre se elige al mismo proceso
+                                   como víctima para romper el ciclo, ese proceso puede quedar en inanición: nunca llega
+                                   a completarse. Por eso la selección de víctima debe rotar o considerar el
+                                   historial.</span>
+                         </div>
+                    </div>
+
+                    <div class="quiz-card" data-answer="1">
+                         <span class="qnum">Pregunta 4 de 5</span>
+                         <h4>Según el algoritmo del banquero, ¿qué ocurre cuando conceder una solicitud llevaría a un
+                              estado inseguro?</h4>
+                         <div class="quiz-options">
+                              <button type="button" class="quiz-option" data-index="0"><span
+                                        class="opt-letter">A</span><span>Se concede igual, porque hay recursos físicos
+                                        disponibles</span></button>
+                              <button type="button" class="quiz-option" data-index="1"><span
+                                        class="opt-letter">B</span><span>La solicitud se pospone, aunque los recursos
+                                        estén disponibles</span></button>
+                              <button type="button" class="quiz-option" data-index="2"><span
+                                        class="opt-letter">C</span><span>El sistema entra en bloqueo de
+                                        inmediato</span></button>
+                              <button type="button" class="quiz-option" data-index="3"><span
+                                        class="opt-letter">D</span><span>Se termina automáticamente al proceso
+                                        solicitante</span></button>
+                         </div>
+                         <div class="quiz-feedback">
+                              <strong data-ok-label></strong> <span data-explain>La evasión es conservadora a propósito:
+                                   si otorgar la solicitud dejaría al sistema en un estado inseguro, se posterga aunque
+                                   en ese instante existan recursos físicos suficientes para atenderla.</span>
+                         </div>
+                    </div>
+
+                    <div class="quiz-card" data-answer="3">
+                         <span class="qnum">Pregunta 5 de 5</span>
+                         <h4>¿Cuál es la técnica de prevención más usada en la práctica para atacar la condición de
+                              espera circular?</h4>
+                         <div class="quiz-options">
+                              <button type="button" class="quiz-option" data-index="0"><span
+                                        class="opt-letter">A</span><span>Spooling de todos los recursos del
+                                        sistema</span></button>
+                              <button type="button" class="quiz-option" data-index="1"><span
+                                        class="opt-letter">B</span><span>Permitir que el sistema operativo apropie
+                                        cualquier recurso en cualquier momento</span></button>
+                              <button type="button" class="quiz-option" data-index="2"><span
+                                        class="opt-letter">C</span><span>Exigir que cada proceso pida todos sus recursos
+                                        al iniciar</span></button>
+                              <button type="button" class="quiz-option" data-index="3"><span
+                                        class="opt-letter">D</span><span>Imponer un orden total sobre los tipos de
+                                        recursos y solicitarlos en orden creciente</span></button>
+                         </div>
+                         <div class="quiz-feedback">
+                              <strong data-ok-label></strong> <span data-explain>Numerar los recursos y exigir que cada
+                                   proceso los solicite en orden estrictamente creciente hace imposible construir un
+                                   ciclo de espera. Es la técnica más usada en núcleos reales, por ejemplo para ordenar
+                                   locks.</span>
+                         </div>
+                    </div>
+               </form>
+
+               <div class="quiz-summary" id="quizSummary">
+                    <div class="score" id="quizScore">0/5</div>
+                    <p id="quizSummaryText">Respondé las 5 preguntas para ver tu resultado.</p>
+                    <button type="button" class="quiz-retry" id="quizRetry">Reintentar</button>
+               </div>
+          </div>
+     </section>
+
+     <footer>
+          <div class="wrap">
+               <div>Trabajo Práctico — Sistemas Operativos</div>
+               <div>Tema: Bloqueos — Recursos, Detección y Recuperación, Evasión y Prevención de bloqueos</div>
+          </div>
+     </footer>
+
+     <script>
+          const nav = document.getElementById('mainnav');
+          const progress = document.getElementById('progress');
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+          // ---------- Parallax de las capas del hero y los divisores ----------
+          const parallaxEls = document.querySelectorAll('[data-speed]');
+
+          // ---------- Parallax de fondo por sección ----------
+          // Adaptado de la técnica .parent/.child de main.js: cada sección tiene una
+          // capa de fondo que se desplaza más lento que el contenido a medida que la
+          // sección entra y sale de la pantalla (scrollValue / profundidad).
+          const sections = document.querySelectorAll('section');
+          const sectionBgs = Array.from(sections).map(s => s.querySelector('.section-parallax-bg'));
+
+          function updateParallax() {
+               if (reduceMotion) return;
+               const scrollY = window.scrollY || window.pageYOffset;
+
+               parallaxEls.forEach(el => {
+                    const speed = parseFloat(el.getAttribute('data-speed'));
+                    const offset = scrollY * speed;
+                    el.style.transform = 'translateY(' + (offset * -0.4) + 'px)';
+               });
+
+               sections.forEach((section, i) => {
+                    const bg = sectionBgs[i];
+                    if (!bg) return;
+                    const rect = section.getBoundingClientRect();
+                    // distancia recorrida desde que la sección entró por abajo del viewport
+                    const scrollValue = window.innerHeight - rect.top;
+                    const depth = scrollValue / 7; // misma proporción de profundidad que main.js
+                    bg.style.transform = 'translateY(' + (-depth) + 'px)';
+               });
+          }
+
+          function updateChrome() {
+               const scrollY = window.scrollY || window.pageYOffset;
+               nav.classList.toggle('scrolled', scrollY > 40);
+               const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+               const pct = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
+               progress.style.width = pct + '%';
+          }
+
+          let ticking = false;
+          window.addEventListener('scroll', () => {
+               if (!ticking) {
+                    window.requestAnimationFrame(() => { updateParallax(); updateChrome(); ticking = false; });
+                    ticking = true;
+               }
+          });
+
+          updateParallax();
+          updateChrome();
+
+          // ---------- Nav-dots (adaptado del .nav-dots de main.js) ----------
+          const dotContainers = document.querySelectorAll('.dot-container');
+          dotContainers.forEach(dc => {
+               dc.addEventListener('click', () => {
+                    const target = document.getElementById(dc.getAttribute('data-target'));
+                    if (target) target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+               });
+          });
+
+          const dotObserver = new IntersectionObserver((entries) => {
+               entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                         const id = entry.target.id;
+                         dotContainers.forEach(dc => {
+                              dc.classList.toggle('active', dc.getAttribute('data-target') === id);
+                         });
+                    }
+               });
+          }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+          sections.forEach(s => { if (s.id) dotObserver.observe(s); });
+
+          // ---------- Reveal on scroll (adaptado del patrón fade-in) ----------
+          document.querySelectorAll(
+               'section .panel, section .condgrid, section .diagram, section table, section .quote, section .badge, section .cond, section .quiz-card, section .quiz-summary'
+          ).forEach(el => el.classList.add('reveal'));
+
+          const revealObserver = new IntersectionObserver((entries) => {
+               entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                         entry.target.classList.add('visible');
+                         revealObserver.unobserve(entry.target);
+                    }
+               });
+          }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+          document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+          // ---------- Actividades: quiz de 5 preguntas ----------
+          (function () {
+               const cards = Array.from(document.querySelectorAll('#quizForm .quiz-card'));
+               const progressWrap = document.getElementById('quizProgress');
+               const summary = document.getElementById('quizSummary');
+               const scoreEl = document.getElementById('quizScore');
+               const summaryText = document.getElementById('quizSummaryText');
+               const retryBtn = document.getElementById('quizRetry');
+               if (!cards.length) return;
+
+               const state = cards.map(() => null); // respuesta elegida por pregunta, null = sin responder
+
+               // Construir puntitos de progreso
+               cards.forEach((_, i) => {
+                    const d = document.createElement('div');
+                    d.className = 'qp-dot' + (i === 0 ? ' current' : '');
+                    progressWrap.appendChild(d);
+               });
+               const progressDots = Array.from(progressWrap.children);
+
+               function updateProgress() {
+                    const answeredCount = state.filter(v => v !== null).length;
+                    progressDots.forEach((d, i) => {
+                         d.classList.toggle('done', state[i] !== null);
+                         d.classList.toggle('current', state[i] === null && i === answeredCount);
+                    });
+               }
+
+               function updateSummary() {
+                    const answeredCount = state.filter(v => v !== null).length;
+                    if (answeredCount < cards.length) {
+                         summary.classList.remove('show');
+                         return;
+                    }
+                    const correctCount = cards.filter((card, i) => state[i] === parseInt(card.getAttribute('data-answer'), 10)).length;
+                    scoreEl.textContent = correctCount + '/' + cards.length;
+                    if (correctCount === cards.length) {
+                         summaryText.textContent = 'Perfecto. Dominás las cuatro condiciones de Coffman y las tres estrategias frente a ellas.';
+                    } else if (correctCount >= 3) {
+                         summaryText.textContent = 'Buen resultado. Repasá las explicaciones marcadas en rojo para cerrar los detalles que faltan.';
+                    } else {
+                         summaryText.textContent = 'Convendría repasar las secciones de Bloqueos, Detección y Prevención antes de seguir.';
+                    }
+                    summary.classList.add('show');
+               }
+
+               cards.forEach((card, qIndex) => {
+                    const correctIndex = parseInt(card.getAttribute('data-answer'), 10);
+                    const options = Array.from(card.querySelectorAll('.quiz-option'));
+                    const feedback = card.querySelector('.quiz-feedback');
+                    const okLabel = feedback.querySelector('[data-ok-label]');
+
+                    options.forEach(opt => {
+                         opt.addEventListener('click', () => {
+                              if (state[qIndex] !== null) return; // ya respondida
+                              const chosenIndex = parseInt(opt.getAttribute('data-index'), 10);
+                              state[qIndex] = chosenIndex;
+
+                              options.forEach(o => { o.disabled = true; });
+                              opt.classList.add(chosenIndex === correctIndex ? 'correct' : 'incorrect');
+                              if (chosenIndex !== correctIndex) {
+                                   options[correctIndex].classList.add('correct');
+                              }
+
+                              feedback.classList.remove('ok', 'bad');
+                              feedback.classList.add(chosenIndex === correctIndex ? 'ok' : 'bad', 'show');
+                              okLabel.textContent = chosenIndex === correctIndex ? 'Correcto.' : 'No exactamente.';
+
+                              updateProgress();
+                              updateSummary();
+                         });
+                    });
+               });
+
+               retryBtn.addEventListener('click', () => {
+                    cards.forEach((card, i) => {
+                         state[i] = null;
+                         card.querySelectorAll('.quiz-option').forEach(o => {
+                              o.disabled = false;
+                              o.classList.remove('correct', 'incorrect');
+                         });
+                         card.querySelector('.quiz-feedback').classList.remove('show', 'ok', 'bad');
+                    });
+                    summary.classList.remove('show');
+                    updateProgress();
+                    cards[0].scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+               });
+
+               updateProgress();
+          })();
+
+
+          document.querySelectorAll('.layer-buildings .windows rect').forEach(r => {
+               r.style.animationDelay = (Math.random() * 9).toFixed(2) + 's';
+               r.style.animationDuration = (7 + Math.random() * 5).toFixed(2) + 's';
+          });
+
+
+          /* ===== Scroll-spy del nav ===== */
+          (function () {
+               const links = Array.from(document.querySelectorAll('nav ul a'));
+               if (!links.length) return;
+
+               const map = {};
+               links.forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href && href.startsWith('#')) map[href.slice(1)] = a;
+               });
+
+               const sections = Object.keys(map)
+                    .map(id => document.getElementById(id))
+                    .filter(Boolean);
+
+               function setActive(id) {
+                    links.forEach(a => a.classList.remove('active'));
+                    if (map[id]) map[id].classList.add('active');
+               }
+
+               /* al hacer clic queda activo de inmediato (el observer confirma después) */
+               links.forEach(a => a.addEventListener('click', () => {
+                    setActive(a.getAttribute('href').slice(1));
+               }));
+
+               /* banda activa: la sección que cruza el ~40% de la pantalla */
+               const io = new IntersectionObserver(entries => {
+                    entries.forEach(e => {
+                         if (e.isIntersecting) setActive(e.target.id);
+                    });
+               }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+
+               sections.forEach(s => io.observe(s));
+
+               /* al llegar al final de la página, fuerza la última sección */
+               window.addEventListener('scroll', () => {
+                    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 6) {
+                         const last = sections[sections.length - 1];
+                         if (last) setActive(last.id);
+                    }
+               }, { passive: true });
+          })();
+
+
+     </script>
+
+</body>
+
+</html>
+<!-- <script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public"
+     data-netlify-site-id="2217f13e-7fdf-4c59-9905-6b8342a3ebb5" data-app-host="app.netlify.com"></script> -->
