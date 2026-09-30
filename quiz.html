@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz - Sistemas Operativos (Unidades 6-11)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e1420;
+    --panel: #161e2e;
+    --panel2: #1d2739;
+    --line: #2a3752;
+    --txt: #e8edf7;
+    --muted: #94a3c0;
+    --ok: #22c55e;
+    --okbg: #0f2f1c;
+    --bad: #ef4444;
+    --badbg: #3a1414;
+    --accent: #4f8cff;
+  }
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 20px 14px 60px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 22px; }
+  h1 { font-size: 1.5rem; letter-spacing: .3px; }
+  .sub { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .center { text-align: center; }
+
+  button {
+    font-family: inherit;
+    font-size: .95rem;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--panel2);
+    color: var(--txt);
+    padding: 11px 18px;
+    cursor: pointer;
+    transition: .15s;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #06101f; font-weight: 600; }
+  .center { text-align: center; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+  .hide { display: none !important; }
+
+  .bar { height: 8px; background: var(--panel2); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+  .meta { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
+  .tag { background: var(--panel2); border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; font-size: .72rem; }
+
+  .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 14px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--panel2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    cursor: pointer;
+    font-size: .93rem;
+  }
+  .opt:hover:not(.locked) { border-color: var(--accent); }
+  .opt .k { font-weight: 700; color: var(--muted); min-width: 18px; }
+  .opt.sel { border-color: var(--accent); background: #1b2a48; }
+  .opt.right { border-color: var(--ok); background: var(--okbg); }
+  .opt.right .k { color: var(--ok); }
+  .opt.wrong { border-color: var(--bad); background: var(--badbg); }
+  .opt.wrong .k { color: var(--bad); }
+  .opt.locked { cursor: default; }
+
+  .fb { margin-top: 12px; font-size: .88rem; border-radius: 10px; padding: 12px 14px; display: none; }
+  .fb.ok { display:block; background: var(--okbg); border: 1px solid #1c5c36; }
+  .fb.no { display:block; background: var(--badbg); border: 1px solid #6b2222; }
+  .fb b { display: block; margin-bottom: 4px; }
+
+  .score { font-size: 3rem; font-weight: 700; line-height: 1; }
+  .score.ok { color: var(--ok); } .score.no { color: var(--bad); } .score.mid { color: #f59e0b; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  td { padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .hint { color: var(--muted); font-size: .82rem; margin-top: 12px; }
+  .src { color: var(--muted); font-size: .72rem; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Quiz de Sistemas Operativos</h1>
+    <div class="sub">Unidades 6 a 11 &middot; 49 preguntas &middot; verificado contra el repositorio del curso</div>
+  </header>
+
+  <section id="setup" class="card center">
+    <div class="q-title" style="margin-bottom:6px">49 preguntas &middot; Unidades 6 a 11</div>
+    <div class="hint" style="margin:0 0 20px">Orden de preguntas y respuestas siempre aleatorio.</div>
+    <div class="actions" style="justify-content:center">
+      <button class="primary" onclick="start()">Comenzar</button>
+    </div>
+  </section>
+
+  <section id="play" class="hide">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="meta">
+      <span id="progTxt"></span>
+      <span>
+        <span class="tag" id="cntOk" style="color:var(--ok)">Correctas: 0</span>
+        <span class="tag" id="cntNo" style="color:var(--bad);margin-left:6px">Incorrectas: 0</span>
+      </span>
+    </div>
+    <div class="card">
+      <div class="tag" id="qUnit" style="display:inline-block;margin-bottom:10px"></div>
+      <div class="q-title" id="qText"></div>
+      <div id="opts"></div>
+      <div class="fb" id="fb"></div>
+    </div>
+    <div class="actions">
+      <button id="btnNext" class="primary" onclick="next()" disabled>Siguiente</button>
+      <button onclick="goMenu()">Salir al menú</button>
+    </div>
+  </section>
+
+  <section id="result" class="hide">
+    <div class="card center">
+      <div class="score" id="rScore">0/0</div>
+      <div class="sub" id="rPct" style="color:var(--muted)"></div>
+      <div class="meta" style="justify-content:center;margin-top:16px">
+        <span class="tag" style="color:var(--ok)">Correctas: <b id="rOk">0</b></span>
+        <span class="tag" style="color:var(--bad)">Incorrectas: <b id="rNo">0</b></span>
+      </div>
+      <div class="actions" style="justify-content:center">
+        <button class="primary" onclick="start()">Reintentar</button>
+        <button onclick="goMenu()">Volver al inicio</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="q-title">Detalle por unidad</div>
+      <table id="rTable"></table>
+    </div>
+    <div class="card">
+      <div class="q-title">Preguntas falladas</div>
+      <div id="rWrong"></div>
+      <div class="hint">Podés usar este listado como guía de repaso.</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* Preguntas verificadas una a una contra el repositorio del curso.
+   U6: la pagina del curso no tiene quiz -> opciones Armadas con el contenido de unidad06_archivos.html
+   U7, U9, U10, U11 y 5 de U8: opciones copiadas textualmente del quiz del curso
+   U8: 6 preguntas armedas desde el contenido de unidad_8_estudioDeSistemas.html */
+const BANK = [
+
+/* ================= UNIDAD 6 · SISTEMA DE ARCHIVOS ================= */
+{u:6,src:"unidad06_archivos.html",t:"¿Cuál es la función principal de un sistema de archivos?",a:[
+"Ejecutar las instrucciones de los programas del usuario",
+"Organizar, almacenar, localizar y proteger la información en los dispositivos de almacenamiento",
+"Asignar direcciones IP a los equipos de la red",
+"Administrar la memoria RAM disponible para los procesos"],c:1,
+e:"Un sistema de archivos es la parte del SO encargada de organizar, almacenar, localizar y proteger la información guardada en discos, SSD, memorias USB y tarjetas. Actúa como intermediario entre el usuario y el almacenamiento físico: el usuario ve carpetas y nombres, pero el SO debe saber en qué bloques del disco están los datos. Ejemplos: FAT32, NTFS, ext4, XFS y Btrfs."},
+
+/* ================= UNIDAD 7 · BLOQUEOS ================= */
+{u:7,src:"Proyectito_Ever.html",t:"¿Cuál de las siguientes NO es una de las cuatro condiciones de Coffman necesarias para que ocurra un bloqueo?",a:[
+"Exclusión mutua",
+"Planificación por turno rotativo (round robin)",
+"Retención y espera",
+"Espera circular"],c:1,
+e:"La planificación round robin es una política del planificador de CPU, no una de las cuatro condiciones de Coffman. Las cuatro son: exclusión mutua, retención y espera, no apropiación y espera circular."},
+{u:7,src:"Proyectito_Ever.html",t:"En el grafo de asignación de recursos, si existe un ciclo y cada recurso involucrado tiene una única instancia, ¿qué se puede afirmar?",a:[
+"El ciclo es condición necesaria pero nunca suficiente",
+"No puede haber bloqueo si hay más de dos procesos",
+"Existe un bloqueo con certeza",
+"El ciclo se rompe automáticamente por el sistema operativo"],c:2,
+e:"Cuando todos los recursos del ciclo tienen una sola instancia, el ciclo garantiza un bloqueo. Con múltiples instancias por recurso, el ciclo pasa a ser necesario pero no suficiente: puede que otro proceso libere una instancia y rompa el estancamiento."},
+{u:7,src:"Proyectito_Ever.html",t:"En la estrategia de detección y recuperación, ¿qué riesgo se busca evitar al elegir repetidamente una misma \"víctima\" para apropiarle recursos o terminarla?",a:[
+"Un desbordamiento del grafo de espera",
+"Un aumento del orden total de recursos",
+"Inanición (starvation) de ese proceso",
+"Una condición de exclusión mutua adicional"],c:2,
+e:"Si siempre se elige al mismo proceso como víctima para romper el ciclo, ese proceso puede quedar en inanición: nunca llega a completarse. Por eso la selección de víctima debe rotar o considerar el historial."},
+{u:7,src:"Proyectito_Ever.html",t:"Según el algoritmo del banquero, ¿qué ocurre cuando conceder una solicitud llevaría a un estado inseguro?",a:[
+"Se concede igual, porque hay recursos físicos disponibles",
+"La solicitud se pospone, aunque los recursos estén disponibles",
+"El sistema entra en bloqueo de inmediato",
+"Se termina automáticamente al proceso solicitante"],c:1,
+e:"La evasión es conservadora a propósito: si otorgar la solicitud dejaría al sistema en un estado inseguro, se posterga aunque en ese instante existan recursos físicos suficientes para atenderla. Algoritmo de Dijkstra: Available, Max, Allocation y Need = Max − Allocation."},
+{u:7,src:"Proyectito_Ever.html",t:"¿Cuál es la técnica de prevención más usada en la práctica para atacar la condición de espera circular?",a:[
+"Spooling de todos los recursos del sistema",
+"Permitir que el sistema operativo apropie cualquier recurso en cualquier momento",
+"Exigir que cada proceso pida todos sus recursos al iniciar",
+"Imponer un orden total sobre los tipos de recursos y solicitarlos en orden creciente"],c:3,
+e:"Numerar los recursos y exigir que cada proceso los solicite en orden estrictamente creciente hace imposible construir un ciclo de espera. Es la técnica más usada en núcleos reales, por ejemplo para ordenar locks."},
+
+/* ================= UNIDAD 8 · ESTUDIO DE SISTEMAS ================= */
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿En qué laboratorio y sobre qué máquina nació Unix en 1969?",a:[
+"Bell Labs, sobre una PDP-7",
+"IBM Research, sobre un mainframe System/360",
+"Xerox PARC, sobre una Alto",
+"MIT, sobre una PDP-10"],c:0,
+e:"Ken Thompson y Dennis Ritchie lo armaron sobre una PDP-7 que nadie más quería usar, después de que Bell Labs se bajara del proyecto Multics. Ese mismo año nació Unix."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Por qué la reescritura de Unix en lenguaje C en 1973 fue una decisión fundamental para su evolución?",a:[
+"Porque permitió incorporar una interfaz gráfica",
+"Porque permitió portar Unix a diferentes tipos de hardware sin reescribirlo desde cero",
+"Porque eliminó la necesidad de utilizar memoria RAM",
+"Porque convirtió Unix en un sistema operativo de un solo usuario"],c:1,
+e:"En 1973 se reescribió casi por completo en C, un lenguaje que Ritchie diseñó en paralelo. Abandonar el ensamblador de la PDP-7 es la razón por la que Unix pudo migrar a otro hardware sin reescribirse desde cero, algo inusual para la época."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Qué idea central de Unix, resumida como \"todo es un archivo\", sigue viva medio siglo después?",a:[
+"Que solo los documentos de texto pueden guardarse en disco",
+"Que discos, impresoras y terminales se tratan con la misma interfaz que un archivo",
+"Que cada programa debe guardar su configuración en un único archivo central",
+"Que los archivos no pueden compartirse entre usuarios"],c:1,
+e:"Unix trató discos, impresoras y terminales bajo la misma abstracción de archivo, lo que simplifico enormemente cómo los programas interactúan con el hardware. Permitió además herramientas pequeñas combinables entre sí mediante pipes."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Qué límite de memoria arrastró el software para PC durante más de una década por decisiones tomadas en el diseño de MS-DOS?",a:[
+"640 kilobytes de memoria convencional",
+"1 gigabyte de disco duro",
+"256 megabytes de memoria RAM",
+"8 caracteres por nombre de archivo, sin extensión"],c:0,
+e:"La barrera de los 640K de memoria convencional, heredada del direccionamiento original de 1981, limitó al software para PC durante años, mucho después de que el hardware pudiera ofrecer mucha más memoria."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Qué versión de Windows se considera el quiebre real hacia la interfaz gráfica moderna, con menú Start y barra de tareas?",a:[
+"Windows 1.0",
+"Windows 3.1",
+"Windows 95",
+"MS-DOS 6.22"],c:2,
+e:"Windows 1.0 y 3.1 todavía dependían de DOS y tenían ventanas en mosaico o superpuestas básicas. Windows 95 introdujo el Start, la barra de tareas y plug and play, marcando el quiebre."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Qué aportó Windows NT que DOS y las primeras versiones de Windows nunca tuvieron?",a:[
+"Un intérprete de comandos con el símbolo C:\\>",
+"Protección de memoria entre programas y multitarea real",
+"El nombre de archivo de 8+3 caracteres",
+"La necesidad de arrancar desde un disquete"],c:1,
+e:"DOS ejecutaba un programa a la vez sin aislar la memoria entre procesos. Windows NT, al fin, incorporo protección de memoria y multitarea real, algo que Unix y Linux ya tenían desde su diseño original."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Qué combinación formó el sistema que Linus Torvalds anunció en 1991 como \"solo un hobby\"?",a:[
+"El kernel de BSD con la interfaz de Windows 95",
+"MS-DOS con un shell de Unix agregado",
+"Un fork directo del código fuente de Unix original de Bell Labs",
+"El kernel Linux combinado con las herramientas del proyecto GNU"],c:3,
+e:"Torvalds escribió el kernel; el proyecto GNU, activo desde 1983, ya tenía compiladores, shell y utilidades libres. Juntos formaron un sistema operativo completo: GNU/Linux."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Cómo se relacionan históricamente Unix, BSD, macOS e iOS?",a:[
+"macOS e iOS descienden directamente de MS-DOS",
+"BSD surgió como rama desarrollada en Berkeley; Apple heredó de NeXT un sistema basado en Unix que dio origen a Mac OS X y luego a iOS",
+"iOS fue creado a partir del kernel Linux de Android",
+"macOS se desarrolló como una distribución de Linux"],c:1,
+e:"En 1977 Berkeley construía su propia rama de Unix: BSD, de donde salieron FreeBSD, OpenBSD y NetBSD. Apple compró NeXT en 1997 y heredó un sistema sobre Unix, que en 2001 se convirtió en Mac OS X. iOS (2007) reconstruyó gran parte de esa base técnica."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Por qué surgieron estándares como POSIX dentro del ecosistema Unix?",a:[
+"Porque todos los sistemas Unix eran exactamente iguales y solo faltaba una interfaz gráfica común",
+"Porque la diversidad de variantes Unix obligaba a interfaces estándar para facilitar la portabilidad",
+"Porque POSIX reemplazó por completo al kernel Unix",
+"Porque POSIX fue creado específicamente para ejecutar aplicaciones de Android"],c:1,
+e:"La diversidad de implementaciones Unix produjo diferencias entre sistemas. POSIX (IEEE 1003.1) estableció interfaces y comportamientos comunes para poder trasladar programas entre sistemas; la edición activa es IEEE 1003.1-2024. La Single UNIX Specification es la certificación oficial."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"¿Cuál es una diferencia fundamental entre Android e iOS según el modelo presentado?",a:[
+"Android usa kernel Linux y está pensado para dispositivos de numerosos fabricantes; iOS está ligado al hardware de Apple y usa una base relacionada con Darwin, BSD y Unix",
+"Android usa Windows NT mientras iOS usa MS-DOS",
+"Android e iOS usan exactamente el mismo kernel",
+"iOS está basado directamente en MS-DOS mientras Android usa Unix original"],c:0,
+e:"Android (2008) corre literalmente un kernel Linux y Google lo entregó a cientos de fabricantes: modelo abierto. iOS (2007) tiene base Darwin (BSD/Unix), hardware solo de Apple y modelo cerrado."},
+{u:8,src:"unidad_8_estudioDeSistemas.html",t:"Un usuario ejecuta `ls -l` en Unix. ¿Cuál describe mejor el proceso completo?",a:[
+"El teclado envía el resultado al disco sin intervención del sistema operativo",
+"El shell interpreta el comando, el SO lo ejecuta, el sistema de archivos obtiene la información y el resultado vuelve a la terminal",
+"Bash reemplaza al sistema operativo y accede directamente al hardware",
+"El comando se ejecuta solo dentro del sistema de archivos, sin intervención del shell"],c:1,
+e:"Teclado → Terminal → Shell (Bash) → Sistema Operativo → Sistema de archivos → Disco → resultado → Terminal → Pantalla. Bash es un descendiente directo de la primera shell de Unix (1971): un programa más, sin privilegios especiales, que le pide al SO que haga el trabajo pesado."},
+
+/* ================= UNIDAD 9 · SO DISTRIBUIDOS ================= */
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Qué capa de software permite integrar sistemas heterogéneos actuando entre las aplicaciones y el sistema operativo?",a:[
+"El microprocesador",
+"El Middleware",
+"La topología en anillo"],c:1,
+e:"Capa intermedia que actúa como puente de comunicación heterogénea y gestiona las llamadas a procedimientos remotos (RPC). Ejemplos: Apache Kafka, RabbitMQ o gRPC (el mesero del restaurante)."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Cuál es el objetivo que busca ocultar la distribución física de los recursos para que el sistema se perciba como una sola computadora?",a:[
+"Escalabilidad",
+"Apertura",
+"Transparencia"],c:2,
+e:"Hacer que muchas computadoras parezcan una sola: el usuario no necesita saber dónde están guardados los datos físicamente. Ejemplo real: Google Fotos o Dropbox."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"En las arquitecturas de hardware, ¿qué caracteriza a los sistemas fuertemente acoplados?",a:[
+"Comparten la misma memoria física y reloj",
+"Cada equipo tiene su propia memoria local independiente",
+"Están conectados exclusivamente por red WAN"],c:0,
+e:"Varios procesadores dentro de una misma caja que comparten la misma memoria física y el reloj del sistema (multiprocesadores). Ejemplo: supercomputadoras para simulaciones científicas o entrenamiento de IA."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿En qué modelo de software el usuario NO percibe dónde se ejecutan sus procesos debido a una gestión global de recursos?",a:[
+"Sistema Operativo de Red (NOS)",
+"Sistema Operativo Distribuido (DOS)",
+"Navegador Web"],c:1,
+e:"Un único sistema operativo gestiona globalmente todos los recursos. Ejemplos: Amoeba o Plan 9, que unifican CPUs y memoria física. En el NOS, en cambio, el usuario es consciente de cada máquina."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Qué modelo arquitectónico de SO se menciona como un aspecto crítico de diseño para brindar flexibilidad?",a:[
+"Monolítico",
+"Micronúcleo (Microkernel)",
+"Jerárquico por capas"],c:1,
+e:"Uso del modelo micronúcleo para delegar servicios a espacio de usuario (bloques LEGO). Ejemplos: QNX o MINIX, donde la falla de un controlador de dispositivos no apaga el equipo completo."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Qué objetivo de los sistemas distribuidos permite agregar más computadoras fácilmente si la carga de trabajo aumenta?",a:[
+"Apertura",
+"Escalabilidad",
+"Compartición de recursos"],c:1,
+e:"La facilidad para agregar más computadoras si el trabajo aumenta, sin que el servicio se vuelva lento o se caiga. Ejemplo real: Netflix estrenando una serie masiva conectando miles de servidores."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Cómo se denominan los equipos en los sistemas débilmente acoplados que poseen su propia memoria local y procesador?",a:[
+"Multicomputadoras",
+"Multiprocesadores simétricos",
+"Subsistemas centralizados"],c:0,
+e:"Son computadoras independientes con su propia memoria local, conectadas mediante red de comunicación. Ejemplo real: un sistema de Puntos de Venta (POS) en una cadena de supermercados."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"En un Sistema Operativo de Red (NOS), ¿cuál es la característica principal respecto al usuario?",a:[
+"El sistema oculta por completo las máquinas físicas",
+"Los usuarios son conscientes de las máquinas individuales y usan comandos explícitos",
+"No requiere de ninguna red de comunicación"],c:1,
+e:"Cada computadora mantiene su propio SO independiente. Ejemplo: Windows Server con Active Directory o conexiones por SSH/FTP."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Qué aspecto crítico del diseño se encarga de garantizar que el sistema siga funcionando aunque falle un nodo o se rompa un cable?",a:[
+"Rendimiento",
+"Tolerancia a fallos y fiabilidad",
+"Sincronización de relojes lógicos"],c:1,
+e:"Garantizar que el sistema siga operando aunque se rompa un cable o se apague un nodo. Ejemplo: réplicas bancarias internacionales que mantienen la operación activa aunque caiga un centro de datos. Lo respalda la topología de malla con rutas alternas."},
+{u:9,src:"Unidad09_Sistemas_Distribuidos.html",t:"¿Qué protocolo o herramientas se mencionan para lograr la sincronización de tiempos en los sistemas distribuidos?",a:[
+"El protocolo NTP y Relojes de Lamport",
+"Protocolos FTP y SSH exclusivamente",
+"Sistemas de ficheros virtuales (VFS)"],c:0,
+e:"Balanceo de carga y aseguramiento de que los equipos tengan exactamente la misma hora mediante relojes lógicos/físicos: protocolo NTP y relojes de Lamport para registrar transacciones al milisegundo exacto."},
+
+/* ================= UNIDAD 10 · SEGURIDAD ================= */
+{u:10,src:"unidad10_seguridad.html",t:"¿Cuáles son las tres propiedades clásicas que la seguridad de un sistema operativo debe garantizar?",a:[
+"Confidencialidad, Integridad y Disponibilidad",
+"Rapidez, Memoria y Almacenamiento",
+"Usuarios, Archivos y Redes"],c:0,
+e:"Confidencialidad (cifrado, permisos), Integridad (firmas digitales, hashes) y Disponibilidad (redundancia y tolerancia a fallos). Las completan Autenticación (quién eres) y No repudio (quedó constancia de que fuiste tú)."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Qué diferencia existe entre una amenaza pasiva y una amenaza activa?",a:[
+"La pasiva solo observa y recopila; la activa modifica, borra o bloquea el sistema",
+"La pasiva daña el hardware y la activa solo roba software",
+"No existe diferencia: ambas son igual de peligrosas"],c:0,
+e:"Amenazas pasivas: no alteran el sistema, solo observan y recopilan sin ser detectadas (rastreo, keyloggers, escuchas de red). Riesgo: fuga silenciosa de datos. Activas: modifican, borran o bloquean (ransomware, DoS, MITM). Riesgo: destrucción o inutilización."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Qué tipo de malware se propaga solo a través de la red, sin que el usuario abra ningún archivo?",a:[
+"El gusano (worm)",
+"El virus tradicional con portada",
+"El troyano"],c:0,
+e:"Se replica solo a través de la red, explotando vulnerabilidades, sin necesitar archivo anfitrión. El caso WannaCry inutilizó hospitales en 150 países. El virus sí necesita acción humana; el troyano se disfraza de programa útil y abre una puerta trasera."},
+{u:10,src:"unidad10_seguridad.html",t:"En Linux, ¿qué mecanismo de control de acceso obligatorio asigna contextos y políticas a procesos y archivos?",a:[
+"NTFS",
+"SELinux o AppArmor",
+"BitLocker"],c:1,
+e:"SELinux (RHEL, AlmaLinux, Fedora) y AppArmor (Debian, Ubuntu) son control de acceso obligatorio (MAC) con perfiles por servicio. En AlmaLinux, getenforce muestra el modo: Enforcing (bloquea), Permissive (solo registra) o Disabled."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Qué componente de macOS impide modificar archivos protegidos del sistema, incluso para el usuario root?",a:[
+"FileVault",
+"SIP (System Integrity Protection)",
+"Gatekeeper"],c:1,
+e:"SIP protege el sistema y el Secure Enclave guarda las claves biométricas. FileVault cifra el volumen y Gatekeeper bloquea aplicaciones no notarizadas: son tres mecanismos distintos."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Cuál es la principal ventaja de una configuración RAID 1 frente a RAID 0?",a:[
+"Ofrece espejado: el sistema sigue funcionando si cae un disco",
+"Duplica el rendimiento de lectura y de escritura",
+"No necesita ningún sistema de archivos"],c:0,
+e:"RAID 1 replica cada bloque en dos discos: si uno cae, el sistema sigue operando. RAID 0 solo reparte datos en bloques, da más rendimiento, pero no tolera ningún fallo."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Qué se afirma correctamente sobre el Journaling de un sistema de archivos?",a:[
+"Duplica todos los archivos para acelerar la lectura",
+"Registra la intención de las operaciones para recuperar la consistencia tras una caída",
+"Es exclusivo de Windows Server"],c:1,
+e:"Antes de escribir datos, el SO registra la intención de la operación. Si se corta la luz, al arrancar se reproduce el journal y el sistema de archivos queda consistente. Linux: ext4, XFS, Btrfs. Windows: NTFS. macOS: APFS."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Qué dos componentes son obligatorios desde Windows 11 para arrancar de forma segura?",a:[
+"TPM 2.0 y Secure Boot",
+"BitLocker y Windows Defender",
+"UAC e Hyper-V"],c:0,
+e:"Secure Boot y TPM 2.0 son obligatorios: verifican el firmware, el cargador de arranque y la firma de cada controlador. El TPM guarda además las credenciales de Windows Hello."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Cómo se denomina al hacker que trabaja con autorización formal, prueba la seguridad y reporta sus hallazgos?",a:[
+"Hacker Black Hat",
+"Hacker Gray Hat",
+"Hacker Ético (White Hat)"],c:2,
+e:"Intruso con autorización legal que prueba la seguridad y reporta las falhas; trabaja con pentesting y auditorías. El Black Hat busca beneficio económico; el Gray Hat actúa sin autorización clara pero sin buscar daño económico: sigue siendo un delito."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Cuál es el principal vector de entrada del malware en Android?",a:[
+"La instalación de APK de fuentes desconocidas",
+"La actualización del kernel",
+"El uso de la biometría"],c:0,
+e:"Riesgo principal: instalar APK de fuentes desconocidas. Desde Android 13 el permiso INSTALL_PACKAGES está restringido y Google Play Protect avisa fuera de la tienda. Android también aplica aislamiento por proceso, cada app en su propio UID y sandbox."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Cuál es la política de cortafuegos más segura para un servidor?",a:[
+"Aceptar todo el tráfico y bloquear solo por IP",
+"Denegar todo por defecto y abrir solo los puertos necesarios",
+"Dejar el cortafuegos desactivado y confiar en el antivirus"],c:1,
+e:"Política de denegar por defecto: en Linux, UFW/firewalld/nftables con DROP por defecto y solo se abren los puertos necesarios. Windows usa perfiles (Dominio, Privado, Público) y macOS el packet filter pf."},
+{u:10,src:"unidad10_seguridad.html",t:"¿Qué norma ISO regula directamente la seguridad de la información?",a:[
+"ISO 9001",
+"ISO/IEC 27001",
+"ISO 14001"],c:1,
+e:"ISO/IEC 27001 define los requisitos del Sistema de Gestión de Seguridad de la Información (SGSI) y protege confidencialidad, integridad y disponibilidad. La ISO 27002 es la guía práctica de controles de referencia. La ISO 9001 es de calidad, no de seguridad."},
+
+/* ================= UNIDAD 11 · VIRTUALBOX Y ALMALINUX 9 ================= */
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Quién creó originalmente VirtualBox y en qué año?",a:[
+"Oracle, en 2010",
+"Innotek GmbH, en 2007",
+"Sun Microsystems, en 2005",
+"Red Hat, en 2008"],c:1,
+e:"Lo creó la empresa alemana Innotek GmbH y lanzó su primera versión en enero de 2007. En 2008 Sun Microsystems purchó Innotek y en 2010 Oracle adquirió Sun, momento en que pasó a llamarse Oracle VM VirtualBox."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Qué tipo de hipervisor es VirtualBox?",a:[
+"Tipo 1 (bare-metal)",
+"Tipo 2 (hosted, sobre un sistema anfitrión)",
+"Un contenedor de aplicaciones",
+"Un emulador de hardware puro"],c:1,
+e:"Es software gratuito de código abierto (GPL) propiedad de Oracle que se ejecuta sobre un sistema operativo anfitrión. Anfitriones: Windows, Linux y macOS. Invitados: Windows, Linux, BSD, Solaris y macOS."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Cuál es el tamaño mínimo de disco recomendado para instalar AlmaLinux 9 en una máquina virtual?",a:[
+"5 GB",
+"10 GB",
+"20 GB",
+"50 GB"],c:2,
+e:"Mínimo 20 GB o más. El resto de recursos recomendados: 1-2 núcleos de CPU, 2 GB de RAM (idealmente 4 GB) y red NAT por defecto o adaptador puente. Almacenamiento reservado dinámicamente en formato VDI."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Cómo se llama el instalador gráfico utilizado por AlmaLinux 9?",a:[
+"YaST",
+"Anaconda",
+"Calamares",
+"Ubiquity"],c:1,
+e:"Al iniciar desde la ISO se abre el instalador gráfico Anaconda, donde se configura teclado, fecha/hora, destino de instalación, red, selección de software, contraseña de root y usuario estándar. YaST es de openSUSE, Calamares de Linux Mint y Ubiquity de Ubuntu."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿En qué año y por qué empresa fue creado AlmaLinux?",a:[
+"2019, por Red Hat",
+"2021, por CloudLinux",
+"2015, por Canonical",
+"2021, por Oracle"],c:1,
+e:"Nació en marzo de 2021 por CloudLinux Inc. como respuesta a la decisión de Red Hat de convertir CentOS en CentOS Stream. Buscó ocupar ese lugar como distribución 1:1 compatible con RHEL; hoy la gestiona la AlmaLinux OS Foundation."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Cuál es la principal diferencia entre AlmaLinux y RHEL?",a:[
+"AlmaLinux no es compatible con RHEL",
+"RHEL requiere suscripción paga; AlmaLinux es gratuito",
+"AlmaLinux solo funciona en máquinas virtuales",
+"RHEL es de código abierto y AlmaLinux no"],c:1,
+e:"RHEL es comercial y requiere suscripción para soporte y actualizaciones. AlmaLinux es gratuita, de código abierto, binariamente compatible (1:1) con RHEL y con soporte comunitario. Ambas tienen el código fuente abierto."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Cuál es el sistema de archivos predeterminado en AlmaLinux 9?",a:[
+"ext4",
+"NTFS",
+"XFS",
+"FAT32"],c:2,
+e:"XFS es el predeterminado en AlmaLinux/RHEL 9, con alto rendimiento en archivos muy grandes y alta concurrencia. ext4 es el más usado en general (Debian, Ubuntu) porque permite reducir tamaño de particiones; Btrfs es el de Fedora Workstation."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Qué partición almacena el kernel y los archivos necesarios para el arranque del sistema?",a:[
+"/home",
+"swap",
+"/boot",
+"/ (root)"],c:2,
+e:"/boot guarda el kernel y los archivos de arranque; swap es memoria de intercambio en disco; / (root) contiene el SO y sus archivos principales; /home almacena los archivos y configuraciones de los usuarios."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Qué gestor de paquetes utiliza AlmaLinux, por pertenecer a la familia Fedora/RHEL?",a:[
+"apt",
+"dnf",
+"pacman",
+"zypper"],c:1,
+e:"dnf. Comandos: sudo dnf update, sudo dnf install nombre, sudo dnf remove nombre, sudo dnf check-update. Debian y Ubuntu usan apt en su lugar. Los comandos básicos (ls, cd, mkdir, rm) son iguales en cualquier distribución."},
+{u:11,src:"unidad11_instalacionvirtual.html",t:"¿Qué comando se utiliza en Linux para crear un directorio?",a:[
+"touch",
+"mkdir",
+"newdir",
+"cd"],c:1,
+e:"mkdir (make directory). touch crea un archivo vacío y cd cambia de directorio. El parámetro -p permite crear carpetas anidadas de una sola vez: mkdir -p proyectos/os/practica01."}
+
+];
+
+const UNITS = [6,7,8,9,10,11];
+const LBL = {6:"U6 · Sistema de archivos",7:"U7 · Bloqueos",8:"U8 · Estudio de Sistemas",9:"U9 · SO Distribuidos",10:"U10 · Seguridad en SO",11:"U11 · VirtualBox y AlmaLinux 9"};
+
+let qs = [], idx = 0, ok = 0, no = 0, answered = false, perUnit = {}, wrong = [];
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function start(){
+  const poolQ = shuffle(BANK.slice());
+
+  qs = poolQ.map(q=>{
+    const opts = shuffle(q.a.map((text,i)=>({text, ok:i===q.c})));
+    return {u:q.u, src:q.src, t:q.t, e:q.e, opts};
+  });
+
+  idx=0; ok=0; no=0; answered=false; perUnit={}; wrong=[];
+  document.getElementById('setup').classList.add('hide');
+  document.getElementById('result').classList.add('hide');
+  document.getElementById('play').classList.remove('hide');
+  render();
+}
+
+function render(){
+  const q = qs[idx];
+  answered = false;
+  document.getElementById('qUnit').textContent = LBL[q.u];
+  document.getElementById('qText').textContent = q.t;
+  document.getElementById('barFill').style.width = (idx/qs.length*100)+'%';
+  document.getElementById('progTxt').textContent = `Pregunta ${idx+1} de ${qs.length}`;
+  document.getElementById('cntOk').textContent = 'Correctas: '+ok;
+  document.getElementById('cntNo').textContent = 'Incorrectas: '+no;
+  document.getElementById('fb').className = 'fb';
+  document.getElementById('fb').innerHTML = '';
+  document.getElementById('btnNext').disabled = true;
+  document.getElementById('btnNext').textContent = (idx===qs.length-1) ? 'Ver resultado' : 'Siguiente';
+
+  const box = document.getElementById('opts');
+  box.innerHTML = '';
+  const LET = ['A','B','C','D','E','F'];
+  q.opts.forEach((o,i)=>{
+    const d = document.createElement('div');
+    d.className = 'opt';
+    d.innerHTML = `<span class="k">${LET[i]}</span><span>${o.text}</span>`;
+    d.onclick = ()=> answer(i,d);
+    box.appendChild(d);
+  });
+}
+
+function answer(i, el){
+  if(answered) return;
+  answered = true;
+  const q = qs[idx];
+  const picked = q.opts[i];
+  const nodes = document.getElementById('opts').children;
+
+  for(let k=0;k<nodes.length;k++){
+    nodes[k].classList.add('locked');
+    nodes[k].classList.remove('sel');
+    if(q.opts[k].ok) nodes[k].classList.add('right');
+  }
+
+  if(!perUnit[q.u]) perUnit[q.u]={ok:0,no:0};
+
+  if(picked.ok){
+    ok++; perUnit[q.u].ok++;
+    el.classList.add('right');
+    const fb = document.getElementById('fb');
+    fb.className = 'fb ok';
+    fb.innerHTML = '<b>Correcto.</b>'+(q.e||'');
+  }else{
+    no++; perUnit[q.u].no++;
+    wrong.push({q:q, mine:picked.text});
+    el.classList.add('wrong');
+    const fb = document.getElementById('fb');
+    fb.className = 'fb no';
+    fb.innerHTML = '<b>Incorrecto.</b>'+(q.e?' '+q.e:'');
+  }
+
+  document.getElementById('cntOk').textContent = 'Correctas: '+ok;
+  document.getElementById('cntNo').textContent = 'Incorrectas: '+no;
+  document.getElementById('barFill').style.width = ((idx+1)/qs.length*100)+'%';
+  document.getElementById('btnNext').disabled = false;
+}
+
+function next(){
+  if(!answered) return;
+  if(idx < qs.length-1){ idx++; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else finish();
+}
+
+function finish(){
+  document.getElementById('play').classList.add('hide');
+  document.getElementById('result').classList.remove('hide');
+  const total = qs.length, pct = Math.round(ok/total*100);
+  const s = document.getElementById('rScore');
+  s.textContent = ok+'/'+total;
+  s.className = 'score ' + (pct>=70?'ok':pct>=40?'mid':'no');
+  document.getElementById('rPct').textContent = pct+'% de aciertos';
+  document.getElementById('rOk').textContent = ok;
+  document.getElementById('rNo').textContent = no;
+
+  const used = Object.keys(perUnit).map(Number).sort((a,b)=>a-b);
+  document.getElementById('rTable').innerHTML = used.map(u=>{
+    const t = perUnit[u].ok + perUnit[u].no;
+    const p = Math.round(perUnit[u].ok/t*100);
+    const col = p>=70?'var(--ok)':p>=40?'#f59e0b':'var(--bad)';
+    return `<tr><td>${LBL[u]}</td><td style="color:${col}">${perUnit[u].ok}/${t} &middot; ${p}%</td></tr>`;
+  }).join('');
+
+  document.getElementById('rWrong').innerHTML = wrong.map((w,i)=>`
+    <div class="opt locked">
+      <span class="k">${i+1}</span>
+      <span>
+        <b>${w.q.t}</b><br>
+        <small style="color:var(--ok)">Correcta: ${w.q.opts.find(o=>o.ok).text}</small><br>
+        <small style="color:var(--bad)">Tu respuesta: ${w.mine}</small><br>
+        <small style="color:var(--muted)">${LBL[w.q.u]} &middot; ${w.q.e||''}</small>
+      </span>
+    </div>`).join('') || '<div class="hint">Sin preguntas falladas. Perfecto.</div>';
+}
+
+function goMenu(){
+  document.getElementById('setup').classList.remove('hide');
+  document.getElementById('play').classList.add('hide');
+  document.getElementById('result').classList.add('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('play').classList.contains('hide')) return;
+  if(!answered && /^[1-6]$/.test(e.key)){
+    const n = document.getElementById('opts').children[e.key-1];
+    if(n) n.click();
+  }
+  if(answered && (e.key==='Enter' || e.key===' ')) { e.preventDefault(); next(); }
+});
+</script>
+</body>
+</html>
